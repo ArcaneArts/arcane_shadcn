@@ -44,6 +44,7 @@ class TextField extends StatefulWidget {
   final TextInputAction? textInputAction;
   final Clip clipBehavior;
   final bool autofocus;
+  final WidgetStatesController? statesController;
 
   const TextField({
     super.key,
@@ -84,6 +85,7 @@ class TextField extends StatefulWidget {
     this.textInputAction,
     this.clipBehavior = Clip.hardEdge,
     this.autofocus = false,
+    this.statesController,
     this.placeholderAlignment = AlignmentDirectional.centerStart,
   });
 
@@ -101,12 +103,14 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
   final GlobalKey _key = GlobalKey();
   late TextEditingController _controller;
   late UndoHistoryController _undoHistoryController;
+  late WidgetStatesController _statesController;
 
   @override
   void initState() {
     super.initState();
     _controller = widget.controller ?? TextEditingController();
     _undoHistoryController = widget.undoController ?? UndoHistoryController();
+    _statesController = widget.statesController ?? WidgetStatesController();
     if (widget.initialValue != null) {
       _controller.text = widget.initialValue!;
     }
@@ -280,6 +284,8 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
                     borderSide: BorderSide(
                       color: theme.colorScheme.ring,
                     ),
+                    cursorColor: theme.colorScheme.primary,
+                    cursorWidth: 1,
                   ),
         enabledBorder: !widget.border
             ? material.InputBorder.none
