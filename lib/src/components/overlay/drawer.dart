@@ -1016,6 +1016,12 @@ class _DrawerOverlayState extends State<DrawerOverlay> {
     });
   }
 
+  void closeLast() {
+    if (_entries.isNotEmpty) {
+      _entries.last.completer.complete();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final parentLayer = Data.maybeOf<DrawerLayerData>(context);
