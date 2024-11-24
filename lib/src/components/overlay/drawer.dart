@@ -1018,7 +1018,13 @@ class _DrawerOverlayState extends State<DrawerOverlay> {
 
   void closeLast() {
     if (_entries.isNotEmpty) {
-      _entries.last.completer.complete();
+      var last = _entries.last;
+      var state = last.key.currentState;
+      if (state != null) {
+        state.close();
+      } else {
+        last.completer.complete();
+      }
     }
   }
 
