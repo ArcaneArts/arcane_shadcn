@@ -85,7 +85,8 @@ class TextField extends StatefulWidget {
     this.textInputAction,
     this.clipBehavior = Clip.hardEdge,
     this.autofocus = false,
-    this.placeholderAlignment = AlignmentDirectional.centerStart,
+    this.placeholderAlignment = AlignmentDirectional.topStart,
+    this.statesController,
   });
 
   static Widget _defaultContextMenuBuilder(
@@ -312,96 +313,36 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
                     cursorColor: theme.colorScheme.primary,
                     cursorWidth: 1,
                   ),
-        hoverColor: Colors.transparent,
-        focusedBorder: !widget.border
-            ? material.InputBorder.none
-            : widget.filled
-                ? material.OutlineInputBorder(
-                    borderRadius: optionallyResolveBorderRadius(
-                            context, widget.borderRadius) ??
-                        BorderRadius.circular(theme.radiusMd),
-                    borderSide: BorderSide.none,
-                  )
-                : material.OutlineInputBorder(
-                    borderRadius: optionallyResolveBorderRadius(
-                            context, widget.borderRadius) ??
-                        BorderRadius.circular(theme.radiusMd),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.ring,
-                    ),
-                  ),
-        enabledBorder: !widget.border
-            ? material.InputBorder.none
-            : widget.filled
-                ? material.OutlineInputBorder(
-                    borderRadius: optionallyResolveBorderRadius(
-                            context, widget.borderRadius) ??
-                        BorderRadius.circular(theme.radiusMd),
-                    borderSide: BorderSide.none,
-                  )
-                : material.OutlineInputBorder(
-                    borderRadius: optionallyResolveBorderRadius(
-                            context, widget.borderRadius) ??
-                        BorderRadius.circular(theme.radiusMd),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.border,
-                    ),
-                  ),
-        disabledBorder: !widget.border
-            ? material.InputBorder.none
-            : widget.filled
-                ? material.OutlineInputBorder(
-                    borderRadius: optionallyResolveBorderRadius(
-                            context, widget.borderRadius) ??
-                        BorderRadius.circular(theme.radiusMd),
-                    borderSide: BorderSide.none,
-                  )
-                : material.OutlineInputBorder(
-                    borderRadius: optionallyResolveBorderRadius(
-                            context, widget.borderRadius) ??
-                        BorderRadius.circular(theme.radiusMd),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.border,
-                    ),
-                  ),
-        errorBorder: !widget.border
-            ? material.InputBorder.none
-            : widget.filled
-                ? material.OutlineInputBorder(
-                    borderRadius: optionallyResolveBorderRadius(
-                            context, widget.borderRadius) ??
-                        BorderRadius.circular(theme.radiusMd),
-                    borderSide: BorderSide.none,
-                  )
-                : material.OutlineInputBorder(
-                    borderRadius: optionallyResolveBorderRadius(
-                            context, widget.borderRadius) ??
-                        BorderRadius.circular(theme.radiusMd),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.destructive,
-                    ),
-                  ),
-        focusedErrorBorder: !widget.border
-            ? material.InputBorder.none
-            : widget.filled
-                ? material.OutlineInputBorder(
-                    borderRadius: optionallyResolveBorderRadius(
-                            context, widget.borderRadius) ??
-                        BorderRadius.circular(theme.radiusMd),
-                    borderSide: BorderSide.none,
-                  )
-                : material.OutlineInputBorder(
-                    borderRadius: optionallyResolveBorderRadius(
-                            context, widget.borderRadius) ??
-                        BorderRadius.circular(theme.radiusMd),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.destructive,
-                    ),
-                  ),
-        contentPadding: widget.padding ??
-            EdgeInsets.symmetric(
-              horizontal: 12 * scaling,
-              vertical: (4 + 8) * scaling,
+                  if (widget.placeholder != null)
+                    Positioned.fill(
+                      child: ListenableBuilder(
+                        listenable: _controller,
+                        builder: (context, child) {
+                          return IgnorePointer(
+                            child: Visibility(
+                              visible: _controller.text.isEmpty,
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 1),
+                                alignment: widget.placeholderAlignment,
+                                child: DefaultTextStyle(
+                                  style: defaultTextStyle
+                                      .merge(theme.typography.normal)
+                                      .merge(theme.typography.small)
+                                      .copyWith(
+                                        color:
+                                            theme.colorScheme.mutedForeground,
+                                      ),
+                                  child: Text(widget.placeholder!),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                ],
+              ),
             ),
             if (widget.trailing != null) SizedBox(width: 8 * scaling),
             if (widget.trailing != null) widget.trailing!,
