@@ -1,3 +1,4 @@
+import 'package:pylon/pylon.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 Future<void> closeOverlay<T>(BuildContext context, [T? value]) {
@@ -337,6 +338,7 @@ class _OverlayManagerLayerState extends State<OverlayManagerLayer>
     Duration? dismissDuration,
     OverlayBarrier? overlayBarrier,
   }) {
+    builder = Pylon.mirror(context, builder);
     return widget.menuHandler.show(
       context: context,
       alignment: alignment,
