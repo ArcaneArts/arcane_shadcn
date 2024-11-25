@@ -350,6 +350,7 @@ class DialogOverlayHandler extends OverlayHandler {
     Duration? dismissDuration,
     OverlayBarrier? overlayBarrier,
   }) {
+    builder = Pylon.mirror(context, builder);
     var navigatorState = Navigator.of(
       context,
       rootNavigator: rootOverlay,

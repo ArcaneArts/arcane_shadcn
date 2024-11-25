@@ -281,6 +281,7 @@ class _OverlayManagerLayerState extends State<OverlayManagerLayer>
     Duration? dismissDuration,
     OverlayBarrier? overlayBarrier,
   }) {
+    builder = Pylon.mirror(context, builder);
     return widget.tooltipHandler.show(
       context: context,
       alignment: alignment,

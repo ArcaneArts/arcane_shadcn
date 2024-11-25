@@ -1,4 +1,3 @@
-import 'package:pylon/pylon.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 OverlayCompleter<T?> showDropdown<T>({
@@ -25,7 +24,6 @@ OverlayCompleter<T?> showDropdown<T>({
   Duration? showDuration,
   Duration? dismissDuration,
 }) {
-  builder = Pylon.mirror(context, builder);
   final theme = Theme.of(context);
   final scaling = theme.scaling;
   final GlobalKey key = GlobalKey();
