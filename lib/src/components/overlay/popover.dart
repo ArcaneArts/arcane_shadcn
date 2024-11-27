@@ -39,8 +39,9 @@ class PopoverOverlayHandler extends OverlayHandler {
     OverlayPylonReference ref = OverlayPylonReference();
     builder = Pylon.mirror(
         context,
-        (context) =>
-            Pylon<OverlayPylonReference>(value: ref, builder: builder));
+        (context) => Builder(
+            builder: (context) =>
+                Pylon<OverlayPylonReference>(value: ref, builder: builder)));
     TextDirection textDirection = Directionality.of(context);
     Alignment resolvedAlignment = alignment.resolve(textDirection);
     anchorAlignment ??= alignment * -1;
