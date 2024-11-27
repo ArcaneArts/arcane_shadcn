@@ -353,10 +353,8 @@ class DialogOverlayHandler extends OverlayHandler {
     OverlayPylonReference ref = OverlayPylonReference();
     builder = Pylon.mirror(
         context,
-        (context) => Builder(
-              builder: (context) =>
-                  Pylon<OverlayPylonReference>(value: ref, builder: builder),
-            ));
+        (context) =>
+            Pylon<OverlayPylonReference>(value: ref, builder: builder));
     var navigatorState = Navigator.of(
       context,
       rootNavigator: rootOverlay,
