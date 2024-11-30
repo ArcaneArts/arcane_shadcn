@@ -9,11 +9,16 @@ class ResizableExample4 extends StatefulWidget {
 }
 
 class _ResizableExample4State extends State<ResizableExample4> {
-  final ResizablePaneController controller1 = ResizablePaneController(80);
-  final ResizablePaneController controller2 = ResizablePaneController(80);
-  final ResizablePaneController controller3 = ResizablePaneController(120);
-  final ResizablePaneController controller4 = ResizablePaneController(80);
-  final ResizablePaneController controller5 = ResizablePaneController(80);
+  final AbsoluteResizablePaneController controller1 =
+      AbsoluteResizablePaneController(80);
+  final AbsoluteResizablePaneController controller2 =
+      AbsoluteResizablePaneController(80);
+  final AbsoluteResizablePaneController controller3 =
+      AbsoluteResizablePaneController(120);
+  final AbsoluteResizablePaneController controller4 =
+      AbsoluteResizablePaneController(80);
+  final AbsoluteResizablePaneController controller5 =
+      AbsoluteResizablePaneController(80);
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -97,13 +102,13 @@ class _ResizableExample4State extends State<ResizableExample4> {
             ),
             PrimaryButton(
               onPressed: () {
-                controller1.tryExpandSize(20);
+                controller2.tryExpandSize(20);
               },
               child: const Text('Expand Panel 1'),
             ),
             PrimaryButton(
               onPressed: () {
-                controller1.tryExpandSize(-20);
+                controller2.tryExpandSize(-20);
               },
               child: const Text('Shrink Panel 1'),
             ),
