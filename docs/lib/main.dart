@@ -108,22 +108,25 @@ void main() async {
       initialColorScheme = colorSchemes[colorScheme];
     }
   }
-  double initialRadius = prefs.getDouble('radius') ?? 0.5;
+  double initialRadius = prefs.getDouble('radius') ?? 0.4;
   double initialScaling = prefs.getDouble('scaling') ?? 1.0;
-  double initialSurfaceOpacity = prefs.getDouble('surfaceOpacity') ?? 1.0;
-  double initialSurfaceBlur = prefs.getDouble('surfaceBlur') ?? 0.0;
+  double initialSurfaceOpacity = prefs.getDouble('surfaceOpacity') ?? 0.66;
+  double initialSurfaceBlur = prefs.getDouble('surfaceBlur') ?? 18;
+  double initialSpin = prefs.getDouble('spin') ?? 0.0;
   runApp(MyApp(
-    initialColorScheme: initialColorScheme ?? colorSchemes['darkZinc']!,
+    initialColorScheme: initialColorScheme ?? colorSchemes['darkViolet']!,
     initialRadius: initialRadius,
     initialScaling: initialScaling,
     initialSurfaceOpacity: initialSurfaceOpacity,
     initialSurfaceBlur: initialSurfaceBlur,
+    initialSpin: initialSpin,
   ));
 }
 
 class MyApp extends StatefulWidget {
   final ColorScheme initialColorScheme;
   final double initialRadius;
+  final double initialSpin;
   final double initialScaling;
   final double initialSurfaceOpacity;
   final double initialSurfaceBlur;
@@ -134,6 +137,7 @@ class MyApp extends StatefulWidget {
     required this.initialScaling,
     required this.initialSurfaceOpacity,
     required this.initialSurfaceBlur,
+    required this.initialSpin,
   });
 
   @override
@@ -667,6 +671,7 @@ class MyAppState extends State<MyApp> {
   late ColorScheme colorScheme;
   late double radius;
   late double scaling;
+  late double spin;
   late double surfaceOpacity;
   late double surfaceBlur;
 
@@ -675,6 +680,7 @@ class MyAppState extends State<MyApp> {
     super.initState();
     colorScheme = widget.initialColorScheme;
     radius = widget.initialRadius;
+    spin = widget.initialSpin;
     scaling = widget.initialScaling;
     surfaceOpacity = widget.initialSurfaceOpacity;
     surfaceBlur = widget.initialSurfaceBlur;
@@ -717,6 +723,17 @@ class MyAppState extends State<MyApp> {
     });
   }
 
+  void changeSpin(double spin) {
+    setState(() {
+      this.spin = spin;
+      SharedPreferences.getInstance().then(
+        (value) {
+          value.setDouble('spin', spin);
+        },
+      );
+    });
+  }
+
   void changeSurfaceOpacity(double surfaceOpacity) {
     setState(() {
       this.surfaceOpacity = surfaceOpacity;
@@ -751,7 +768,7 @@ class MyAppState extends State<MyApp> {
         enableScrollInterception: true,
         // popoverHandler: DialogOverlayHandler(),
         theme: ThemeData(
-          colorScheme: colorScheme,
+          colorScheme: colorScheme.spin(spin),
           radius: radius,
           surfaceBlur: surfaceBlur,
           surfaceOpacity: surfaceOpacity,
