@@ -384,6 +384,22 @@ class ColorScheme implements ChartColorScheme {
                 .firstOrNull ??
             Brightness.light;
 
+  /// Spin the color scheme hue by the given degrees
+  ColorScheme spin(double degrees) {
+    Map<String, Color> colors = toColorMap();
+
+    for (String key in colors.keys) {
+      HSLColor hsl = HSLColor.fromColor(colors[key]!);
+      hsl = hsl.withHue((hsl.hue + degrees) % 360);
+      colors[key] = hsl.toColor();
+    }
+
+    return ColorScheme.fromMap({
+      ...toMap(),
+      ...colors.map((k, v) => MapEntry(k, hexFromColor(v))),
+    });
+  }
+
   Map<String, String> toMap() {
     return {
       'background': hexFromColor(background),
