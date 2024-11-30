@@ -16,10 +16,12 @@ class Scaffold extends StatefulWidget {
   final Color? footerBackgroundColor;
   final Color? backgroundColor;
   final bool showLoadingSparks;
+  final bool primary;
 
   const Scaffold({
     super.key,
     required this.child,
+    this.primary = true,
     this.headers = const [],
     this.footers = const [],
     this.loadingProgress,
@@ -148,23 +150,27 @@ class ScaffoldState extends State<Scaffold> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final viewInsets = MediaQuery.viewInsetsOf(context);
-    return DrawerOverlay(
-      child: Container(
-        color: widget.backgroundColor ?? theme.colorScheme.background,
-        child: _ScaffoldFlex(
-          floatingHeader: widget.floatingHeader,
-          floatingFooter: widget.floatingFooter,
-          children: [
-            buildHeader(context),
-            Container(
-              padding: viewInsets,
-              child: ToastLayer(child: widget.child),
-            ),
-            buildFooter(context, viewInsets),
-          ],
-        ),
+    Widget w = Container(
+      color: theme.colorScheme.background,
+      child: _ScaffoldFlex(
+        floatingHeader: widget.floatingHeader,
+        floatingFooter: widget.floatingFooter,
+        children: [
+          buildHeader(context),
+          Container(
+            padding: viewInsets,
+            child: ToastLayer(child: widget.child),
+          ),
+          buildFooter(context, viewInsets),
+        ],
       ),
     );
+
+    return widget.primary
+        ? DrawerOverlay(
+            child: w,
+          )
+        : w;
   }
 }
 
