@@ -47,7 +47,7 @@ class ChartColorScheme {
   Color get chart5 => chartColors[4];
 }
 
-class ColorShades implements Color, ColorSwatch {
+class ColorShades implements ColorSwatch {
   static const int _step = 100;
   static const List<int> _shadeValues = [
     50,
