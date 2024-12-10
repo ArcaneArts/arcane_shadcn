@@ -8,8 +8,7 @@ import '../../../shadcn_flutter.dart';
 class TextField extends StatefulWidget {
   final TextEditingController? controller;
   final bool filled;
-  final Widget? placeholder;
-  final AlignmentGeometry? placeholderAlignment;
+  final String? placeholder;
   final AlignmentGeometry? leadingAlignment;
   final AlignmentGeometry? trailingAlignment;
   final bool border;
@@ -39,6 +38,7 @@ class TextField extends StatefulWidget {
   final void Function(PointerDownEvent event)? onTapOutside;
   final List<TextInputFormatter>? inputFormatters;
   final TextStyle? style;
+  final TextStyle? placeholderStyle;
   final EditableTextContextMenuBuilder? contextMenuBuilder;
   final bool useNativeContextMenu;
   final bool? isCollapsed;
@@ -47,6 +47,13 @@ class TextField extends StatefulWidget {
   final Clip clipBehavior;
   final bool autofocus;
   final WidgetStatesController? statesController;
+  final ScrollController? scrollController;
+  final bool autocorrect;
+  final bool canRequestFocus;
+  final double? cursorHeight;
+  final TextCapitalization textCapitalization;
+  final EdgeInsets scrollPadding;
+  final EdgeInsets contentPadding;
 
   const TextField({
     super.key,
@@ -242,115 +249,99 @@ class _TextFieldState extends State<TextField> with FormValueSupplier {
         child: Row(
           children: [
             if (widget.leading != null)
-              Align(
-                  alignment: widget.leadingAlignment ?? Alignment.center,
-                  child: widget.leading!),
+              widget.leadingAlignment != null
+                  ? Align(
+                      alignment: widget.leadingAlignment ?? Alignment.center,
+                      child: widget.leading!)
+                  : widget.leading!,
             if (widget.leading != null) SizedBox(width: 8 * scaling),
             Flexible(
-              child: Stack(
-                fit: StackFit.passthrough,
-                children: [
-                  material.TextField(
-                    key: _key,
-                    contextMenuBuilder: widget.contextMenuBuilder == null
-                        ? null
-                        : widget.useNativeContextMenu && !kIsWeb
-                            ? (context, editableTextState) {
-                                return material.AdaptiveTextSelectionToolbar
-                                    .editableText(
-                                  editableTextState: editableTextState,
-                                );
-                              }
-                            : widget.contextMenuBuilder,
-                    clipBehavior: widget.clipBehavior,
-                    statesController: _statesController,
-                    inputFormatters: widget.inputFormatters,
-                    onTapOutside: widget.onTapOutside,
-                    onChanged: widget.onChanged,
-                    keyboardType: widget.keyboardType,
-                    textAlign: widget.textAlign,
-                    obscureText: widget.obscureText,
-                    autofocus: widget.autofocus,
-                    obscuringCharacter: widget.obscuringCharacter,
-                    enabled: widget.enabled,
-                    readOnly: widget.readOnly,
-                    maxLength: widget.maxLength,
-                    maxLengthEnforcement: widget.maxLengthEnforcement,
-                    maxLines: maxLines,
-                    onTap: widget.onTap,
-                    focusNode: _focusNode,
-                    onSubmitted: widget.onSubmitted,
-                    onEditingComplete: widget.onEditingComplete,
-                    undoController: _undoHistoryController,
-                    textInputAction: widget.textInputAction,
-                    autofillHints: widget.autofillHints,
-                    minLines: widget.minLines,
-                    buildCounter: (context,
-                        {required currentLength,
-                        required isFocused,
-                        required maxLength}) {
-                      return null;
-                    },
-                    controller: _controller,
-                    style: defaultTextStyle,
-                    expands: widget.expands,
-                    textAlignVertical: widget.textAlignVertical,
-                    decoration: material.InputDecoration(
-                      isCollapsed: widget.isCollapsed,
-                      // prefixIcon: widget.leading,
-                      // suffixIcon: widget.trailing,
-                      isDense: true,
-                      border: material.InputBorder.none,
-                      hoverColor: Colors.transparent,
-                      focusedBorder: material.InputBorder.none,
-                      enabledBorder: material.InputBorder.none,
-                      disabledBorder: material.InputBorder.none,
-                      errorBorder: material.InputBorder.none,
-                      focusedErrorBorder: material.InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 4,
-                      ),
-                    ),
-                    cursorColor: theme.colorScheme.primary,
-                    cursorWidth: 1,
-                  ),
-                  if (widget.placeholder != null)
-                    Positioned.fill(
-                      child: ListenableBuilder(
-                        listenable: _controller,
-                        builder: (context, child) {
-                          return IgnorePointer(
-                            child: Visibility(
-                              visible: _controller.text.isEmpty,
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 1),
-                                alignment: widget.placeholderAlignment ??
-                                    Alignment.centerLeft,
-                                child: DefaultTextStyle(
-                                  style: defaultTextStyle
-                                      .merge(theme.typography.normal)
-                                      .merge(theme.typography.small)
-                                      .copyWith(
-                                        color:
-                                            theme.colorScheme.mutedForeground,
-                                      ),
-                                  child: widget.placeholder!,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                ],
+              child: material.TextField(
+                key: _key,
+                contextMenuBuilder: widget.contextMenuBuilder == null
+                    ? null
+                    : widget.useNativeContextMenu && !kIsWeb
+                        ? (context, editableTextState) {
+                            return material.AdaptiveTextSelectionToolbar
+                                .editableText(
+                              editableTextState: editableTextState,
+                            );
+                          }
+                        : widget.contextMenuBuilder,
+                clipBehavior: widget.clipBehavior,
+                statesController: _statesController,
+                inputFormatters: widget.inputFormatters,
+                onTapOutside: widget.onTapOutside,
+                onChanged: widget.onChanged,
+                scrollController: widget.scrollController,
+                autocorrect: widget.autocorrect,
+                canRequestFocus: widget.canRequestFocus,
+                cursorHeight: widget.cursorHeight,
+                textCapitalization: widget.textCapitalization,
+                keyboardType: widget.keyboardType,
+                textAlign: widget.textAlign,
+                obscureText: widget.obscureText,
+                autofocus: widget.autofocus,
+                obscuringCharacter: widget.obscuringCharacter,
+                enabled: widget.enabled,
+                readOnly: widget.readOnly,
+                maxLength: widget.maxLength,
+                maxLengthEnforcement: widget.maxLengthEnforcement,
+                maxLines: maxLines,
+                onTap: widget.onTap,
+                focusNode: _focusNode,
+                onSubmitted: widget.onSubmitted,
+                onEditingComplete: widget.onEditingComplete,
+                undoController: _undoHistoryController,
+                textInputAction: widget.textInputAction,
+                autofillHints: widget.autofillHints,
+                minLines: widget.minLines,
+                scrollPadding: widget.scrollPadding,
+                buildCounter: (context,
+                    {required currentLength,
+                    required isFocused,
+                    required maxLength}) {
+                  return null;
+                },
+                controller: _controller,
+                style: defaultTextStyle,
+                expands: widget.expands,
+                textAlignVertical: widget.textAlignVertical,
+                decoration: material.InputDecoration(
+                  hintText: widget.placeholder,
+                  hintStyle: widget.placeholderStyle ??
+                      widget.style?.copyWith(
+                        color: theme.colorScheme.mutedForeground,
+                      ) ??
+                      defaultTextStyle
+                          .merge(theme.typography.normal)
+                          .merge(theme.typography.small)
+                          .copyWith(
+                            color: theme.colorScheme.mutedForeground,
+                          ),
+                  isCollapsed: widget.isCollapsed,
+                  isDense: true,
+                  border: material.InputBorder.none,
+                  hoverColor: Colors.transparent,
+                  focusedBorder: material.InputBorder.none,
+                  enabledBorder: material.InputBorder.none,
+                  disabledBorder: material.InputBorder.none,
+                  errorBorder: material.InputBorder.none,
+                  focusedErrorBorder: material.InputBorder.none,
+                  contentPadding: widget.contentPadding,
+                  //     ),
+                ),
+                cursorColor: theme.colorScheme.primary,
+                cursorWidth: 1,
               ),
             ),
             if (widget.trailing != null) SizedBox(width: 8 * scaling),
             if (widget.trailing != null)
-              Align(
-                  alignment: widget.trailingAlignment ?? Alignment.center,
-                  child: widget.trailing!),
+              widget.trailingAlignment != null
+                  ? Align(
+                      alignment: widget.trailingAlignment ?? Alignment.center,
+                      child: widget.trailing!)
+                  : widget.trailing!,
           ],
         ),
       ),

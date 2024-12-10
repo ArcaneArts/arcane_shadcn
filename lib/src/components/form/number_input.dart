@@ -261,6 +261,7 @@ class _NumberInputState extends State<NumberInput> {
           }
           _lastValidValue = value;
           widget.onChanged?.call(_lastValidValue);
+          widget.onEditingComplete?.call();
         },
         onEditingComplete: () {
           double value = double.tryParse(_controller.text) ?? _lastValidValue;
