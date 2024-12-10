@@ -54,9 +54,16 @@ class TextField extends StatefulWidget {
   final TextCapitalization textCapitalization;
   final EdgeInsets scrollPadding;
   final EdgeInsets contentPadding;
+  final AlignmentGeometry? placeholderAlignment;
 
   const TextField({
     super.key,
+    this.scrollController,
+    this.autocorrect = true,
+    this.canRequestFocus = true,
+    this.cursorHeight,
+    this.textCapitalization = TextCapitalization.none,
+    this.scrollPadding = EdgeInsets.zero,
     this.controller,
     this.maxLength,
     this.maxLengthEnforcement,
@@ -98,6 +105,10 @@ class TextField extends StatefulWidget {
     this.leadingAlignment,
     this.trailingAlignment,
     this.statesController,
+    this.placeholderStyle,
+    this.contentPadding = const EdgeInsets.symmetric(
+      vertical: 4,
+    ),
   });
 
   static Widget defaultContextMenuBuilder(
