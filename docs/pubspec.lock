@@ -113,6 +113,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+  colored_print:
+    dependency: transitive
+    description:
+      name: colored_print
+      sha256: ab9f458563fb4bbc81ac8c5fea65f4e0154f20382458d40bd985c950208f3d21
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   convert:
     dependency: transitive
     description:
@@ -177,6 +185,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
+  fast_log:
+    dependency: transitive
+    description:
+      name: fast_log
+      sha256: "23d0c6e2d2aeeb9c04d69f47ad7005bc0e35a259a874e673beb32ad22c957810"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.7"
   ffi:
     dependency: transitive
     description:
@@ -480,13 +496,29 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.9.1"
+  pylon:
+    dependency: transitive
+    description:
+      name: pylon
+      sha256: "6f5eb536e1b4488a7a4e1becbdb5ed86df11f747020fb9f39cb31f249144c9aa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.5"
+  rxdart:
+    dependency: transitive
+    description:
+      name: rxdart
+      sha256: "5c3004a4a8dbb94bd4bf5412a4def4acdaa12e12f269737a5751369e12d1a962"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.28.0"
   shadcn_flutter:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.0.21"
+    version: "0.0.22"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -628,6 +660,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.2"
+  toxic:
+    dependency: transitive
+    description:
+      name: toxic
+      sha256: c95dd8bf174436fb396bf977d0b17cc4bd80749cc480d6bb5ef6d0ae95e2be83
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.2"
+  toxic_flutter:
+    dependency: transitive
+    description:
+      name: toxic_flutter
+      sha256: "4f1506bbe98e56ab55b8ec8676d832458883b72abdf05a277c37230477136454"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   typed_data:
     dependency: transitive
     description:
@@ -728,10 +776,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: f652077d0bdf60abe4c1f6377448e8655008eef28f128bc023f7b5e8dfeb48fc
+      sha256: "5c5f338a667b4c644744b661f309fb8080bb94b18a7e91ef1dbd343bed00ed6d"
       url: "https://pub.dev"
     source: hosted
-    version: "14.2.4"
+    version: "14.2.5"
   web:
     dependency: transitive
     description:
