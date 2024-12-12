@@ -23,10 +23,12 @@ class NumberInput extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final VoidCallback? onEditingComplete;
   final String? placeholder;
+  final bool pointerSignals;
 
   const NumberInput({
     super.key,
     this.padding,
+    this.pointerSignals = true,
     this.controller,
     this.initialValue = 0,
     this.leading,
@@ -90,51 +92,55 @@ class _NumberInputState extends State<NumberInput> {
       width: 24 * theme.scaling,
       height: 32 * theme.scaling,
       child: GestureDetector(
-        onPanUpdate: (details) {
-          if (details.delta.dy > 0) {
-            if (widget.max == null || _lastValidValue < widget.max!) {
-              double oldValue = _value.toDouble();
-              _lastValidValue = oldValue - widget.step;
-              _controller.text = widget.allowDecimals
-                  ? _lastValidValue.toString()
-                  : _lastValidValue.toInt().toString();
-              widget.onChanged?.call(_lastValidValue);
-            }
-          } else if (details.delta.dy < 0) {
-            if (widget.min == null || _lastValidValue > widget.min!) {
-              double oldValue = _value.toDouble();
-              _lastValidValue = oldValue + widget.step;
-              _controller.text = widget.allowDecimals
-                  ? _lastValidValue.toString()
-                  : _lastValidValue.toInt().toString();
-              widget.onChanged?.call(_lastValidValue);
-            }
-          }
-        },
-        child: Listener(
-          onPointerSignal: (event) {
-            if (event is PointerScrollEvent) {
-              if (event.scrollDelta.dy > 0) {
-                if (widget.max == null || _lastValidValue < widget.max!) {
-                  double oldValue = _value.toDouble();
-                  _lastValidValue = oldValue - widget.step;
-                  _controller.text = widget.allowDecimals
-                      ? _lastValidValue.toString()
-                      : _lastValidValue.toInt().toString();
-                  widget.onChanged?.call(_lastValidValue);
-                }
-              } else {
-                if (widget.min == null || _lastValidValue > widget.min!) {
-                  double oldValue = _value.toDouble();
-                  _lastValidValue = oldValue + widget.step;
-                  _controller.text = widget.allowDecimals
-                      ? _lastValidValue.toString()
-                      : _lastValidValue.toInt().toString();
-                  widget.onChanged?.call(_lastValidValue);
+        onPanUpdate: widget.pointerSignals
+            ? (details) {
+                if (details.delta.dy > 0) {
+                  if (widget.max == null || _lastValidValue < widget.max!) {
+                    double oldValue = _value.toDouble();
+                    _lastValidValue = oldValue - widget.step;
+                    _controller.text = widget.allowDecimals
+                        ? _lastValidValue.toString()
+                        : _lastValidValue.toInt().toString();
+                    widget.onChanged?.call(_lastValidValue);
+                  }
+                } else if (details.delta.dy < 0) {
+                  if (widget.min == null || _lastValidValue > widget.min!) {
+                    double oldValue = _value.toDouble();
+                    _lastValidValue = oldValue + widget.step;
+                    _controller.text = widget.allowDecimals
+                        ? _lastValidValue.toString()
+                        : _lastValidValue.toInt().toString();
+                    widget.onChanged?.call(_lastValidValue);
+                  }
                 }
               }
-            }
-          },
+            : null,
+        child: Listener(
+          onPointerSignal: widget.pointerSignals
+              ? (event) {
+                  if (event is PointerScrollEvent) {
+                    if (event.scrollDelta.dy > 0) {
+                      if (widget.max == null || _lastValidValue < widget.max!) {
+                        double oldValue = _value.toDouble();
+                        _lastValidValue = oldValue - widget.step;
+                        _controller.text = widget.allowDecimals
+                            ? _lastValidValue.toString()
+                            : _lastValidValue.toInt().toString();
+                        widget.onChanged?.call(_lastValidValue);
+                      }
+                    } else {
+                      if (widget.min == null || _lastValidValue > widget.min!) {
+                        double oldValue = _value.toDouble();
+                        _lastValidValue = oldValue + widget.step;
+                        _controller.text = widget.allowDecimals
+                            ? _lastValidValue.toString()
+                            : _lastValidValue.toInt().toString();
+                        widget.onChanged?.call(_lastValidValue);
+                      }
+                    }
+                  }
+                }
+              : null,
           child: Stack(
             fit: StackFit.passthrough,
             children: [
