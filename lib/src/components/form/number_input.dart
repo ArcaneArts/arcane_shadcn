@@ -194,16 +194,17 @@ class _NumberInputState extends State<NumberInput> {
                   ),
                 ],
               ),
-              const Positioned.fill(
-                child: Center(
-                    child: MouseRegion(
-                        cursor: SystemMouseCursors.resizeUpDown,
-                        hitTestBehavior: HitTestBehavior.translucent,
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 8,
-                        ))),
-              )
+              if (widget.pointerSignals)
+                const Positioned.fill(
+                  child: Center(
+                      child: MouseRegion(
+                          cursor: SystemMouseCursors.resizeUpDown,
+                          hitTestBehavior: HitTestBehavior.translucent,
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 8,
+                          ))),
+                )
             ],
           ),
         ),
