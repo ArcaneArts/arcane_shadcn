@@ -22,6 +22,7 @@ class NumberInput extends StatefulWidget {
   final TextStyle? style;
   final EdgeInsetsGeometry? padding;
   final VoidCallback? onEditingComplete;
+  final String? placeholder;
 
   const NumberInput({
     super.key,
@@ -41,6 +42,7 @@ class NumberInput extends StatefulWidget {
     this.buttonStyle,
     this.style,
     this.onEditingComplete,
+    this.placeholder,
   });
 
   @override
@@ -233,6 +235,7 @@ class _NumberInputState extends State<NumberInput> {
       ),
       child: TextField(
         border: false,
+        placeholder: widget.placeholder,
         minLines: 1,
         maxLines: 1,
         leading: widget.leading,
