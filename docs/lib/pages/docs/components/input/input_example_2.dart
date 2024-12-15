@@ -14,7 +14,7 @@ class _InputExample2State extends State<InputExample2> {
     return TextField(
       controller: _searchController,
       initialValue: 'Hello World!',
-      placeholder: Text('Search something...'),
+      placeholder: 'Search something...',
       leading: StatedWidget.builder(
         builder: (context, states) {
           if (states.focused) {
