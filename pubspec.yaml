@@ -22,7 +22,7 @@ dependencies:
   image: ^4.5.0
   pixel_snap: ^0.1.5
   data_widget: ^0.0.2
-  pylon: ^3.1.4
+  pylon: ^3.1.5
 
 dev_dependencies:
   flutter_test:
