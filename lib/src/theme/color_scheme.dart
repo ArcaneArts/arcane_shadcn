@@ -275,20 +275,14 @@ class ColorShades implements ColorSwatch {
   double get b => _primary.b;
   ColorSpace get colorSpace => _primary.colorSpace;
   double get g => _primary.g;
+  double get r => _primary.r;
 
   int toARGB32() =>
       ((alpha & 0xFF) << 24) |
       ((red & 0xFF) << 16) |
       ((green & 0xFF) << 8) |
       (blue & 0xFF);
-  Color withValues(
-          {double? alpha,
-          double? red,
-          double? green,
-          double? blue,
-          ColorSpace? colorSpace}) =>
-      this;
-  
+
   Color withValues(
       {double? alpha,
       double? red,
@@ -308,7 +302,6 @@ class ColorShades implements ColorSwatch {
     return ColorShades._direct(colors);
   }
 ///////////////////////////////////////////////////////////
-
 }
 
 String hexFromColor(Color color) {
