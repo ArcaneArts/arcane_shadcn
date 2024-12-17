@@ -195,7 +195,7 @@ class DocsPageState extends State<DocsPage> {
         // TODO also make it zoomable like: https://zoom-chart-demo.vercel.app/
         ShadcnDocsPage('Chart', 'chart', ShadcnFeatureTag.workInProgress),
         ShadcnDocsPage('Code Snippet', 'code_snippet'),
-        ShadcnDocsPage('Table', 'table', ShadcnFeatureTag.experimental),
+        ShadcnDocsPage('Table', 'table', ShadcnFeatureTag.newFeature),
         ShadcnDocsPage('Tracker', 'tracker'),
       ],
     ),
@@ -237,14 +237,12 @@ class DocsPageState extends State<DocsPage> {
         ShadcnDocsPage('Text Input', 'input'),
         // TODO: same as text input, but has dropdown autocomplete like chip input, the difference is, it does not convert
         // the value into chips
-        ShadcnDocsPage(
-            'AutoComplete', 'autocomplete', ShadcnFeatureTag.newFeature),
+        ShadcnDocsPage('AutoComplete', 'autocomplete'),
         // TODO: same as input, except it only accepts number, and can be increased or decreased
         // using scroll, also has increment and decrement button
         // in between increment and decrement button, theres
         // a divider that can be dragged to increase or decrease the value
-        ShadcnDocsPage(
-            'Number Input', 'number_input', ShadcnFeatureTag.newFeature),
+        ShadcnDocsPage('Number Input', 'number_input'),
         ShadcnDocsPage('Input OTP', 'input_otp'),
         ShadcnDocsPage('Phone Input', 'phone_input'),
         ShadcnDocsPage('Radio Group', 'radio_group'),
@@ -268,7 +266,7 @@ class DocsPageState extends State<DocsPage> {
         ShadcnDocsPage('Divider', 'divider'),
         ShadcnDocsPage('Resizable', 'resizable'),
         // https://nextjs-shadcn-dnd.vercel.app/ (make it headless)
-        ShadcnDocsPage('Sortable', 'sortable', ShadcnFeatureTag.experimental),
+        ShadcnDocsPage('Sortable', 'sortable', ShadcnFeatureTag.newFeature),
         ShadcnDocsPage('Steps', 'steps'),
         ShadcnDocsPage('Stepper', 'stepper'),
         ShadcnDocsPage('Timeline', 'timeline'),
@@ -329,8 +327,7 @@ class DocsPageState extends State<DocsPage> {
             'Image Tools', 'image_tools', ShadcnFeatureTag.workInProgress),
         // TODO: Mostly same as refresh indicator, but it does not provide indicator
         // the indicator itself is provided by scaffold
-        ShadcnDocsPage(
-            'Refresh Trigger', 'refresh_trigger', ShadcnFeatureTag.newFeature),
+        ShadcnDocsPage('Refresh Trigger', 'refresh_trigger'),
         ShadcnDocsPage('Overflow Marquee', 'overflow_marquee'),
       ],
     ),
