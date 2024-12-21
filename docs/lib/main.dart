@@ -56,6 +56,7 @@ import 'package:docs/pages/docs/components/stepper_example.dart';
 import 'package:docs/pages/docs/components/steps_example.dart';
 import 'package:docs/pages/docs/components/switch_example.dart';
 import 'package:docs/pages/docs/components/tab_list_example.dart';
+import 'package:docs/pages/docs/components/tab_pane_example.dart';
 import 'package:docs/pages/docs/components/table_example.dart';
 import 'package:docs/pages/docs/components/tabs_example.dart';
 import 'package:docs/pages/docs/components/text_area_example.dart';
@@ -668,6 +669,11 @@ class MyAppState extends State<MyApp> {
             builder: (context, state) => const TableExample(),
             name: 'table',
           ),
+          GoRoute(
+            path: 'tab_pane',
+            builder: (context, state) => const TabPaneExample(),
+            name: 'tab_pane',
+          )
         ]),
   ]);
   // ColorScheme colorScheme = ColorSchemes.darkZync();
