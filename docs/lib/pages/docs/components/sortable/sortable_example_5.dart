@@ -1,13 +1,13 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
-class SortableExample2 extends StatefulWidget {
-  const SortableExample2({super.key});
+class SortableExample5 extends StatefulWidget {
+  const SortableExample5({super.key});
 
   @override
-  State<SortableExample2> createState() => _SortableExample2State();
+  State<SortableExample5> createState() => _SortableExample5State();
 }
 
-class _SortableExample2State extends State<SortableExample2> {
+class _SortableExample5State extends State<SortableExample5> {
   List<SortableData<String>> names = [
     const SortableData('James'),
     const SortableData('John'),
@@ -33,6 +33,8 @@ class _SortableExample2State extends State<SortableExample2> {
               Sortable<String>(
                 key: ValueKey(i),
                 data: names[i],
+                // sortable must be disabled to allow the drag handle to work
+                enabled: false,
                 onAcceptTop: (value) {
                   setState(() {
                     names.swapItem(value, i);
@@ -45,7 +47,13 @@ class _SortableExample2State extends State<SortableExample2> {
                 },
                 child: OutlinedContainer(
                   padding: const EdgeInsets.all(12),
-                  child: Center(child: Text(names[i].data)),
+                  child: Row(
+                    children: [
+                      SortableDragHandle(child: const Icon(Icons.drag_handle)),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(names[i].data)),
+                    ],
+                  ),
                 ),
               ),
           ],
