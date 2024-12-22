@@ -80,6 +80,7 @@ void swapItemInLists<T>(
     }
   }
   targetList.swapItem(element, targetIndex);
+}
 
 class OverlayPylonReference {
   OverlayCompleter? completer;
