@@ -96,6 +96,7 @@ import 'pages/docs/components/number_input_example.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  initializeDocsWithArcane();
   GoRouter.optionURLReflectsImperativeAPIs = true;
   final prefs = await SharedPreferences.getInstance();
   var colorScheme = prefs.getString('colorScheme');
