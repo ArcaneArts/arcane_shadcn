@@ -1,6 +1,8 @@
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:toxic_flutter/toxic_flutter.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class OverflowMarquee extends StatefulWidget {
@@ -48,7 +50,7 @@ class _OverflowMarqueeState extends State<OverflowMarquee> {
       key: vKey,
       child: _shouldTick.distinct().buildNullable((should) => TickerMode(
           enabled: (should?.$1 ?? false) && (should?.$2 ?? false),
-          child: OverflowMarqueeTicker(
+          child: _OverflowMarqueeTicker(
               onShouldTick: (v) => _shouldTick.add((v, _shouldTick.value.$2)),
               direction: widget.direction,
               duration: widget.duration,
@@ -61,7 +63,7 @@ class _OverflowMarqueeState extends State<OverflowMarquee> {
           _shouldTick.add((_shouldTick.value.$1, vc.visibleFraction > 0)));
 }
 
-class OverflowMarqueeTicker extends StatefulWidget {
+class _OverflowMarqueeTicker extends StatefulWidget {
   final Widget child;
   final Axis direction;
   final Duration duration;
@@ -71,7 +73,7 @@ class OverflowMarqueeTicker extends StatefulWidget {
   final Curve curve;
   final ValueChanged<bool> onShouldTick;
 
-  const OverflowMarqueeTicker({
+  const _OverflowMarqueeTicker({
     super.key,
     required this.child,
     this.direction = Axis.horizontal,
@@ -85,10 +87,10 @@ class OverflowMarqueeTicker extends StatefulWidget {
   });
 
   @override
-  State<OverflowMarqueeTicker> createState() => _OverflowMarqueeTickerState();
+  State<_OverflowMarqueeTicker> createState() => _OverflowMarqueeTickerState();
 }
 
-class _OverflowMarqueeTickerState extends State<OverflowMarqueeTicker>
+class _OverflowMarqueeTickerState extends State<_OverflowMarqueeTicker>
     with SingleTickerProviderStateMixin {
   late Ticker _ticker;
   Duration elapsed = Duration.zero;
