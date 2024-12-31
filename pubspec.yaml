@@ -25,6 +25,7 @@ dependencies:
   web: ^1.1.0
   gap: ^3.0.1
   visibility_detector: ^0.4.0+2
+  rxdart: ^0.28.0
 
 dev_dependencies:
   flutter_test:
