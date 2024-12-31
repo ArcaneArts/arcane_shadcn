@@ -16,12 +16,12 @@ dependencies:
     sdk: flutter
   skeletonizer: ^1.4.2
   syntax_highlight: ^0.4.0
-  country_flags: ^3.1.0
+  country_flags: ^3.2.0
   phonecodes: ^0.0.3
   cross_file: ^0.3.4+2
-  image: ^4.5.0
+  image: ^4.5.2
   data_widget: ^0.0.2
-  pylon: ^3.1.5
+  pylon: ^3.1.9
   web: ^1.1.0
   gap: ^3.0.1
   visibility_detector: ^0.4.0+2
