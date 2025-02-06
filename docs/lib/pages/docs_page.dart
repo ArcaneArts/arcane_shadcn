@@ -292,7 +292,7 @@ class DocsPageState extends State<DocsPage> {
         ShadcnDocsPage('Navigation Bar', 'navigation_bar'),
         ShadcnDocsPage('Navigation Rail', 'navigation_rail'),
         ShadcnDocsPage('Expandable Sidebar', 'expandable_sidebar',
-            ShadcnFeatureTag.workInProgress),
+            ShadcnFeatureTag.experimental),
         // aka Drawer
         ShadcnDocsPage('Navigation Sidebar', 'navigation_sidebar'),
         ShadcnDocsPage('Dot Indicator', 'dot_indicator'),
@@ -308,7 +308,7 @@ class DocsPageState extends State<DocsPage> {
         ShadcnDocsPage('Sheet', 'sheet'),
         ShadcnDocsPage('Tooltip', 'tooltip'),
         // TODO: window as in like a window in desktop
-        ShadcnDocsPage('Window', 'window', ShadcnFeatureTag.workInProgress),
+        ShadcnDocsPage('Window', 'window', ShadcnFeatureTag.experimental),
       ],
     ),
 
