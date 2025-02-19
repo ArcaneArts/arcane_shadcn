@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:docs/custom.dart';
 import 'package:docs/pages/docs/colors_page.dart';
 import 'package:docs/pages/docs/components/accordion_example.dart';
 import 'package:docs/pages/docs/components/alert_dialog_example.dart';
@@ -101,6 +102,7 @@ const kEnablePersistentPath = false;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  initializeDocsWithArcane();
   GoRouter.optionURLReflectsImperativeAPIs = true;
   final prefs = await SharedPreferences.getInstance();
   var colorScheme = prefs.getString('colorScheme');
@@ -114,24 +116,30 @@ void main() async {
       initialColorScheme = colorSchemes[colorScheme];
     }
   }
-  double initialRadius = prefs.getDouble('radius') ?? 0.5;
+  double initialRadius = prefs.getDouble('radius') ?? 0.4;
   double initialScaling = prefs.getDouble('scaling') ?? 1.0;
-  double initialSurfaceOpacity = prefs.getDouble('surfaceOpacity') ?? 1.0;
-  double initialSurfaceBlur = prefs.getDouble('surfaceBlur') ?? 0.0;
-  String initialPath = prefs.getString('initialPath') ?? '/';
+  double initialSurfaceOpacity = prefs.getDouble('surfaceOpacity') ?? 0.66;
+  double initialSurfaceBlur = prefs.getDouble('surfaceBlur') ?? 18;
+  double initialSpin = prefs.getDouble('spin') ?? 0.0;
+  double initialContrast = prefs.getDouble('contrast') ?? 0.0;
+
   runApp(MyApp(
-    initialColorScheme: initialColorScheme ?? colorSchemes['darkGreen']!,
+    initialColorScheme: initialColorScheme ?? colorSchemes['darkViolet']!,
     initialRadius: initialRadius,
+    initialContrast: initialContrast,
     initialScaling: initialScaling,
     initialSurfaceOpacity: initialSurfaceOpacity,
     initialSurfaceBlur: initialSurfaceBlur,
     initialPath: kEnablePersistentPath ? initialPath : '/',
+    initialSpin: initialSpin,
   ));
 }
 
 class MyApp extends StatefulWidget {
   final ColorScheme initialColorScheme;
   final double initialRadius;
+  final double initialContrast;
+  final double initialSpin;
   final double initialScaling;
   final double initialSurfaceOpacity;
   final double initialSurfaceBlur;
@@ -140,10 +148,12 @@ class MyApp extends StatefulWidget {
     super.key,
     required this.initialColorScheme,
     required this.initialRadius,
+    required this.initialContrast,
     required this.initialScaling,
     required this.initialSurfaceOpacity,
     required this.initialSurfaceBlur,
     required this.initialPath,
+    required this.initialSpin,
   });
 
   @override
@@ -217,6 +227,7 @@ class MyAppState extends State<MyApp> {
           return const ComponentsPage();
         },
         routes: [
+          ...customRoutes,
           GoRoute(
             path: 'accordion',
             builder: (context, state) => const AccordionExample(),
@@ -702,15 +713,19 @@ class MyAppState extends State<MyApp> {
   late ColorScheme colorScheme;
   late double radius;
   late double scaling;
+  late double spin;
   late double surfaceOpacity;
   late double surfaceBlur;
   late GoRouter router;
+  late double contrast;
 
   @override
   void initState() {
     super.initState();
     colorScheme = widget.initialColorScheme;
     radius = widget.initialRadius;
+    spin = widget.initialSpin;
+    contrast = widget.initialContrast;
     scaling = widget.initialScaling;
     surfaceOpacity = widget.initialSurfaceOpacity;
     surfaceBlur = widget.initialSurfaceBlur;
@@ -768,6 +783,28 @@ class MyAppState extends State<MyApp> {
     });
   }
 
+  void changeSpin(double spin) {
+    setState(() {
+      this.spin = spin;
+      SharedPreferences.getInstance().then(
+        (value) {
+          value.setDouble('spin', spin);
+        },
+      );
+    });
+  }
+
+  void changeContrast(double contrast) {
+    setState(() {
+      this.contrast = contrast;
+      SharedPreferences.getInstance().then(
+        (value) {
+          value.setDouble('contrast', contrast);
+        },
+      );
+    });
+  }
+
   void changeSurfaceOpacity(double surfaceOpacity) {
     setState(() {
       this.surfaceOpacity = surfaceOpacity;
@@ -802,7 +839,7 @@ class MyAppState extends State<MyApp> {
         enableScrollInterception: true,
         // popoverHandler: DialogOverlayHandler(),
         theme: ThemeData(
-          colorScheme: colorScheme,
+          colorScheme: colorScheme.spin(spin).contrast(contrast),
           radius: radius,
           surfaceBlur: surfaceBlur,
           surfaceOpacity: surfaceOpacity,
