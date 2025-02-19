@@ -130,7 +130,7 @@ void main() async {
     initialScaling: initialScaling,
     initialSurfaceOpacity: initialSurfaceOpacity,
     initialSurfaceBlur: initialSurfaceBlur,
-    initialPath: kEnablePersistentPath ? initialPath : '/',
+    initialPath: '/',
     initialSpin: initialSpin,
   ));
 }
