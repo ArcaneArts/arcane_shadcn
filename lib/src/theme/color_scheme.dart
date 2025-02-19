@@ -300,7 +300,11 @@ class ColorShades implements ColorSwatch {
     }
     return ColorShades._direct(colors);
   }
-///////////////////////////////////////////////////////////
+  
+  @override
+  int toARGB32() {
+    return _primary.toARGB32();
+  }
 }
 
 String hexFromColor(Color color) {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:docs/custom.dart';
 import 'package:docs/pages/docs/colors_page.dart';
@@ -79,6 +80,7 @@ import 'package:docs/pages/docs/state_management_page.dart';
 import 'package:docs/pages/docs/theme_page.dart';
 import 'package:docs/pages/docs/typography_page.dart';
 import 'package:docs/pages/docs/web_preloader_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -95,6 +97,8 @@ import 'pages/docs/components/color_picker_example.dart';
 import 'pages/docs/components/command_example.dart';
 import 'pages/docs/components/form_example.dart';
 import 'pages/docs/components/number_input_example.dart';
+
+const kEnablePersistentPath = false;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -118,6 +122,7 @@ void main() async {
   double initialSurfaceBlur = prefs.getDouble('surfaceBlur') ?? 18;
   double initialSpin = prefs.getDouble('spin') ?? 0.0;
   double initialContrast = prefs.getDouble('contrast') ?? 0.0;
+
   runApp(MyApp(
     initialColorScheme: initialColorScheme ?? colorSchemes['darkViolet']!,
     initialRadius: initialRadius,
@@ -125,6 +130,7 @@ void main() async {
     initialScaling: initialScaling,
     initialSurfaceOpacity: initialSurfaceOpacity,
     initialSurfaceBlur: initialSurfaceBlur,
+    initialPath: kEnablePersistentPath ? initialPath : '/',
     initialSpin: initialSpin,
   ));
 }
@@ -137,6 +143,7 @@ class MyApp extends StatefulWidget {
   final double initialScaling;
   final double initialSurfaceOpacity;
   final double initialSurfaceBlur;
+  final String initialPath;
   const MyApp({
     super.key,
     required this.initialColorScheme,
@@ -145,6 +152,7 @@ class MyApp extends StatefulWidget {
     required this.initialScaling,
     required this.initialSurfaceOpacity,
     required this.initialSurfaceBlur,
+    required this.initialPath,
     required this.initialSpin,
   });
 
@@ -152,8 +160,21 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => MyAppState();
 }
 
+class _DesktopNavigatorObserver extends NavigatorObserver {
+  final ValueChanged<String> onRouteChanged;
+
+  _DesktopNavigatorObserver({this.onRouteChanged = print});
+
+  @override
+  void didChangeTop(Route topRoute, Route? previousTopRoute) {
+    var settings = topRoute.settings as NoTransitionPage;
+    var key = settings.key as ValueKey<String>;
+    onRouteChanged(key.value);
+  }
+}
+
 class MyAppState extends State<MyApp> {
-  final GoRouter router = GoRouter(routes: [
+  final List<GoRoute> routes = [
     GoRoute(
       path: '/',
       builder: (context, state) => const IntroductionPage(),
@@ -688,15 +709,14 @@ class MyAppState extends State<MyApp> {
             name: 'expandable_sidebar',
           )
         ]),
-  ]);
-  // ColorScheme colorScheme = ColorSchemes.darkZync();
-  // double radius = 0.5;
+  ];
   late ColorScheme colorScheme;
   late double radius;
   late double scaling;
   late double spin;
   late double surfaceOpacity;
   late double surfaceBlur;
+  late GoRouter router;
   late double contrast;
 
   @override
@@ -709,6 +729,21 @@ class MyAppState extends State<MyApp> {
     scaling = widget.initialScaling;
     surfaceOpacity = widget.initialSurfaceOpacity;
     surfaceBlur = widget.initialSurfaceBlur;
+    router = GoRouter(
+        routes: routes,
+        initialLocation: widget.initialPath,
+        observers: [
+          if (!kIsWeb &&
+              (Platform.isMacOS || Platform.isWindows || Platform.isLinux) &&
+              kEnablePersistentPath)
+            _DesktopNavigatorObserver(
+              onRouteChanged: (path) {
+                SharedPreferences.getInstance().then((prefs) {
+                  prefs.setString('initialPath', path);
+                });
+              },
+            ),
+        ]);
   }
   // This widget is the root of your application.
 
