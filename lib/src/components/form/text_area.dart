@@ -4,7 +4,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart';
 class TextArea extends StatefulWidget {
   final TextEditingController? controller;
   final bool filled;
-  final String? placeholder;
+  final Widget? placeholder;
   final bool border;
   final Widget? leading;
   final Widget? trailing;
@@ -40,8 +40,6 @@ class TextArea extends StatefulWidget {
   final List<TextInputFormatter>? inputFormatters;
   final TextStyle? style;
   final EditableTextContextMenuBuilder? contextMenuBuilder;
-  final bool useNativeContextMenu;
-  final bool? isCollapsed;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final Clip clipBehavior;
@@ -87,8 +85,6 @@ class TextArea extends StatefulWidget {
     this.inputFormatters,
     this.style,
     this.contextMenuBuilder,
-    this.useNativeContextMenu = false,
-    this.isCollapsed,
     this.keyboardType,
     this.textInputAction,
     this.clipBehavior = Clip.hardEdge,
@@ -134,7 +130,6 @@ class _TextAreaState extends State<TextArea> {
             Positioned.fill(
               child: TextField(
                 expands: true,
-                isCollapsed: widget.isCollapsed,
                 controller: widget.controller,
                 onSubmitted: widget.onSubmitted,
                 onEditingComplete: widget.onEditingComplete,
@@ -165,7 +160,6 @@ class _TextAreaState extends State<TextArea> {
                 inputFormatters: widget.inputFormatters,
                 style: widget.style,
                 contextMenuBuilder: widget.contextMenuBuilder,
-                useNativeContextMenu: widget.useNativeContextMenu,
                 keyboardType: widget.keyboardType,
                 textInputAction: widget.textInputAction,
                 clipBehavior: widget.clipBehavior,
