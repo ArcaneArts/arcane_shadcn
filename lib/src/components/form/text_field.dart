@@ -65,6 +65,7 @@ class TextField extends StatefulWidget {
     this.decoration,
     this.padding,
     this.placeholder,
+    this.placeholderWidget,
     this.leading,
     this.trailing,
     this.crossAxisAlignment = CrossAxisAlignment.center,
@@ -168,7 +169,8 @@ class TextField extends StatefulWidget {
 
   final EdgeInsetsGeometry? padding;
 
-  final Widget? placeholder;
+  final String? placeholder;
+  final Widget? placeholderWidget;
 
   final Widget? leading;
 
@@ -669,6 +671,7 @@ class _TextFieldState extends State<TextField>
   // True if any surrounding decoration widgets will be shown.
   bool get _hasDecoration {
     return widget.placeholder != null ||
+        widget.placeholderWidget != null ||
         widget.leading != null ||
         widget.trailing != null;
   }
@@ -700,28 +703,30 @@ class _TextFieldState extends State<TextField>
       child: editableText,
       builder: (BuildContext context, TextEditingValue text, Widget? child) {
         final bool hasText = text.text.isNotEmpty;
-        final Widget? placeholder = widget.placeholder == null
-            ? null
-            // Make the placeholder invisible when hasText is true.
-            : Visibility(
-                maintainAnimation: true,
-                maintainSize: true,
-                maintainState: true,
-                visible: !hasText,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: DefaultTextStyle(
-                    style: textStyle
-                        .merge(theme.typography.small)
-                        .merge(theme.typography.normal)
-                        .copyWith(
-                          color: theme.colorScheme.mutedForeground,
-                        ),
-                    maxLines: widget.maxLines,
-                    child: widget.placeholder!,
-                  ),
-                ),
-              );
+        final Widget? placeholder =
+            widget.placeholderWidget == null && widget.placeholder == null
+                ? null
+                // Make the placeholder invisible when hasText is true.
+                : Visibility(
+                    maintainAnimation: true,
+                    maintainSize: true,
+                    maintainState: true,
+                    visible: !hasText,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: DefaultTextStyle(
+                        style: textStyle
+                            .merge(theme.typography.small)
+                            .merge(theme.typography.normal)
+                            .copyWith(
+                              color: theme.colorScheme.mutedForeground,
+                            ),
+                        maxLines: widget.maxLines,
+                        child: widget.placeholderWidget ??
+                            Text(widget.placeholder!),
+                      ),
+                    ),
+                  );
 
         final Widget? leadingWidget = widget.leading;
 

@@ -189,12 +189,6 @@ class ScaffoldState extends State<Scaffold> {
         ),
       ),
     );
-
-    return widget.primary
-        ? DrawerOverlay(
-            child: w,
-          )
-        : w;
   }
 }
 
