@@ -35,8 +35,6 @@ final Map<String, ColorScheme> colorSchemes = {
   'darkYellow': ColorSchemes.darkYellow(),
   'lightZinc': ColorSchemes.lightZinc(),
   'darkZinc': ColorSchemes.darkZinc(),
-  'lightOled': ColorSchemes.lightOled(),
-  'darkOled': ColorSchemes.darkOled(),
 };
 
 String? nameFromColorScheme(ColorScheme scheme) {
