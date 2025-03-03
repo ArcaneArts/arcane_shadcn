@@ -43,6 +43,7 @@ class PhoneInput extends StatefulWidget {
   final bool onlyNumber;
   final List<Country>? countries;
   final String? searchPlaceholder;
+  final Widget? searchPlaceholderWidget;
 
   const PhoneInput({
     super.key,
@@ -56,6 +57,7 @@ class PhoneInput extends StatefulWidget {
     this.onlyNumber = true,
     this.countries,
     this.searchPlaceholder,
+    this.searchPlaceholderWidget,
   });
 
   @override
@@ -130,26 +132,26 @@ class _PhoneInputState extends State<PhoneInput>
                 left: theme.scaling * 8,
                 bottom: theme.scaling * 8,
                 right: theme.scaling * 4),
-            searchPlaceholder: widget.searchPlaceholder ??
+            placeholder: widget.searchPlaceholder ??
                 localization.searchPlaceholderCountry,
-            searchFilter: (item, query) {
-              query = query.toLowerCase();
-              var searchScore = item.name.toLowerCase().contains(query) ||
-                      item.dialCode.contains(query) ||
-                      item.code.toLowerCase().contains(query)
-                  ? 1
-                  : 0;
-              return searchScore;
-            },
-            emptyBuilder: (context) {
-              return Container(
-                padding: EdgeInsets.all(theme.scaling * 16),
-                child: Text(
-                  localization.emptyCountryList,
-                  textAlign: TextAlign.center,
-                ).small().muted(),
-              );
-            },
+            // searchFilter: (item, query) {
+            //   query = query.toLowerCase();
+            //   var searchScore = item.name.toLowerCase().contains(query) ||
+            //           item.dialCode.contains(query) ||
+            //           item.code.toLowerCase().contains(query)
+            //       ? 1
+            //       : 0;
+            //   return searchScore;
+            // },
+            // emptyBuilder: (context) {
+            //   return Container(
+            //     padding: EdgeInsets.all(theme.scaling * 16),
+            //     child: Text(
+            //       localization.emptyCountryList,
+            //       textAlign: TextAlign.center,
+            //     ).small().muted(),
+            //   );
+            // },
             value: _country,
             borderRadius: BorderRadius.only(
               topLeft: theme.radiusMdRadius,

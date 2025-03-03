@@ -472,14 +472,14 @@ class DocsPageState extends State<DocsPage> {
                 children: [
                   MenuButton(
                     child: Text(getReleaseTagName()),
-                    onPressed: (context) {
+                    onPressed: () {
                       launchUrlString(
                           'https://sunarya-thito.github.io/shadcn_flutter/');
                     },
                   ),
                   MenuButton(
                     child: Text('Experimental'),
-                    onPressed: (context) {
+                    onPressed: () {
                       launchUrlString(
                           'https://sunarya-thito.github.io/shadcn_flutter/experimental/');
                     },

@@ -110,7 +110,8 @@ mixin TextInput on Widget {
   FocusNode? get focusNode;
   BoxDecoration? get decoration;
   EdgeInsetsGeometry? get padding;
-  Widget? get placeholder;
+  String? get placeholder;
+  Widget? get placeholderWidget;
   Widget? get leading;
   Widget? get trailing;
   CrossAxisAlignment get crossAxisAlignment;
@@ -298,7 +299,9 @@ class TextField extends StatefulWidget with TextInput {
   @override
   final EdgeInsetsGeometry? padding;
 
+  @override
   final String? placeholder;
+  @override
   final Widget? placeholderWidget;
 
   @override

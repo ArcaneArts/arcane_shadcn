@@ -73,7 +73,6 @@ class ControlledCheckbox extends StatelessWidget
           onChanged: data.onChanged,
           leading: leading,
           trailing: trailing,
-          enabled: data.enabled,
           tristate: tristate,
         );
       },
@@ -108,7 +107,6 @@ class Checkbox extends StatefulWidget {
     this.leading,
     this.trailing,
     this.tristate = false,
-    this.enabled,
   });
 
   @override
@@ -168,7 +166,7 @@ class _CheckboxState extends State<Checkbox>
     }
   }
 
-  bool get enabled => widget.enabled ?? widget.onChanged != null;
+  bool get enabled => widget.onChanged != null;
 
   @override
   Widget build(BuildContext context) {

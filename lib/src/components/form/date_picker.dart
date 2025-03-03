@@ -159,7 +159,8 @@ class DateInput extends StatefulWidget with ControlledComponent<DateTime?> {
   final DateStateBuilder? stateBuilder;
   final List<DatePart>? datePartsOrder;
   final InputPart? separator;
-  final Map<DatePart, Widget>? placeholders;
+  final Map<DatePart, Widget>? placeholderWidgets;
+  final Map<DatePart, String>? placeholders;
 
   const DateInput({
     super.key,
@@ -179,6 +180,7 @@ class DateInput extends StatefulWidget with ControlledComponent<DateTime?> {
     this.datePartsOrder,
     this.separator,
     this.placeholders,
+    this.placeholderWidgets,
   });
 
   @override
@@ -233,8 +235,14 @@ class _DateInputState extends State<DateInput> {
             inputFormatters: [
               TextInputFormatters.datePart(_values, newDatePartOrders[i]),
             ],
+            placeholderWidget: widget
+                    .placeholderWidgets?[newDatePartOrders[i]] ??
+                Text(
+                  widget.placeholders?[newDatePartOrders[i]] ??
+                      localizations.datePartPlaceholder(newDatePartOrders[i]),
+                ),
             placeholder: widget.placeholders?[newDatePartOrders[i]] ??
-                Text(localizations.datePartPlaceholder(newDatePartOrders[i])),
+                localizations.datePartPlaceholder(newDatePartOrders[i]),
           ).withValue(oldValue?.parts.optGet(i)?.value ??
               (_values[newDatePartOrders[i]]?.toString() ?? '')
                   .padLeft(newDatePartOrders[i].length, '0')),

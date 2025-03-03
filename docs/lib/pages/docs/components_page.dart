@@ -666,7 +666,7 @@ class _ComponentsPageState extends State<ComponentsPage> {
                           itemBuilder: (context, item) {
                             return Text(item);
                           },
-                          placeholder: const Text('Select a fruit'),
+                          placeholderWidget: const Text('Select a fruit'),
                           value: 'Apple',
                           enabled: true,
                           constraints: BoxConstraints.tightFor(width: 300),
