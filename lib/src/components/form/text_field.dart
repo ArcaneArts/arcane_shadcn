@@ -1252,7 +1252,7 @@ class _TextFieldState extends State<TextField>
           color: _effectiveFocusNode.hasFocus && widget.enabled
               ? theme.colorScheme.ring
               : theme.colorScheme.border,
-          strokeWidth: 1,
+          strokeWidth: 2,
           dashPattern: signal.borderStyle,
           radius:
               (optionallyResolveBorderRadius(context, widget.borderRadius) ??
