@@ -64,6 +64,32 @@ class DashedBorderSignal {
   });
 }
 
+/// Adds a dashed border mode
+class DashBorderMode extends StatelessWidget {
+  final List<double> borderstyle;
+  final PylonBuilder builder;
+  const DashBorderMode(
+      {super.key, required this.borderstyle, required this.builder});
+
+  @override
+  Widget build(BuildContext context) => Pylon<DashedBorderSignal?>(
+        value: DashedBorderSignal(borderStyle: borderstyle),
+        builder: builder,
+      );
+}
+
+/// Removes the dashed border mode
+class SolidBorderMode extends StatelessWidget {
+  final PylonBuilder builder;
+
+  const SolidBorderMode({super.key, required this.builder});
+
+  @override
+  Widget build(BuildContext context) => PylonRemove<DashedBorderSignal>(
+        builder: builder,
+      );
+}
+
 class OutlinedContainer extends StatefulWidget {
   final Widget child;
   final Color? backgroundColor;
