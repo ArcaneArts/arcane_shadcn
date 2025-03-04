@@ -1247,12 +1247,12 @@ class _TextFieldState extends State<TextField>
       ),
     );
 
-    if (signal != null) {
+    if (signal != null && !widget.filled) {
       internalContainer = DottedBorder(
           color: _effectiveFocusNode.hasFocus && widget.enabled
               ? theme.colorScheme.ring
               : theme.colorScheme.border,
-          strokeWidth: 4,
+          strokeWidth: 1,
           dashPattern: signal.borderStyle,
           radius:
               (optionallyResolveBorderRadius(context, widget.borderRadius) ??
