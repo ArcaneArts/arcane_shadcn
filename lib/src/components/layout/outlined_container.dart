@@ -1,5 +1,8 @@
 import 'dart:ui';
 
+import 'package:dotted_border/dotted_border.dart';
+import 'package:pylon/pylon.dart';
+
 import '../../../shadcn_flutter.dart';
 
 class SurfaceBlur extends StatefulWidget {
@@ -53,6 +56,14 @@ class _SurfaceBlurState extends State<SurfaceBlur> {
   }
 }
 
+class DashedBorderSignal {
+  final List<double> borderStyle;
+
+  const DashedBorderSignal({
+    this.borderStyle = const [5, 5],
+  });
+}
+
 class OutlinedContainer extends StatefulWidget {
   final Widget child;
   final Color? backgroundColor;
@@ -68,6 +79,7 @@ class OutlinedContainer extends StatefulWidget {
   final double? width;
   final double? height;
   final Duration? duration;
+
   const OutlinedContainer({
     super.key,
     required this.child,
@@ -94,6 +106,7 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
   final GlobalKey _mainContainerKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
+    DashedBorderSignal? signal = context.pylonOr<DashedBorderSignal>();
     final ThemeData theme = Theme.of(context);
     final scaling = theme.scaling;
     var borderRadius =
@@ -114,7 +127,9 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
         border: Border.all(
           color: widget.borderColor ?? theme.colorScheme.muted,
           width: widget.borderWidth ?? (1 * scaling),
-          style: widget.borderStyle ?? BorderStyle.solid,
+          style: signal != null
+              ? BorderStyle.none
+              : (widget.borderStyle ?? BorderStyle.solid),
         ),
         borderRadius: borderRadius,
         boxShadow: widget.boxShadow,
@@ -132,6 +147,21 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
         child: widget.child,
       ),
     );
+
+    if (signal != null) {
+      childWidget = DottedBorder(
+          color: widget.borderColor ?? theme.colorScheme.muted,
+          strokeWidth: 4,
+          dashPattern: signal.borderStyle,
+          radius: Radius.circular(8),
+          borderType: BorderType.RRect,
+          stackFit: StackFit.passthrough,
+          padding: EdgeInsets.zero,
+          strokeCap: StrokeCap.round,
+          borderPadding: EdgeInsets.all(0.5),
+          child: childWidget);
+    }
+
     if (widget.surfaceBlur != null && widget.surfaceBlur! > 0) {
       childWidget = SurfaceBlur(
         surfaceBlur: widget.surfaceBlur!,
