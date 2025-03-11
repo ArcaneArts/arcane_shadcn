@@ -24,52 +24,6 @@ export 'package:flutter/services.dart'
         TextInputAction,
         TextInputType;
 
-// patched from flutter:widgets.dart to implement ComponentController<TextEditingValue>
-class TextEditingController extends widgets.TextEditingController
-    with ComponentController<TextEditingValue> {
-  TextEditingController({String? text}) : super(text: text);
-  TextEditingController.fromValue(TextEditingValue value)
-      : super.fromValue(value);
-}
-
-class RestorableTextEditingController
-    extends RestorableChangeNotifier<TextEditingController> {
-  /// Creates a [RestorableTextEditingController].
-  ///
-  /// This constructor treats a null `text` argument as if it were the empty
-  /// string.
-  factory RestorableTextEditingController({String? text}) =>
-      RestorableTextEditingController.fromValue(
-        text == null ? TextEditingValue.empty : TextEditingValue(text: text),
-      );
-
-  /// Creates a [RestorableTextEditingController] from an initial
-  /// [TextEditingValue].
-  ///
-  /// This constructor treats a null `value` argument as if it were
-  /// [TextEditingValue.empty].
-  RestorableTextEditingController.fromValue(TextEditingValue value)
-      : _initialValue = value;
-
-  final TextEditingValue _initialValue;
-
-  @override
-  TextEditingController createDefaultValue() {
-    return TextEditingController.fromValue(_initialValue);
-  }
-
-  @override
-  TextEditingController fromPrimitives(Object? data) {
-    return TextEditingController(text: data! as String);
-  }
-
-  @override
-  Object toPrimitives() {
-    return value.text;
-  }
-}
-// end of patch
-
 class _TextFieldSelectionGestureDetectorBuilder
     extends TextSelectionGestureDetectorBuilder {
   _TextFieldSelectionGestureDetectorBuilder({required _TextFieldState state})
