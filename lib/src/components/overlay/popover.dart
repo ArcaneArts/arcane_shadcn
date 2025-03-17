@@ -99,12 +99,13 @@ class PopoverOverlayHandler extends OverlayHandler {
     overlayEntry = OverlayEntry(
       builder: (innerContext) {
         return RepaintBoundary(
-          child: FocusScope(
-            autofocus: dismissBackdropFocus,
-            child: AnimatedBuilder(
-                animation: isClosed,
-                builder: (innerContext, child) {
-                  return AnimatedValueBuilder.animation(
+          child: AnimatedBuilder(
+              animation: isClosed,
+              builder: (innerContext, child) {
+                return FocusScope(
+                  autofocus: dismissBackdropFocus,
+                  canRequestFocus: !isClosed.value,
+                  child: AnimatedValueBuilder.animation(
                       value: isClosed.value ? 0.0 : 1.0,
                       initialValue: 0.0,
                       curve: isClosed.value
@@ -170,9 +171,9 @@ class PopoverOverlayHandler extends OverlayHandler {
                           },
                         );
                         return popoverAnchor;
-                      });
-                }),
-          ),
+                      }),
+                );
+              }),
         );
       },
     );
