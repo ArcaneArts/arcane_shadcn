@@ -85,7 +85,7 @@ class ControlledSelect<T> extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return ControlledComponentBuilder<T?>(
+    return ControlledComponentAdapter<T?>(
       builder: (context, data) {
         return Select<T>(
           onChanged: data.onChanged,
@@ -267,7 +267,7 @@ class SelectItemButton<T> extends StatelessWidget {
       ),
       trailing: isSelected
           ? const Icon(
-              Icons.check,
+              LucideIcons.check,
             ).iconSmall()
           : hasSelection
               ? SizedBox(
@@ -499,6 +499,7 @@ class SelectState<T> extends State<Select<T>>
     super.initState();
     _focusNode = widget.focusNode ?? FocusNode();
     _valueNotifier = ValueNotifier(widget.value);
+    formValue = widget.value;
   }
 
   @override
@@ -568,7 +569,8 @@ class SelectState<T> extends State<Select<T>>
     }
     var selectionHandler = widget.valueSelectionHandler ??
         _defaultSingleSelectValueSelectionHandler;
-    widget.onChanged?.call(selectionHandler(widget.value, value, selected));
+    var newValue = selectionHandler(widget.value, value, selected);
+    widget.onChanged?.call(newValue);
     return true;
   }
 
@@ -684,7 +686,7 @@ class SelectState<T> extends State<Select<T>>
                       color: theme.colorScheme.foreground,
                       opacity: 0.5,
                     ),
-                    child: const Icon(Icons.unfold_more).iconSmall(),
+                    child: const Icon(LucideIcons.chevronsUpDown).iconSmall(),
                   ),
                 ],
               ),
@@ -713,14 +715,16 @@ class MultiSelectChip extends StatelessWidget {
     final data = Data.maybeOf<SelectData>(context);
     return Chip(
       style: style,
-      trailing: data?.enabled == false ? null : ChipButton(
-        onPressed: () {
-          data?.onChanged(value, false);
-        },
-        child: const Icon(
-          Icons.close,
-        ).iconSmall(),
-      ),
+      trailing: data?.enabled == false
+          ? null
+          : ChipButton(
+              onPressed: () {
+                data?.onChanged(value, false);
+              },
+              child: const Icon(
+                LucideIcons.x,
+              ).iconSmall(),
+            ),
       child: child,
     );
   }
@@ -806,8 +810,7 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
       runSpacing: 4 * scaling,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        for (var value in value)
-          multiItemBuilder(context, value),
+        for (var value in value) multiItemBuilder(context, value),
       ],
     );
   }
@@ -926,7 +929,7 @@ class SelectPopup<T> extends StatefulWidget {
     this.errorBuilder,
     this.surfaceBlur,
     this.surfaceOpacity,
-    this.autoClose = true,
+    this.autoClose,
     this.canUnselect,
     this.scrollController,
     this.shrinkWrap = true,
@@ -944,7 +947,7 @@ class SelectPopup<T> extends StatefulWidget {
     this.errorBuilder,
     this.surfaceBlur,
     this.surfaceOpacity,
-    this.autoClose = true,
+    this.autoClose,
     this.canUnselect,
     this.scrollController,
   })  : builder = null,
@@ -1027,7 +1030,7 @@ class _SelectPopupState<T> extends State<SelectPopup<T>>
     final scaling = theme.scaling;
     return Data<SelectPopupHandle>.inherit(
       data: this,
-      child: SurfaceCard(
+      child: ModalContainer(
         clipBehavior: Clip.hardEdge,
         surfaceBlur: widget.surfaceBlur,
         surfaceOpacity: widget.surfaceOpacity,
@@ -1040,9 +1043,13 @@ class _SelectPopupState<T> extends State<SelectPopup<T>>
               TextField(
                 controller: _searchController,
                 border: false,
-                leading: const Icon(
-                  Icons.search,
-                ).iconSmall().iconMutedForeground(),
+                features: [
+                  InputFeature.leading(
+                    const Icon(
+                      LucideIcons.search,
+                    ).iconSmall().iconMutedForeground(),
+                  ),
+                ],
                 placeholder: widget.searchPlaceholder,
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 12) *

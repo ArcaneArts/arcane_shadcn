@@ -8,8 +8,6 @@ class InputExample2 extends StatefulWidget {
 }
 
 class _InputExample2State extends State<InputExample2> {
-  final TextEditingController _searchController =
-      TextEditingController(text: 'Hello World');
   @override
   Widget build(BuildContext context) {
     return TextField(

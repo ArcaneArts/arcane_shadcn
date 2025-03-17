@@ -47,7 +47,7 @@ class ControlledDatePicker extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return ControlledComponentBuilder(
+    return ControlledComponentAdapter(
       controller: controller,
       initialValue: initialValue,
       onChanged: onChanged,
@@ -114,7 +114,7 @@ class DatePicker extends StatelessWidget {
       value: value,
       onChanged: onChanged,
       placeholder: placeholder ?? Text(localizations.placeholderDatePicker),
-      trailing: const Icon(Icons.calendar_today),
+      trailing: const Icon(LucideIcons.calendarDays),
       builder: (context, value) {
         return Text(localizations.formatDateTime(value, showTime: false));
       },
@@ -447,7 +447,7 @@ class DateRangePicker extends StatelessWidget {
       onChanged: onChanged,
       dialogTitle: dialogTitle,
       placeholder: placeholder ?? Text(localizations.placeholderDatePicker),
-      trailing: const Icon(Icons.calendar_month),
+      trailing: const Icon(LucideIcons.calendarRange),
       builder: (context, value) {
         return Text(
             '${localizations.formatDateTime(value.start, showTime: false)} - ${localizations.formatDateTime(value.end, showTime: false)}');
