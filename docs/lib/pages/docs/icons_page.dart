@@ -82,7 +82,114 @@ class _IconsPageState extends State<IconsPage> {
       scrollable: false,
       child: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [];
+          final theme = Theme.of(context);
+          return [
+            SliverAppBar(
+              pinned: true,
+              floating: true,
+              backgroundColor: theme.colorScheme.background,
+              automaticallyImplyLeading: false,
+              toolbarHeight: 50,
+              collapsedHeight: 50,
+              expandedHeight: 255,
+              surfaceTintColor: theme.colorScheme.background,
+              flexibleSpace: Stack(
+                fit: StackFit.passthrough,
+                children: [
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: ShadcnUI(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text('Icons').h1(),
+                          const Text('Use bundled icons in your application')
+                              .lead(),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Card(
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('${kRadixIcons.length}')
+                                              .textLarge(),
+                                          const Text('Radix Icons')
+                                              .muted()
+                                              .textSmall(),
+                                        ],
+                                      ),
+                                      Positioned(
+                                        right: -32,
+                                        bottom: -48,
+                                        child: const Icon(
+                                          RadixIcons.iconjarLogo,
+                                          size: 96,
+                                        )
+                                            .iconMutedForeground()
+                                            .withOpacity(0.3),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Card(
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('${kBootstrapIcons.length}')
+                                              .textLarge(),
+                                          const Text('Bootstrap Icons')
+                                              .muted()
+                                              .textSmall(),
+                                        ],
+                                      ),
+                                      Positioned(
+                                        right: -32,
+                                        bottom: -48,
+                                        child: const Icon(
+                                          BootstrapIcons.bootstrap,
+                                          size: 96,
+                                        )
+                                            .iconMutedForeground()
+                                            .withOpacity(0.3),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ).gap(12).p(),
+                          const Gap(32),
+                          TextField(
+                            leading: const Icon(Icons.search),
+                            placeholder: 'Search icons',
+                            controller: _controller,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ];
         },
         body: AnimatedBuilder(
             animation: _controller,

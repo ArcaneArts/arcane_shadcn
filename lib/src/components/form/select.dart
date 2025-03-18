@@ -21,7 +21,9 @@ class ControlledSelect<T> extends StatelessWidget
   final SelectController<T>? controller;
 
   @override
-  final Widget? placeholder;
+  final String? placeholder;
+  @override
+  final Widget? placeholderWidget;
   @override
   final bool filled;
   @override
@@ -62,6 +64,7 @@ class ControlledSelect<T> extends StatelessWidget
     this.enabled = true,
     this.initialValue,
     this.placeholder,
+    this.placeholderWidget,
     this.filled = false,
     this.focusNode,
     this.constraints,
@@ -87,6 +90,7 @@ class ControlledSelect<T> extends StatelessWidget
         return Select<T>(
           onChanged: data.onChanged,
           placeholder: placeholder,
+          placeholderWidget: placeholderWidget,
           filled: filled,
           focusNode: focusNode,
           constraints: constraints,
@@ -131,7 +135,9 @@ class ControlledMultiSelect<T> extends StatelessWidget
   final MultiSelectController<T>? controller;
 
   @override
-  final Widget? placeholder;
+  final String? placeholder;
+  @override
+  final Widget? placeholderWidget;
   @override
   final bool filled;
   @override
@@ -175,6 +181,7 @@ class ControlledMultiSelect<T> extends StatelessWidget
     this.enabled = true,
     this.initialValue,
     this.placeholder,
+    this.placeholderWidget,
     this.filled = false,
     this.focusNode,
     this.constraints,
@@ -201,6 +208,7 @@ class ControlledMultiSelect<T> extends StatelessWidget
       enabled: enabled,
       initialValue: initialValue,
       placeholder: placeholder,
+      placeholderWidget: placeholderWidget,
       filled: filled,
       focusNode: focusNode,
       constraints: constraints,
@@ -387,7 +395,8 @@ bool _defaultMultiSelectValueSelectionPredicate<T>(
 
 mixin SelectBase<T> {
   ValueChanged<T?>? get onChanged;
-  Widget? get placeholder;
+  String? get placeholder;
+  Widget? get placeholderWidget;
   bool get filled;
   FocusNode? get focusNode;
   BoxConstraints? get constraints;
@@ -411,7 +420,10 @@ class Select<T> extends StatefulWidget with SelectBase<T> {
   @override
   final ValueChanged<T?>? onChanged; // if null, then it's a disabled combobox
   @override
-  final Widget? placeholder; // placeholder when value is null
+  final Widget? placeholderWidget; // placeholder when value is null
+
+  @override
+  final String? placeholder;
   @override
   final bool filled;
   @override
@@ -451,6 +463,7 @@ class Select<T> extends StatefulWidget with SelectBase<T> {
     super.key,
     this.onChanged,
     this.placeholder,
+    this.placeholderWidget,
     this.filled = false,
     this.focusNode,
     this.constraints,
@@ -518,7 +531,11 @@ class SelectState<T> extends State<Select<T>>
 
   Widget get _placeholder {
     if (widget.placeholder != null) {
-      return widget.placeholder!;
+      return Text(widget.placeholder!);
+    }
+
+    if (widget.placeholderWidget != null) {
+      return widget.placeholderWidget!;
     }
     return const SizedBox();
   }
@@ -718,7 +735,9 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
   final ValueChanged<Iterable<T>?>?
       onChanged; // if null, then it's a disabled combobox
   @override
-  final Widget? placeholder; // placeholder when value is null
+  final String? placeholder; // placeholder when value is null
+  @override
+  final Widget? placeholderWidget;
   @override
   final bool filled;
   @override
@@ -761,6 +780,7 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
     super.key,
     this.onChanged,
     this.placeholder,
+    this.placeholderWidget,
     this.filled = false,
     this.focusNode,
     this.constraints,
@@ -801,6 +821,7 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
       popup: popup,
       itemBuilder: itemBuilder,
       onChanged: onChanged,
+      placeholderWidget: placeholderWidget,
       placeholder: placeholder,
       filled: filled,
       focusNode: focusNode,
@@ -864,7 +885,8 @@ class SelectPopup<T> extends StatefulWidget {
   final SelectItemsBuilder<T>? builder;
   final FutureOr<SelectItemDelegate?>? items;
   final TextEditingController? searchController;
-  final Widget? searchPlaceholder;
+  final String? searchPlaceholder;
+  final Widget? searchPlaceholderWidget;
   final WidgetBuilder? emptyBuilder;
   final WidgetBuilder? loadingBuilder;
   final ErrorWidgetBuilder? errorBuilder;
@@ -882,6 +904,7 @@ class SelectPopup<T> extends StatefulWidget {
     required this.builder,
     this.searchController,
     this.searchPlaceholder,
+    this.searchPlaceholderWidget,
     this.emptyBuilder,
     this.loadingBuilder,
     this.surfaceBlur,
@@ -900,6 +923,7 @@ class SelectPopup<T> extends StatefulWidget {
     this.items,
     this.searchController,
     this.searchPlaceholder,
+    this.searchPlaceholderWidget,
     this.emptyBuilder,
     this.loadingBuilder,
     this.errorBuilder,
@@ -1004,68 +1028,60 @@ class _SelectPopupState<T> extends State<SelectPopup<T>>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scaling = theme.scaling;
-    return Data<SelectPopupHandle>.inherit(
-      data: this,
-      child: ModalContainer(
-        clipBehavior: Clip.hardEdge,
-        surfaceBlur: widget.surfaceBlur,
-        surfaceOpacity: widget.surfaceOpacity,
-        padding: EdgeInsets.zero,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.enableSearch)
-              TextField(
-                controller: _searchController,
-                border: false,
-                features: [
-                  InputFeature.leading(
-                    const Icon(
-                      LucideIcons.search,
-                    ).iconSmall().iconMutedForeground(),
-                  ),
-                ],
-                placeholder: widget.searchPlaceholder,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 12) *
-                        scaling,
-              ),
-            Flexible(
-              child: ListenableBuilder(
-                  listenable: _searchController,
-                  builder: (context, _) {
-                    return CachedValueWidget(
-                        value: _searchController.text.isEmpty
-                            ? null
-                            : _searchController.text,
-                        builder: (context, searchQuery) {
-                          return FutureOrBuilder<SelectItemDelegate?>(
-                              future: widget.builder != null
-                                  ? widget.builder!.call(context, searchQuery)
-                                  : widget.items != null
-                                      ? widget.items!
-                                      : SelectItemDelegate.empty,
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  Widget? loadingBuilder =
-                                      widget.loadingBuilder?.call(context);
-                                  if (loadingBuilder != null) {
-                                    return Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        if (widget.enableSearch)
-                                          const Divider(),
-                                        Flexible(
-                                          child: loadingBuilder,
-                                        ),
-                                      ],
-                                    );
-                                  }
-                                  return const SizedBox();
+    return SurfaceCard(
+      clipBehavior: Clip.hardEdge,
+      surfaceBlur: widget.surfaceBlur,
+      surfaceOpacity: widget.surfaceOpacity,
+      padding: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (widget.enableSearch)
+            TextField(
+              controller: _searchController,
+              border: false,
+              leading: const Icon(
+                Icons.search,
+              ).iconSmall().iconMutedForeground(),
+              placeholder: widget.searchPlaceholder,
+              placeholderWidget: widget.searchPlaceholderWidget,
+              padding:
+                  const EdgeInsets.symmetric(vertical: 12, horizontal: 12) *
+                      scaling,
+            ),
+          Flexible(
+            child: ListenableBuilder(
+                listenable: _searchController,
+                builder: (context, _) {
+                  return CachedValueWidget(
+                      value: _searchController.text.isEmpty
+                          ? null
+                          : _searchController.text,
+                      builder: (context, searchQuery) {
+                        return FutureOrBuilder<SelectItemDelegate>(
+                            future: widget.builder != null
+                                ? widget.builder!.call(context, searchQuery)
+                                : widget.items != null
+                                    ? widget.items!
+                                    : SelectItemDelegate.empty,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                Widget? loadingBuilder =
+                                    widget.loadingBuilder?.call(context);
+                                if (loadingBuilder != null) {
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      if (widget.enableSearch) const Divider(),
+                                      Flexible(
+                                        child: loadingBuilder,
+                                      ),
+                                    ],
+                                  );
                                 }
                                 if (snapshot.hasError) {
                                   Widget? errorBuilder =

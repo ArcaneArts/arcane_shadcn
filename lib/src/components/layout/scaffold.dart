@@ -16,10 +16,13 @@ class Scaffold extends StatefulWidget {
   final Color? footerBackgroundColor;
   final Color? backgroundColor;
   final bool showLoadingSparks;
+  final bool primary;
+  final Color? overrideBackgroundColor;
 
   const Scaffold({
     super.key,
     required this.child,
+    this.primary = true,
     this.headers = const [],
     this.footers = const [],
     this.loadingProgress,
@@ -30,6 +33,7 @@ class Scaffold extends StatefulWidget {
     this.headerBackgroundColor,
     this.footerBackgroundColor,
     this.showLoadingSparks = false,
+    this.overrideBackgroundColor,
   });
 
   @override

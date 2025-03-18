@@ -57,7 +57,7 @@ class _MultiSelectExample3State extends State<MultiSelectExample3> {
         );
       },
       popup: SelectPopup.builder(
-        searchPlaceholder: const Text('Search fruit'),
+        searchPlaceholderWidget: const Text('Search fruit'),
         emptyBuilder: (context) {
           return const Center(
             child: Text('No fruit found'),
@@ -107,7 +107,7 @@ class _MultiSelectExample3State extends State<MultiSelectExample3> {
         minWidth: 200,
       ),
       value: selectedValues,
-      placeholder: const Text('Select a fruit'),
+      placeholderWidget: const Text('Select a fruit'),
     );
   }
 }

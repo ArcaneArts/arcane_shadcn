@@ -1,3 +1,4 @@
+import 'package:pylon/pylon.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 class ModalBackdrop extends StatelessWidget {
@@ -285,6 +286,7 @@ Future<T?> showDialog<T>({
   AlignmentGeometry? alignment,
   bool fullScreen = false,
 }) {
+  builder = Pylon.mirror(context, builder);
   var navigatorState = Navigator.of(
     context,
     rootNavigator: useRootNavigator,
@@ -416,6 +418,7 @@ class DialogOverlayHandler extends OverlayHandler {
     OverlayBarrier? overlayBarrier,
     LayerLink? layerLink,
   }) {
+    builder = Pylon.mirror(context, builder);
     var navigatorState = Navigator.of(
       context,
       rootNavigator: rootOverlay,

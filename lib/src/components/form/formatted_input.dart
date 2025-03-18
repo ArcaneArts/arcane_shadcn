@@ -10,7 +10,8 @@ abstract class InputPart implements FormattedValuePart {
     required int length,
     bool obscureText,
     List<TextInputFormatter> inputFormatters,
-    Widget? placeholder,
+    Widget? placeholderWidget,
+    String? placeholder,
     required double width,
   }) = EditablePart;
   const factory InputPart.widget(Widget widget) = WidgetPart;
@@ -85,12 +86,14 @@ class EditablePart extends InputPart {
   final bool obscureText;
   final List<TextInputFormatter> inputFormatters;
   final double width;
-  final Widget? placeholder;
+  final String? placeholder;
+  final Widget? placeholderWidget;
   const EditablePart({
     required this.length,
     this.obscureText = false,
     this.inputFormatters = const [],
     this.placeholder,
+    this.placeholderWidget,
     required this.width,
   });
 
@@ -108,6 +111,7 @@ class EditablePart extends InputPart {
       obscureText: obscureText,
       inputFormatters: inputFormatters,
       placeholder: placeholder,
+      placeholderWidget: placeholderWidget,
       width: width,
     );
   }
@@ -190,13 +194,15 @@ class _EditablePartWidget extends StatefulWidget {
   final bool obscureText;
   final List<TextInputFormatter> inputFormatters;
   final double width;
-  final Widget? placeholder;
+  final String? placeholder;
+  final Widget? placeholderWidget;
   const _EditablePartWidget({
     required this.length,
     required this.data,
     this.obscureText = false,
     this.inputFormatters = const [],
     this.placeholder,
+    this.placeholderWidget,
     required this.width,
   });
 
@@ -212,7 +218,8 @@ class _EditablePartWidgetState extends State<_EditablePartWidget> {
     super.initState();
     _controller = _EditablePartController(
       maxLength: widget.length,
-      hasPlaceholder: widget.placeholder != null,
+      hasPlaceholder:
+          widget.placeholder != null || widget.placeholderWidget != null,
       text: widget.data.initialValue,
     );
     if (widget.data.controller != null) {
@@ -245,7 +252,8 @@ class _EditablePartWidgetState extends State<_EditablePartWidget> {
       final oldValue = _controller.value;
       _controller = _EditablePartController(
         maxLength: widget.length,
-        hasPlaceholder: widget.placeholder != null,
+        hasPlaceholder:
+            widget.placeholder != null || widget.placeholderWidget != null,
         text: oldValue.text,
       );
     }
@@ -323,29 +331,26 @@ class _EditablePartWidgetState extends State<_EditablePartWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Focus(
-      onKeyEvent: _onKeyEvent,
-      child: FormEntry(
-        key: FormKey(data.partIndex),
-        child: SizedBox(
-          width: widget.width,
-          child: TextField(
-            focusNode: data.focusNode,
-            controller: _controller,
-            maxLength: widget.length,
-            onChanged: _onChanged,
-            style:
-                DefaultTextStyle.of(context).style.merge(theme.typography.mono),
-            border: false,
-            textAlign: TextAlign.center,
-            initialValue: data.initialValue,
-            maxLines: 1,
-            obscureText: widget.obscureText,
-            inputFormatters: widget.inputFormatters,
-            placeholder: widget.placeholder,
-            padding: EdgeInsets.symmetric(
-              horizontal: 6 * theme.scaling,
-            ),
+    return FormEntry(
+      key: FormKey(data.partIndex),
+      child: SizedBox(
+        width: widget.width,
+        child: TextField(
+          placeholderWidget: widget.placeholderWidget,
+          controller: _controller,
+          maxLength: widget.length,
+          style:
+              DefaultTextStyle.of(context).style.merge(theme.typography.mono),
+          border: false,
+          textAlign: TextAlign.center,
+          initialValue: data.initialValue,
+          maxLines: 1,
+          obscureText: widget.obscureText,
+          inputFormatters: widget.inputFormatters,
+          placeholder: widget.placeholder,
+          padding: EdgeInsets.symmetric(
+            horizontal: 6 * theme.scaling,
+            vertical: 8 * theme.scaling,
           ),
         ),
       ),

@@ -73,7 +73,6 @@ class ControlledCheckbox extends StatelessWidget
           onChanged: data.onChanged,
           leading: leading,
           trailing: trailing,
-          enabled: data.enabled,
           tristate: tristate,
         );
       },
@@ -98,16 +97,16 @@ class Checkbox extends StatefulWidget {
   final Widget? leading;
   final Widget? trailing;
   final bool tristate;
-  final bool? enabled;
+  final double padding;
 
   const Checkbox({
     super.key,
+    this.padding = 8,
     required this.state,
     required this.onChanged,
     this.leading,
     this.trailing,
     this.tristate = false,
-    this.enabled,
   });
 
   @override
@@ -167,7 +166,7 @@ class _CheckboxState extends State<Checkbox>
     }
   }
 
-  bool get enabled => widget.enabled ?? widget.onChanged != null;
+  bool get enabled => widget.onChanged != null;
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +183,7 @@ class _CheckboxState extends State<Checkbox>
         mainAxisSize: MainAxisSize.min,
         children: [
           if (widget.leading != null) widget.leading!.small().medium(),
-          SizedBox(width: theme.scaling * 8),
+          SizedBox(width: theme.scaling * widget.padding),
           AnimatedContainer(
             duration: kDefaultDuration,
             width: theme.scaling * 16,
@@ -250,7 +249,7 @@ class _CheckboxState extends State<Checkbox>
                     ),
                   ),
           ),
-          SizedBox(width: theme.scaling * 8),
+          SizedBox(width: theme.scaling * widget.padding),
           if (widget.trailing != null) widget.trailing!.small().medium(),
         ],
       ),

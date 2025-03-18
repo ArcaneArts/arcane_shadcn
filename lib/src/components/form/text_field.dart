@@ -3,6 +3,7 @@
 import 'dart:math';
 import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
 
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart'
     show
         CupertinoSpellCheckSuggestionsToolbar,
@@ -12,6 +13,8 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart' as widgets;
+import 'package:pylon/pylon.dart';
 
 import '../../../shadcn_flutter.dart';
 
@@ -167,7 +170,8 @@ mixin TextInput on Widget {
   FocusNode? get focusNode;
   BoxDecoration? get decoration;
   EdgeInsetsGeometry? get padding;
-  Widget? get placeholder;
+  String? get placeholder;
+  Widget? get placeholderWidget;
   Widget? get leading;
   Widget? get trailing;
   CrossAxisAlignment get crossAxisAlignment;
@@ -247,8 +251,9 @@ class TextField extends StatefulWidget with TextInput {
     this.decoration,
     this.padding,
     this.placeholder,
-    @Deprecated('Use InputFeature.leading instead') this.leading,
-    @Deprecated('Use InputFeature.trailing instead') this.trailing,
+    this.placeholderWidget,
+    this.leading,
+    this.trailing,
     this.crossAxisAlignment = CrossAxisAlignment.center,
     this.clearButtonSemanticLabel,
     TextInputType? keyboardType,
@@ -294,6 +299,7 @@ class TextField extends StatefulWidget with TextInput {
     this.selectionControls,
     this.onTap,
     this.scrollController,
+    this.stackAlignment = AlignmentDirectional.topCenter,
     this.scrollPhysics,
     this.autofillHints = const [],
     this.contentInsertionConfiguration,
@@ -341,6 +347,8 @@ class TextField extends StatefulWidget with TextInput {
         enableInteractiveSelection =
             enableInteractiveSelection ?? (!readOnly || !obscureText);
 
+  final AlignmentGeometry stackAlignment;
+
   @override
   final List<InputFeature> features;
 
@@ -360,7 +368,9 @@ class TextField extends StatefulWidget with TextInput {
   final EdgeInsetsGeometry? padding;
 
   @override
-  final Widget? placeholder;
+  final String? placeholder;
+  @override
+  final Widget? placeholderWidget;
 
   @override
   final Widget? leading;
@@ -1142,6 +1152,7 @@ class TextFieldState extends State<TextField>
   // True if any surrounding decoration widgets will be shown.
   bool get _hasDecoration {
     return widget.placeholder != null ||
+        widget.placeholderWidget != null ||
         widget.leading != null ||
         widget.trailing != null;
   }
@@ -1173,29 +1184,30 @@ class TextFieldState extends State<TextField>
       child: editableText,
       builder: (BuildContext context, TextEditingValue text, Widget? child) {
         final bool hasText = text.text.isNotEmpty;
-        final Widget? placeholder = widget.placeholder == null
-            ? null
-            // Make the placeholder invisible when hasText is true.
-            : Visibility(
-                maintainAnimation: true,
-                maintainSize: true,
-                maintainState: true,
-                visible: !hasText,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: DefaultTextStyle(
-                    style: textStyle
-                        .merge(theme.typography.small)
-                        .merge(theme.typography.normal)
-                        .copyWith(
-                          color: theme.colorScheme.mutedForeground,
-                        ),
-                    textAlign: widget.textAlign,
-                    maxLines: widget.maxLines,
-                    child: widget.placeholder!,
-                  ),
-                ),
-              );
+        final Widget? placeholder =
+            widget.placeholderWidget == null && widget.placeholder == null
+                ? null
+                // Make the placeholder invisible when hasText is true.
+                : Visibility(
+                    maintainAnimation: true,
+                    maintainSize: true,
+                    maintainState: true,
+                    visible: !hasText,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: DefaultTextStyle(
+                        style: textStyle
+                            .merge(theme.typography.small)
+                            .merge(theme.typography.normal)
+                            .copyWith(
+                              color: theme.colorScheme.mutedForeground,
+                            ),
+                        maxLines: widget.maxLines,
+                        child: widget.placeholderWidget ??
+                            Text(widget.placeholder!),
+                      ),
+                    ),
+                  );
 
         Widget? leadingWidget = widget.leading;
 
@@ -1251,7 +1263,7 @@ class TextFieldState extends State<TextField>
                 // the cost of the ability to compute the intrinsic dimensions of
                 // this widget.
                 // See also https://github.com/flutter/flutter/issues/13715.
-                alignment: AlignmentDirectional.center,
+                alignment: widget.stackAlignment,
                 textDirection: widget.textDirection,
                 children: <Widget>[
                   if (placeholder != null) placeholder,
@@ -1404,8 +1416,8 @@ class TextFieldState extends State<TextField>
     super.build(context); // See AutomaticKeepAliveClientMixin.
     final ThemeData theme = Theme.of(context);
     assert(debugCheckHasDirectionality(context));
-    final TextEditingController controller = effectiveController;
-
+    final TextEditingController controller = _effectiveController;
+    DashedBorderSignal? signal = context.pylonOr<DashedBorderSignal>();
     TextSelectionControls? textSelectionControls = widget.selectionControls;
     VoidCallback? handleDidGainAccessibilityFocus;
     VoidCallback? handleDidLoseAccessibilityFocus;
@@ -1474,6 +1486,7 @@ class TextFieldState extends State<TextField>
           color: widget.filled ? theme.colorScheme.muted : null,
           border: widget.border
               ? Border.all(
+                  style: signal != null ? BorderStyle.none : BorderStyle.solid,
                   color: _effectiveFocusNode.hasFocus && widget.enabled
                       ? theme.colorScheme.ring
                       : theme.colorScheme.border,
@@ -1566,7 +1579,47 @@ class TextFieldState extends State<TextField>
       ),
     );
 
-    Widget textField = IconTheme.merge(
+    Widget internalContainer = Container(
+      decoration: effectiveDecoration,
+      child: _selectionGestureDetectorBuilder.buildGestureDetector(
+        behavior: HitTestBehavior.translucent,
+        child: Align(
+          alignment: Alignment(-1.0, _textAlignVertical.y),
+          widthFactor: 1.0,
+          heightFactor: 1.0,
+          child: Padding(
+            padding: widget.padding ??
+                EdgeInsets.symmetric(
+                  horizontal: 12 * scaling,
+                  vertical: 8 * scaling,
+                ),
+            child:
+                _addTextDependentAttachments(editable, defaultTextStyle, theme),
+          ),
+        ),
+      ),
+    );
+
+    if (signal != null && !widget.filled) {
+      internalContainer = DottedBorder(
+          color: _effectiveFocusNode.hasFocus && widget.enabled
+              ? theme.colorScheme.ring
+              : theme.colorScheme.border,
+          strokeWidth: 2,
+          dashPattern: signal.borderStyle,
+          radius:
+              (optionallyResolveBorderRadius(context, widget.borderRadius) ??
+                      BorderRadius.circular(theme.radiusMd))
+                  .topLeft,
+          borderType: BorderType.RRect,
+          stackFit: StackFit.passthrough,
+          padding: EdgeInsets.zero,
+          strokeCap: StrokeCap.round,
+          borderPadding: EdgeInsets.all(0.5),
+          child: internalContainer);
+    }
+
+    return IconTheme.merge(
       data: theme.iconTheme.small.copyWith(
         color: theme.colorScheme.mutedForeground,
       ),
@@ -1615,30 +1668,11 @@ class TextFieldState extends State<TextField>
                       // in the framework.
                       _requestKeyboard();
                     }
-                  }
-                : null,
-            child: TextFieldTapRegion(
-              child: IgnorePointer(
-                ignoring: !enabled,
-                child: Container(
-                  decoration: effectiveDecoration,
-                  child: _selectionGestureDetectorBuilder.buildGestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    child: Align(
-                      alignment: Alignment(-1.0, _textAlignVertical.y),
-                      widthFactor: 1.0,
-                      heightFactor: 1.0,
-                      child: Padding(
-                        padding: widget.padding ??
-                            EdgeInsets.symmetric(
-                              horizontal: 12 * scaling,
-                              vertical: 8 * scaling,
-                            ),
-                        child: _addTextDependentAttachments(
-                            editable, defaultTextStyle, theme),
-                      ),
-                    ),
-                  ),
+                  : null,
+              child: TextFieldTapRegion(
+                child: IgnorePointer(
+                  ignoring: !enabled,
+                  child: internalContainer,
                 ),
               ),
             ),

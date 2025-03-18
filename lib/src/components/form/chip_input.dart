@@ -33,7 +33,8 @@ class ControlledChipInput<T> extends StatelessWidget
   final ChipWidgetBuilder<T>? suggestionBuilder;
   final bool useChips;
   final TextInputAction? textInputAction;
-  final Widget? placeholder;
+  final String? placeholder;
+  final Widget? placeholderWidget;
   final Widget Function(BuildContext, T)? suggestionLeadingBuilder;
   final Widget Function(BuildContext, T)? suggestionTrailingBuilder;
   final Widget? inputTrailingWidget;
@@ -61,6 +62,7 @@ class ControlledChipInput<T> extends StatelessWidget
     this.useChips = true,
     this.textInputAction,
     this.placeholder,
+    this.placeholderWidget,
     this.suggestionLeadingBuilder,
     this.suggestionTrailingBuilder,
     this.inputTrailingWidget,
@@ -91,6 +93,7 @@ class ControlledChipInput<T> extends StatelessWidget
           suggestionBuilder: suggestionBuilder,
           textInputAction: textInputAction,
           placeholder: placeholder,
+          placeholderWidget: placeholderWidget,
           suggestionLeadingBuilder: suggestionLeadingBuilder,
           suggestionTrailingBuilder: suggestionTrailingBuilder,
           inputTrailingWidget: inputTrailingWidget,
@@ -117,7 +120,8 @@ class ChipInput<T> extends StatefulWidget {
   final ChipWidgetBuilder<T>? suggestionBuilder;
   final bool useChips;
   final TextInputAction? textInputAction;
-  final Widget? placeholder;
+  final String? placeholder;
+  final Widget? placeholderWidget;
   final Widget Function(BuildContext, T)? suggestionLeadingBuilder;
   final Widget Function(BuildContext, T)? suggestionTrailingBuilder;
   final Widget? inputTrailingWidget;
@@ -142,6 +146,7 @@ class ChipInput<T> extends StatefulWidget {
     this.suggestionBuilder,
     this.textInputAction,
     this.placeholder,
+    this.placeholderWidget,
     this.suggestionLeadingBuilder,
     this.suggestionTrailingBuilder,
     this.inputTrailingWidget,
@@ -476,6 +481,7 @@ class ChipInputState<T> extends State<ChipInput<T>>
             enabled: widget.enabled,
             maxLines: 1,
             placeholder: widget.placeholder,
+            placeholderWidget: widget.placeholderWidget,
             onSubmitted: _handleSubmitted,
             controller: _controller,
             undoController: widget.undoHistoryController,
