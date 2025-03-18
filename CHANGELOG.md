@@ -1,3 +1,47 @@
+## 0.0.30
+* Fixed Sheet autoOpen issue
+* Fixed incorrect MultiSelectKey FormKey type
+* Fixed Focus issue on closing dialog
+* Fixed Focus issue on closing popover
+* Default locale now accepts all language as a fallback
+* Fix scaffold MediaQuery padding
+* Added DateInput component
+* Added TimeInput component
+* Added DurationInput component
+* Improved sonner/toast component hover animation
+* Added PrimaryButtonTheme
+* Added SecondaryButtonTheme
+* Added OutlineButtonTheme
+* Added GhostButtonTheme
+* Added DestructiveButtonTheme
+* Added LinkButtonTheme
+* Added MutedButtonTheme
+* Added CardButtonTheme
+* Added TextButtonTheme
+* Added MenuButtonTheme
+* Added MenubarButtonTheme
+* Added FixedButtonTheme
+* FormattedInput now properly transfer focus when done editing one of the part
+
+## 0.0.29
+* Properly bundled Geist and Geist Mono fonts
+* Properly bundled Radix and Bootstrap Icons
+* Added Lucide Icons
+* Added style to SelectItemButton
+* Added MultiSelectChip component
+* MultiSelect now uses MultiSelectChip as the itemBuilder
+* Added more extension methods to AbstractButtonStyle
+* Added Swiper component
+* TextEditingController no longer implements ComponentController
+* NavigationLabeled now uses directional padding
+* Fixed StarRatings on mobile devices
+* Fixed SheetOverlayHandler safe area issue
+
+## 0.0.28
+* Added no virtualization mode on Select and MultiSelect Popup
+* Added intrinsic PopupConstraint
+* Fixed autoClosePopup on Select and MultiSelect
+
 ## 0.0.27
 * Fix ControlledComponent initial state issue
 
