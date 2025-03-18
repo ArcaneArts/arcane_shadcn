@@ -25,7 +25,7 @@ class _SelectExample1State extends State<SelectExample1> {
         });
       },
       value: selectedValue,
-      placeholderWidget: const Text('Select a fruit'),
+      placeholder: const Text('Select a fruit'),
       popup: const SelectPopup(
         items: SelectItemList(
           children: [

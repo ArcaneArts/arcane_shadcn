@@ -41,7 +41,7 @@ class _MultiSelectExample2State extends State<MultiSelectExample2> {
         return MultiSelectChip(value: item, child: Text(item));
       },
       popup: SelectPopup.builder(
-        searchPlaceholderWidget: const Text('Search fruit'),
+        searchPlaceholder: const Text('Search fruit'),
         builder: (context, searchQuery) {
           final filteredFruits = searchQuery == null
               ? fruits.entries
@@ -76,7 +76,7 @@ class _MultiSelectExample2State extends State<MultiSelectExample2> {
         minWidth: 200,
       ),
       value: selectedValues,
-      placeholderWidget: const Text('Select a fruit'),
+      placeholder: const Text('Select a fruit'),
     );
   }
 }

@@ -39,7 +39,7 @@ class _MultiSelectExample1State extends State<MultiSelectExample1> {
         minWidth: 200,
       ),
       value: selectedValues,
-      placeholderWidget: const Text('Select a fruit'),
+      placeholder: const Text('Select a fruit'),
     );
   }
 }

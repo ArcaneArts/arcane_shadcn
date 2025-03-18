@@ -41,7 +41,7 @@ class _SelectExample3State extends State<SelectExample3> {
         return Text(item);
       },
       popup: SelectPopup.builder(
-        searchPlaceholderWidget: const Text('Search fruit'),
+        searchPlaceholder: const Text('Search fruit'),
         emptyBuilder: (context) {
           return const Center(
             child: Text('No fruit found'),
@@ -88,7 +88,7 @@ class _SelectExample3State extends State<SelectExample3> {
         minWidth: 200,
       ),
       value: selectedValue,
-      placeholderWidget: const Text('Select a fruit'),
+      placeholder: const Text('Select a fruit'),
     );
   }
 }

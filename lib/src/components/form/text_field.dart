@@ -3,7 +3,6 @@
 import 'dart:math';
 import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
 
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart'
     show
         CupertinoSpellCheckSuggestionsToolbar,
@@ -168,8 +167,7 @@ mixin TextInput on Widget {
   FocusNode? get focusNode;
   BoxDecoration? get decoration;
   EdgeInsetsGeometry? get padding;
-  String? get placeholder;
-  Widget? get placeholderWidget;
+  Widget? get placeholder;
   Widget? get leading;
   Widget? get trailing;
   CrossAxisAlignment get crossAxisAlignment;
@@ -365,9 +363,7 @@ class TextField extends StatefulWidget with TextInput {
   final EdgeInsetsGeometry? padding;
 
   @override
-  final String? placeholder;
-  @override
-  final Widget? placeholderWidget;
+  final Widget? placeholder;
 
   @override
   final Widget? leading;
@@ -1149,7 +1145,6 @@ class TextFieldState extends State<TextField>
   // True if any surrounding decoration widgets will be shown.
   bool get _hasDecoration {
     return widget.placeholder != null ||
-        widget.placeholderWidget != null ||
         widget.leading != null ||
         widget.trailing != null;
   }
@@ -1181,30 +1176,28 @@ class TextFieldState extends State<TextField>
       child: editableText,
       builder: (BuildContext context, TextEditingValue text, Widget? child) {
         final bool hasText = text.text.isNotEmpty;
-        final Widget? placeholder =
-            widget.placeholderWidget == null && widget.placeholder == null
-                ? null
-                // Make the placeholder invisible when hasText is true.
-                : Visibility(
-                    maintainAnimation: true,
-                    maintainSize: true,
-                    maintainState: true,
-                    visible: !hasText,
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: DefaultTextStyle(
-                        style: textStyle
-                            .merge(theme.typography.small)
-                            .merge(theme.typography.normal)
-                            .copyWith(
-                              color: theme.colorScheme.mutedForeground,
-                            ),
-                        maxLines: widget.maxLines,
-                        child: widget.placeholderWidget ??
-                            Text(widget.placeholder!),
-                      ),
-                    ),
-                  );
+        final Widget? placeholder = widget.placeholder == null
+            ? null
+            // Make the placeholder invisible when hasText is true.
+            : Visibility(
+                maintainAnimation: true,
+                maintainSize: true,
+                maintainState: true,
+                visible: !hasText,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: DefaultTextStyle(
+                    style: textStyle
+                        .merge(theme.typography.small)
+                        .merge(theme.typography.normal)
+                        .copyWith(
+                          color: theme.colorScheme.mutedForeground,
+                        ),
+                    maxLines: widget.maxLines,
+                    child: widget.placeholder ?? const SizedBox.shrink(),
+                  ),
+                ),
+              );
 
         Widget? leadingWidget = widget.leading;
 
@@ -1483,7 +1476,7 @@ class TextFieldState extends State<TextField>
           color: widget.filled ? theme.colorScheme.muted : null,
           border: widget.border
               ? Border.all(
-                  style: signal != null ? BorderStyle.none : BorderStyle.solid,
+                  style: BorderStyle.solid,
                   color: _effectiveFocusNode.hasFocus && widget.enabled
                       ? theme.colorScheme.ring
                       : theme.colorScheme.border,

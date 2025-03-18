@@ -10,8 +10,7 @@ abstract class InputPart implements FormattedValuePart {
     required int length,
     bool obscureText,
     List<TextInputFormatter> inputFormatters,
-    Widget? placeholderWidget,
-    String? placeholder,
+    Widget? placeholder,
     required double width,
   }) = EditablePart;
   const factory InputPart.widget(Widget widget) = WidgetPart;
@@ -86,14 +85,12 @@ class EditablePart extends InputPart {
   final bool obscureText;
   final List<TextInputFormatter> inputFormatters;
   final double width;
-  final String? placeholder;
-  final Widget? placeholderWidget;
+  final Widget? placeholder;
   const EditablePart({
     required this.length,
     this.obscureText = false,
     this.inputFormatters = const [],
     this.placeholder,
-    this.placeholderWidget,
     required this.width,
   });
 
@@ -111,7 +108,6 @@ class EditablePart extends InputPart {
       obscureText: obscureText,
       inputFormatters: inputFormatters,
       placeholder: placeholder,
-      placeholderWidget: placeholderWidget,
       width: width,
     );
   }
@@ -194,15 +190,13 @@ class _EditablePartWidget extends StatefulWidget {
   final bool obscureText;
   final List<TextInputFormatter> inputFormatters;
   final double width;
-  final String? placeholder;
-  final Widget? placeholderWidget;
+  final Widget? placeholder;
   const _EditablePartWidget({
     required this.length,
     required this.data,
     this.obscureText = false,
     this.inputFormatters = const [],
     this.placeholder,
-    this.placeholderWidget,
     required this.width,
   });
 
@@ -218,8 +212,7 @@ class _EditablePartWidgetState extends State<_EditablePartWidget> {
     super.initState();
     _controller = _EditablePartController(
       maxLength: widget.length,
-      hasPlaceholder:
-          widget.placeholder != null || widget.placeholderWidget != null,
+      hasPlaceholder: widget.placeholder != null,
       text: widget.data.initialValue,
     );
     if (widget.data.controller != null) {
@@ -252,8 +245,7 @@ class _EditablePartWidgetState extends State<_EditablePartWidget> {
       final oldValue = _controller.value;
       _controller = _EditablePartController(
         maxLength: widget.length,
-        hasPlaceholder:
-            widget.placeholder != null || widget.placeholderWidget != null,
+        hasPlaceholder: widget.placeholder != null,
         text: oldValue.text,
       );
     }

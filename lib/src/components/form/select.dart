@@ -21,9 +21,7 @@ class ControlledSelect<T> extends StatelessWidget
   final SelectController<T>? controller;
 
   @override
-  final String? placeholder;
-  @override
-  final Widget? placeholderWidget;
+  final Widget? placeholder;
   @override
   final bool filled;
   @override
@@ -64,7 +62,6 @@ class ControlledSelect<T> extends StatelessWidget
     this.enabled = true,
     this.initialValue,
     this.placeholder,
-    this.placeholderWidget,
     this.filled = false,
     this.focusNode,
     this.constraints,
@@ -90,7 +87,6 @@ class ControlledSelect<T> extends StatelessWidget
         return Select<T>(
           onChanged: data.onChanged,
           placeholder: placeholder,
-          placeholderWidget: placeholderWidget,
           filled: filled,
           focusNode: focusNode,
           constraints: constraints,
@@ -133,11 +129,8 @@ class ControlledMultiSelect<T> extends StatelessWidget
   final bool enabled;
   @override
   final MultiSelectController<T>? controller;
-
   @override
-  final String? placeholder;
-  @override
-  final Widget? placeholderWidget;
+  final Widget? placeholder;
   @override
   final bool filled;
   @override
@@ -181,7 +174,6 @@ class ControlledMultiSelect<T> extends StatelessWidget
     this.enabled = true,
     this.initialValue,
     this.placeholder,
-    this.placeholderWidget,
     this.filled = false,
     this.focusNode,
     this.constraints,
@@ -208,7 +200,6 @@ class ControlledMultiSelect<T> extends StatelessWidget
       enabled: enabled,
       initialValue: initialValue,
       placeholder: placeholder,
-      placeholderWidget: placeholderWidget,
       filled: filled,
       focusNode: focusNode,
       constraints: constraints,
@@ -395,8 +386,7 @@ bool _defaultMultiSelectValueSelectionPredicate<T>(
 
 mixin SelectBase<T> {
   ValueChanged<T?>? get onChanged;
-  String? get placeholder;
-  Widget? get placeholderWidget;
+  Widget? get placeholder;
   bool get filled;
   FocusNode? get focusNode;
   BoxConstraints? get constraints;
@@ -420,10 +410,7 @@ class Select<T> extends StatefulWidget with SelectBase<T> {
   @override
   final ValueChanged<T?>? onChanged; // if null, then it's a disabled combobox
   @override
-  final Widget? placeholderWidget; // placeholder when value is null
-
-  @override
-  final String? placeholder;
+  final Widget? placeholder;
   @override
   final bool filled;
   @override
@@ -463,7 +450,6 @@ class Select<T> extends StatefulWidget with SelectBase<T> {
     super.key,
     this.onChanged,
     this.placeholder,
-    this.placeholderWidget,
     this.filled = false,
     this.focusNode,
     this.constraints,
@@ -531,11 +517,7 @@ class SelectState<T> extends State<Select<T>>
 
   Widget get _placeholder {
     if (widget.placeholder != null) {
-      return Text(widget.placeholder!);
-    }
-
-    if (widget.placeholderWidget != null) {
-      return widget.placeholderWidget!;
+      return widget.placeholder!;
     }
     return const SizedBox();
   }
@@ -735,9 +717,7 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
   final ValueChanged<Iterable<T>?>?
       onChanged; // if null, then it's a disabled combobox
   @override
-  final String? placeholder; // placeholder when value is null
-  @override
-  final Widget? placeholderWidget;
+  final Widget? placeholder; // placeholder when value is null
   @override
   final bool filled;
   @override
@@ -780,7 +760,6 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
     super.key,
     this.onChanged,
     this.placeholder,
-    this.placeholderWidget,
     this.filled = false,
     this.focusNode,
     this.constraints,
@@ -821,7 +800,6 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
       popup: popup,
       itemBuilder: itemBuilder,
       onChanged: onChanged,
-      placeholderWidget: placeholderWidget,
       placeholder: placeholder,
       filled: filled,
       focusNode: focusNode,
@@ -885,8 +863,7 @@ class SelectPopup<T> extends StatefulWidget {
   final SelectItemsBuilder<T>? builder;
   final FutureOr<SelectItemDelegate?>? items;
   final TextEditingController? searchController;
-  final String? searchPlaceholder;
-  final Widget? searchPlaceholderWidget;
+  final Widget? searchPlaceholder;
   final WidgetBuilder? emptyBuilder;
   final WidgetBuilder? loadingBuilder;
   final ErrorWidgetBuilder? errorBuilder;
@@ -904,7 +881,6 @@ class SelectPopup<T> extends StatefulWidget {
     required this.builder,
     this.searchController,
     this.searchPlaceholder,
-    this.searchPlaceholderWidget,
     this.emptyBuilder,
     this.loadingBuilder,
     this.surfaceBlur,
@@ -923,7 +899,6 @@ class SelectPopup<T> extends StatefulWidget {
     this.items,
     this.searchController,
     this.searchPlaceholder,
-    this.searchPlaceholderWidget,
     this.emptyBuilder,
     this.loadingBuilder,
     this.errorBuilder,
