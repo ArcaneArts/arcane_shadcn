@@ -229,7 +229,6 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
   Duration elapsed;
   double step;
   TextDirection textDirection;
-  ValueChanged<bool> onShouldTick;
 
   _RenderOverflowMarqueeLayout({
     required this.direction,
@@ -465,7 +464,6 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
         }
       }
 
-      onShouldTick(sizeDiff > 0);
       var progress = offsetProgress;
       final offset = direction == Axis.horizontal
           ? Offset(-sizeDiff * progress, 0)
