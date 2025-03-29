@@ -129,7 +129,6 @@ class ControlledMultiSelect<T> extends StatelessWidget
   final bool enabled;
   @override
   final MultiSelectController<T>? controller;
-
   @override
   final Widget? placeholder;
   @override
@@ -411,7 +410,7 @@ class Select<T> extends StatefulWidget with SelectBase<T> {
   @override
   final ValueChanged<T?>? onChanged; // if null, then it's a disabled combobox
   @override
-  final Widget? placeholder; // placeholder when value is null
+  final Widget? placeholder;
   @override
   final bool filled;
   @override
