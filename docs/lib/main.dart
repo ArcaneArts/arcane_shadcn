@@ -109,9 +109,8 @@ String? _packageLatestVersion;
 String? get packageLatestVersion => _packageLatestVersion;
 
 String get flavor {
-  String? flavor = _docs?['flavor'] as String?;
-  assert(flavor != null, 'Flavor not found in docs.json');
-  return flavor!;
+  String? flavor = _docs?['flavor'] as String? ?? "local";
+  return flavor;
 }
 
 String getReleaseTagName() {
