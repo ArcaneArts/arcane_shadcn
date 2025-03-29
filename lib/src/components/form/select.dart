@@ -806,7 +806,7 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
       constraints: constraints,
       popupConstraints: popupConstraints,
       popupWidthConstraint: popupWidthConstraint,
-      value: value,
+      value: value != null && value!.isEmpty ? null : value,
       borderRadius: borderRadius,
       padding: padding,
       popoverAlignment: popoverAlignment,
