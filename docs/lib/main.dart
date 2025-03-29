@@ -28,6 +28,7 @@ import 'package:docs/pages/docs/components/formatted_input_example.dart';
 import 'package:docs/pages/docs/components/hover_card_example.dart';
 import 'package:docs/pages/docs/components/input_example.dart';
 import 'package:docs/pages/docs/components/input_otp_example.dart';
+import 'package:docs/pages/docs/components/item_picker_example.dart';
 import 'package:docs/pages/docs/components/keyboard_display_example.dart';
 import 'package:docs/pages/docs/components/linear_progress_example.dart';
 import 'package:docs/pages/docs/components/material_example.dart';
@@ -736,9 +737,16 @@ class MyAppState extends State<MyApp> {
             path: 'swiper',
             name: 'swiper',
             builder: (context, state) {
-              return SwiperExample();
+              return const SwiperExample();
             },
           ),
+          GoRoute(
+            path: 'item_picker',
+            name: 'item_picker',
+            builder: (context, state) {
+              return const ItemPickerExample();
+            },
+          )
         ]),
   ];
   late ColorScheme colorScheme;

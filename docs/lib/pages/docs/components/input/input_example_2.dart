@@ -12,18 +12,22 @@ class _InputExample2State extends State<InputExample2> {
   Widget build(BuildContext context) {
     return TextField(
         initialValue: 'Hello World!',
-        placeholder: Text('Search something...'),
+        placeholder: const Text('Search something...'),
         features: [
           InputFeature.leading(StatedWidget.builder(
             builder: (context, states) {
-              if (states.focused) {
-                return Icon(Icons.search);
+              if (states.hovered) {
+                return const Icon(Icons.search);
               } else {
-                return Icon(Icons.search).iconMutedForeground();
+                return const Icon(Icons.search).iconMutedForeground();
               }
             },
-          )),
-          const InputFeature.clear(),
+          ), visibility: InputFeatureVisibility.textEmpty),
+          InputFeature.clear(
+            visibility: (InputFeatureVisibility.textNotEmpty &
+                    InputFeatureVisibility.focused) |
+                InputFeatureVisibility.hovered,
+          ),
         ]);
   }
 }

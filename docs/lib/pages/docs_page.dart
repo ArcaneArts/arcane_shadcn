@@ -257,6 +257,8 @@ class DocsPageState extends State<DocsPage> {
         ShadcnDocsPage('Time Picker', 'time_picker'),
         ShadcnDocsPage('Toggle', 'toggle'),
         ShadcnDocsPage('Multi Select', 'multiselect'),
+        ShadcnDocsPage(
+            'Item Picker', 'item_picker', ShadcnFeatureTag.experimental),
       ],
     ),
     ShadcnDocsSection(
@@ -286,13 +288,12 @@ class DocsPageState extends State<DocsPage> {
         ShadcnDocsPage('Tabs', 'tabs'),
         ShadcnDocsPage('Tab List', 'tab_list'),
         // TODO: like a chrome tab, complete with its view
-        ShadcnDocsPage('Tab Pane', 'tab_pane', ShadcnFeatureTag.newFeature),
+        ShadcnDocsPage('Tab Pane', 'tab_pane'),
         ShadcnDocsPage('Tree', 'tree'),
         // aka Bottom Navigation Bar
         ShadcnDocsPage('Navigation Bar', 'navigation_bar'),
         ShadcnDocsPage('Navigation Rail', 'navigation_rail'),
-        ShadcnDocsPage('Expandable Sidebar', 'expandable_sidebar',
-            ShadcnFeatureTag.newFeature),
+        ShadcnDocsPage('Expandable Sidebar', 'expandable_sidebar'),
         // aka Drawer
         ShadcnDocsPage('Navigation Sidebar', 'navigation_sidebar'),
         ShadcnDocsPage('Dot Indicator', 'dot_indicator'),
@@ -306,7 +307,7 @@ class DocsPageState extends State<DocsPage> {
         ShadcnDocsPage('Hover Card', 'hover_card'),
         ShadcnDocsPage('Popover', 'popover'),
         ShadcnDocsPage('Sheet', 'sheet'),
-        ShadcnDocsPage('Swiper', 'swiper', ShadcnFeatureTag.experimental),
+        ShadcnDocsPage('Swiper', 'swiper', ShadcnFeatureTag.newFeature),
         ShadcnDocsPage('Tooltip', 'tooltip'),
         // TODO: window as in like a window in desktop
         ShadcnDocsPage('Window', 'window', ShadcnFeatureTag.experimental),
@@ -467,7 +468,7 @@ class DocsPageState extends State<DocsPage> {
         onPressed: () {
           showDropdown(
             context: context,
-            offset: Offset(0, 8) * Theme.of(context).scaling,
+            offset: const Offset(0, 8) * Theme.of(context).scaling,
             builder: (context) {
               return DropdownMenu(
                 children: [
@@ -479,8 +480,8 @@ class DocsPageState extends State<DocsPage> {
                     },
                   ),
                   MenuButton(
-                    child: Text('Experimental'),
-                    onPressed: () {
+                    child: const Text('Experimental'),
+                    onPressed: (context) {
                       launchUrlString(
                           'https://sunarya-thito.github.io/shadcn_flutter/experimental/');
                     },
@@ -934,7 +935,6 @@ class DocsPageState extends State<DocsPage> {
 
 class _DocsSidebar extends StatefulWidget {
   const _DocsSidebar({
-    super.key,
     required this.sections,
     required this.pageName,
   });
@@ -972,7 +972,6 @@ class _DocsSecondarySidebar extends StatefulWidget {
   final EdgeInsets padding;
 
   const _DocsSecondarySidebar({
-    super.key,
     required this.onThisPage,
     required this.isVisible,
     required this.padding,
@@ -1029,7 +1028,6 @@ class _DocsSecondarySidebarState extends State<_DocsSecondarySidebar> {
 
 class _DocsSidebarSection extends StatefulWidget {
   const _DocsSidebarSection({
-    super.key,
     required this.section,
     required this.pageName,
   });
@@ -1066,7 +1064,6 @@ class _DocsSidebarSectionState extends State<_DocsSidebarSection> {
 
 class _DocsSidebarButton extends StatefulWidget {
   const _DocsSidebarButton({
-    super.key,
     required this.page,
     required this.pageName,
   });
