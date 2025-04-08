@@ -584,6 +584,7 @@ class TextField extends StatefulWidget with TextInput {
     this.selectionControls,
     this.onTap,
     this.scrollController,
+    this.stackAlignment = AlignmentDirectional.topCenter,
     this.scrollPhysics,
     this.autofillHints = const [],
     this.contentInsertionConfiguration,
@@ -631,6 +632,8 @@ class TextField extends StatefulWidget with TextInput {
             (maxLines == 1 ? TextInputType.text : TextInputType.multiline),
         enableInteractiveSelection =
             enableInteractiveSelection ?? (!readOnly || !obscureText);
+
+  final AlignmentGeometry stackAlignment;
 
   @override
   final List<InputFeature> features;
@@ -1546,9 +1549,8 @@ class TextFieldState extends State<TextField>
                         .copyWith(
                           color: theme.colorScheme.mutedForeground,
                         ),
-                    textAlign: widget.textAlign,
                     maxLines: widget.maxLines,
-                    child: widget.placeholder!,
+                    child: widget.placeholder ?? const SizedBox.shrink(),
                   ),
                 ),
               );
@@ -1607,7 +1609,7 @@ class TextFieldState extends State<TextField>
                 // the cost of the ability to compute the intrinsic dimensions of
                 // this widget.
                 // See also https://github.com/flutter/flutter/issues/13715.
-                alignment: AlignmentDirectional.center,
+                alignment: widget.stackAlignment,
                 textDirection: widget.textDirection,
                 children: <Widget>[
                   if (placeholder != null) placeholder,
@@ -1834,6 +1836,7 @@ class TextFieldState extends State<TextField>
           color: widget.filled ? theme.colorScheme.muted : null,
           border: widget.border
               ? Border.all(
+                  style: BorderStyle.solid,
                   color: _effectiveFocusNode.hasFocus && widget.enabled
                       ? theme.colorScheme.ring
                       : theme.colorScheme.border,

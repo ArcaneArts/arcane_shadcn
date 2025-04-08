@@ -129,8 +129,7 @@ class _PhoneInputState extends State<PhoneInput>
                 left: theme.scaling * 8,
                 bottom: theme.scaling * 8,
                 right: theme.scaling * 4),
-            // searchPlaceholder: widget.searchPlaceholder ??
-            //     Text(localization.searchPlaceholderCountry),
+            placeholder: widget.searchPlaceholder,
             // searchFilter: (item, query) {
             //   query = query.toLowerCase();
             //   var searchScore = item.name.toLowerCase().contains(query) ||
