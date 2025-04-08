@@ -1,3 +1,13 @@
+## 0.0.34
+* Excluded web loaders directory from package release
+* Disabled AutoComplete shortcuts and actions while suggestion popover is not open
+
+## 0.0.33
+* Added showValuePredicate parameter to Select, MultiSelect, ControlledSelect, and ControlledMultiSelect
+* Fixed AutoComplete suggestion item button 
+* Added AcceptSuggestionIntent and NavigateSuggestionIntent to AutoComplete
+* Added resizeToAvoidBottomInset to Scaffold
+
 ## 0.0.32
 * Fixed StarRating component
 * Added InputFeatureVisibility
