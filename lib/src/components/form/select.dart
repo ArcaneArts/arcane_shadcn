@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:shadcn_flutter/src/components/control/hover.dart';
+import 'package:shadcn_flutter/src/events.dart';
 
 class SelectController<T> extends ValueNotifier<T?>
     with ComponentController<T?> {
@@ -567,6 +568,7 @@ class SelectState<T> extends State<Select<T>>
         _defaultSingleSelectValueSelectionHandler;
     var newValue = selectionHandler(widget.value, value, selected);
     widget.onChanged?.call(newValue);
+    $shadEvent?.onMenuSelection(context);
     return true;
   }
 
