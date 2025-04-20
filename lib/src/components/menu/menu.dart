@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:shadcn_flutter/src/events.dart';
 
 class MenuShortcut extends StatelessWidget {
   final ShortcutActivator activator;
@@ -106,7 +107,7 @@ class MenuRadio<T> extends StatelessWidget {
                 ).iconSmall(),
               )
             : SizedBox(width: 16 * scaling),
-        onPressed: (context) {
+        onContextPressed: (context) {
           radioGroup.onChanged?.call(context, value);
         },
         enabled: enabled,
@@ -178,19 +179,23 @@ class MenuGap extends StatelessWidget implements MenuItem {
 class MenuButton extends StatefulWidget implements MenuItem {
   final Widget child;
   final List<MenuItem>? subMenu;
-  final ContextedCallback? onPressed;
+  final ContextedCallback? onContextPressed;
+  final VoidCallback? onPressed;
   final Widget? trailing;
   final Widget? leading;
   final bool enabled;
   final FocusNode? focusNode;
   final bool autoClose;
+  final double emptyLeadingSpace;
   @override
   final PopoverController? popoverController;
   const MenuButton({
     super.key,
     required this.child,
+    this.emptyLeadingSpace = 16,
     this.subMenu,
     this.onPressed,
+    this.onContextPressed,
     this.trailing,
     this.leading,
     this.enabled = true,
@@ -210,9 +215,11 @@ class MenuLabel extends StatelessWidget implements MenuItem {
   final Widget child;
   final Widget? trailing;
   final Widget? leading;
+  final double emptyLeadingSpace;
 
   const MenuLabel({
     super.key,
+    this.emptyLeadingSpace = 16,
     required this.child,
     this.trailing,
     this.leading,
@@ -237,7 +244,7 @@ class MenuLabel extends StatelessWidget implements MenuItem {
       child: Basic(
         contentSpacing: 8 * scaling,
         leading: leading == null && menuGroupData.hasLeading
-            ? SizedBox(width: 16 * scaling)
+            ? SizedBox(width: emptyLeadingSpace * scaling)
             : leading == null
                 ? null
                 : SizedBox(
@@ -296,7 +303,7 @@ class MenuCheckbox extends StatelessWidget implements MenuItem {
               ).iconSmall(),
             )
           : SizedBox(width: 16 * scaling),
-      onPressed: (context) {
+      onContextPressed: (context) {
         onChanged?.call(context, !value);
       },
       enabled: enabled,
@@ -446,7 +453,7 @@ class _MenuButtonState extends State<MenuButton> {
                   leading: widget.leading == null &&
                           menuGroupData.hasLeading &&
                           menuBarData == null
-                      ? SizedBox(width: 16 * scaling)
+                      ? SizedBox(width: widget.emptyLeadingSpace * scaling)
                       : widget.leading == null
                           ? null
                           : SizedBox(
@@ -486,7 +493,9 @@ class _MenuButtonState extends State<MenuButton> {
                     }
                   },
                   onPressed: () {
-                    widget.onPressed?.call(context);
+                    $shadEvent?.onMenuSelection(context);
+                    widget.onPressed?.call();
+                    widget.onContextPressed?.call(context);
                     if (widget.subMenu != null && widget.subMenu!.isNotEmpty) {
                       if (!menuData.popoverController.hasOpenPopover) {
                         openSubMenu(context);
@@ -793,34 +802,34 @@ class MenuOverlayHandler extends OverlayHandler {
   const MenuOverlayHandler(this.manager);
 
   @override
-  OverlayCompleter<T?> show<T>(
-      {required BuildContext context,
-      required AlignmentGeometry alignment,
-      required WidgetBuilder builder,
-      Offset? position,
-      AlignmentGeometry? anchorAlignment,
-      PopoverConstraint widthConstraint = PopoverConstraint.flexible,
-      PopoverConstraint heightConstraint = PopoverConstraint.flexible,
-      Key? key,
-      bool rootOverlay = true,
-      bool modal = true,
-      bool barrierDismissable = true,
-      Clip clipBehavior = Clip.none,
-      Object? regionGroupId,
-      Offset? offset,
-      AlignmentGeometry? transitionAlignment,
-      EdgeInsetsGeometry? margin,
-      bool follow = true,
-      bool consumeOutsideTaps = true,
-      ValueChanged<PopoverOverlayWidgetState>? onTickFollow,
-      bool allowInvertHorizontal = true,
-      bool allowInvertVertical = true,
-      bool dismissBackdropFocus = true,
-      Duration? showDuration,
-      Duration? dismissDuration,
-      OverlayBarrier? overlayBarrier,
-        LayerLink? layerLink,
-      }) {
+  OverlayCompleter<T?> show<T>({
+    required BuildContext context,
+    required AlignmentGeometry alignment,
+    required WidgetBuilder builder,
+    Offset? position,
+    AlignmentGeometry? anchorAlignment,
+    PopoverConstraint widthConstraint = PopoverConstraint.flexible,
+    PopoverConstraint heightConstraint = PopoverConstraint.flexible,
+    Key? key,
+    bool rootOverlay = true,
+    bool modal = true,
+    bool barrierDismissable = true,
+    Clip clipBehavior = Clip.none,
+    Object? regionGroupId,
+    Offset? offset,
+    AlignmentGeometry? transitionAlignment,
+    EdgeInsetsGeometry? margin,
+    bool follow = true,
+    bool consumeOutsideTaps = true,
+    ValueChanged<PopoverOverlayWidgetState>? onTickFollow,
+    bool allowInvertHorizontal = true,
+    bool allowInvertVertical = true,
+    bool dismissBackdropFocus = true,
+    Duration? showDuration,
+    Duration? dismissDuration,
+    OverlayBarrier? overlayBarrier,
+    LayerLink? layerLink,
+  }) {
     return manager.showMenu(
       context: context,
       alignment: alignment,

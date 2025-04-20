@@ -1,4 +1,5 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:shadcn_flutter/src/events.dart';
 
 OverlayCompleter<T?> showDropdown<T>({
   required BuildContext context,
@@ -24,6 +25,7 @@ OverlayCompleter<T?> showDropdown<T>({
   Duration? showDuration,
   Duration? dismissDuration,
 }) {
+  $shadEvent?.onMenuOpened(context);
   final theme = Theme.of(context);
   final scaling = theme.scaling;
   final GlobalKey key = GlobalKey();

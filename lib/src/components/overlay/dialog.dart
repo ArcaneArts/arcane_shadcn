@@ -1,4 +1,6 @@
+import 'package:pylon/pylon.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:shadcn_flutter/src/events.dart';
 
 class ModalBackdrop extends StatelessWidget {
   static bool shouldClipSurface(double? surfaceOpacity) {
@@ -77,6 +79,7 @@ class ModalContainer extends StatelessWidget {
   static bool isFullScreenMode(BuildContext context) {
     return Model.maybeOf<bool>(context, kFullScreenMode) == true;
   }
+
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final bool filled;
@@ -214,7 +217,9 @@ class DialogRoute<T> extends RawDialogRoute<T> {
                 final theme = Theme.of(context);
                 final scaling = theme.scaling;
                 return Padding(
-                  padding: fullScreen ? EdgeInsets.zero : const EdgeInsets.all(16) * scaling,
+                  padding: fullScreen
+                      ? EdgeInsets.zero
+                      : const EdgeInsets.all(16) * scaling,
                   child: builder(context),
                 );
               },
@@ -285,6 +290,8 @@ Future<T?> showDialog<T>({
   AlignmentGeometry? alignment,
   bool fullScreen = false,
 }) {
+  $shadEvent?.onDialogOpened(context);
+  builder = Pylon.mirror(context, builder);
   var navigatorState = Navigator.of(
     context,
     rootNavigator: useRootNavigator,
@@ -416,6 +423,7 @@ class DialogOverlayHandler extends OverlayHandler {
     OverlayBarrier? overlayBarrier,
     LayerLink? layerLink,
   }) {
+    builder = Pylon.mirror(context, builder);
     var navigatorState = Navigator.of(
       context,
       rootNavigator: rootOverlay,

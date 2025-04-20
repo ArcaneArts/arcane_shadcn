@@ -1,18 +1,28 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:shadcn_flutter/src/events.dart';
 
 class Tabs extends StatelessWidget {
   final int index;
   final ValueChanged<int> onChanged;
   final List<TabChild> children;
   final EdgeInsetsGeometry? padding;
+  final Color? backgroundColor;
+  final Color? selectedColor;
 
   const Tabs({
     super.key,
     required this.index,
     required this.onChanged,
     required this.children,
+    this.backgroundColor,
+    this.selectedColor,
     this.padding,
   });
+
+  void onChange(BuildContext context, int v) {
+    $shadEvent?.onTabChanged(context);
+    onChanged(v);
+  }
 
   Widget _childBuilder(
       BuildContext context, TabContainerData data, Widget child) {
@@ -22,7 +32,7 @@ class Tabs extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () {
-        onChanged(i);
+        onChange(context, i);
       },
       child: MouseRegion(
         hitTestBehavior: HitTestBehavior.translucent,
@@ -38,7 +48,9 @@ class Tabs extends StatelessWidget {
                   ) *
                   scaling,
           decoration: BoxDecoration(
-            color: i == index ? theme.colorScheme.background : null,
+            color: i == index
+                ? selectedColor ?? theme.colorScheme.background
+                : null,
             borderRadius: BorderRadius.circular(
               theme.radiusMd,
             ),
@@ -57,11 +69,11 @@ class Tabs extends StatelessWidget {
     final scaling = theme.scaling;
     return TabContainer(
       selected: index,
-      onSelect: onChanged,
+      onSelect: (v) => onChange(context, v),
       builder: (context, children) {
         return Container(
           decoration: BoxDecoration(
-            color: theme.colorScheme.muted,
+            color: backgroundColor ?? theme.colorScheme.muted,
             borderRadius: BorderRadius.circular(theme.radiusLg),
           ),
           padding: const EdgeInsets.all(4) * scaling,
