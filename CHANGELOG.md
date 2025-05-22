@@ -1,3 +1,36 @@
+## 0.0.37
+* Fixed web preloader issues
+* Fix PhoneInput initialValue not being passed
+* Added showTopSnapBar to WindowNavigator
+* Fix item picker issue with popover
+* Refactor IterableExtension to use ValueGetter instead of Supplier for buildSeparator method
+* Fixed issue with ResizablePane state management
+* Added a way to get form values individually with type-safe casting
+* Upgraded to Flutter 3.32.0
+
+## 0.0.36
+* Added native (adaptive) context menu builder for TextField
+* Added material context menu builder for TextField
+* Added cupertino context menu builder for TextField
+* Added parameter to skip input feature focus traversal
+* Fixed issue with validities casting in form widget
+
+## 0.0.35
+* Fix InputSpinner gesture
+* Added RadioCardThemeData (by @mcquenji)
+* Added PhoneInputTheme (by @mcquenji)
+* Fixed CalendarGridData
+* Added generic parameter type to `FormFieldHandle#reportNewFormValue` to handle typed-null value
+* Fixed LengthValidator issue with the validator ignores null value
+* Added title parameter to ItemPicker
+* Fixed async error issue with FormErrorBuilder
+* Fixed issue with FormEntry cached value not accepting null for the initial value
+* Removed FormValidationMode.waiting
+* ValidationResult is now attached to a FormKey
+* WaitingResult now stores proper validation mode value
+* Added errors getter on form controller
+* SubmitButton now uses FormErrorBuilder instead of handling its own state
+
 ## 0.0.34
 * Excluded web loaders directory from package release
 * Disabled AutoComplete shortcuts and actions while suggestion popover is not open
