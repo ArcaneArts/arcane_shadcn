@@ -1,4 +1,6 @@
+import 'package:pylon/pylon.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:shadcn_flutter/src/events.dart';
 
 /// Theme configuration for modal backdrop appearance and behavior.
 ///
@@ -694,6 +696,8 @@ Future<T?> showDialog<T>({
   AlignmentGeometry? alignment,
   bool fullScreen = false,
 }) {
+  $shadEvent?.onDialogOpened(context);
+  builder = Pylon.mirror(context, builder);
   var navigatorState = Navigator.of(
     context,
     rootNavigator: useRootNavigator,
@@ -864,6 +868,7 @@ class DialogOverlayHandler extends OverlayHandler {
     OverlayBarrier? overlayBarrier,
     LayerLink? layerLink,
   }) {
+    builder = Pylon.mirror(context, builder);
     var navigatorState = Navigator.of(
       context,
       rootNavigator: rootOverlay,

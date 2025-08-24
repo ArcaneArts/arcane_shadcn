@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:shadcn_flutter/src/events.dart';
 
 /// Theme configuration for toast notification system.
 ///
@@ -259,6 +260,9 @@ ToastOverlay showToast({
   VoidCallback? onClosed,
   Duration showDuration = const Duration(seconds: 5),
 }) {
+  $shadEvent?.onToastOpened(context);
+  _ToastLayerState? layer = Data.maybeFindMessenger(context);
+  layer ??= Data.maybeOf(context);
   CapturedThemes? themes;
   CapturedData? data;
   _ToastLayerState? layer = Data.maybeFind<_ToastLayerState>(context);

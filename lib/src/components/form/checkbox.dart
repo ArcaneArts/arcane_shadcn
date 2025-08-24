@@ -355,7 +355,6 @@ class ControlledCheckbox extends StatelessWidget
           onChanged: data.onChanged,
           leading: leading,
           trailing: trailing,
-          enabled: data.enabled,
           tristate: tristate,
           size: size,
           gap: gap,
@@ -482,6 +481,8 @@ class Checkbox extends StatefulWidget {
   /// of an [onChanged] callback.
   final bool? enabled;
 
+  final double padding;
+
   /// Size of the checkbox square in logical pixels.
   ///
   /// Overrides the theme default. When null, uses [CheckboxTheme.size] or
@@ -543,6 +544,7 @@ class Checkbox extends StatefulWidget {
   /// ```
   const Checkbox({
     super.key,
+    this.padding = 8,
     required this.state,
     required this.onChanged,
     this.leading,
@@ -613,7 +615,7 @@ class _CheckboxState extends State<Checkbox>
     }
   }
 
-  bool get enabled => widget.enabled ?? widget.onChanged != null;
+  bool get enabled => widget.onChanged != null;
 
   @override
   Widget build(BuildContext context) {

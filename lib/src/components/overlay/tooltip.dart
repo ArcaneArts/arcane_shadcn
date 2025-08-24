@@ -1,3 +1,4 @@
+import 'package:pylon/pylon.dart';
 import 'package:shadcn_flutter/src/components/control/hover.dart';
 
 import '../../../shadcn_flutter.dart';
@@ -396,6 +397,7 @@ class FixedTooltipOverlayHandler extends OverlayHandler {
     OverlayBarrier? overlayBarrier,
     LayerLink? layerLink,
   }) {
+    builder = Pylon.mirror(context, builder);
     TextDirection textDirection = Directionality.of(context);
     Alignment resolvedAlignment = alignment.resolve(textDirection);
     anchorAlignment ??= alignment * -1;

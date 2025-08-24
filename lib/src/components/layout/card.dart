@@ -188,6 +188,7 @@ class Card extends StatelessWidget {
   final double? surfaceOpacity;
   final double? surfaceBlur;
   final Duration? duration;
+  final VoidCallback? onPressed;
 
   const Card({
     super.key,
@@ -203,6 +204,7 @@ class Card extends StatelessWidget {
     this.surfaceOpacity,
     this.surfaceBlur,
     this.duration,
+    this.onPressed,
   });
 
   @override
@@ -278,12 +280,15 @@ class Card extends StatelessWidget {
       surfaceOpacity: surfaceOpacity,
       surfaceBlur: surfaceBlur,
       duration: duration,
-      child: DefaultTextStyle.merge(
-        child: child,
-        style: TextStyle(
-          color: theme.colorScheme.cardForeground,
-        ),
-      ),
+      child: onPressed != null
+          ? GhostButton(
+              onPressed: onPressed,
+              density: ButtonDensity.compact,
+              child: Padding(
+                padding: p,
+                child: m,
+              ))
+          : m,
     );
   }
 }

@@ -1,5 +1,8 @@
 import 'dart:ui';
 
+import 'package:dotted_border/dotted_border.dart';
+import 'package:pylon/pylon.dart';
+
 import '../../../shadcn_flutter.dart';
 
 class SurfaceBlur extends StatefulWidget {
@@ -121,7 +124,40 @@ class OutlinedContainerTheme {
         boxShadow,
         padding,
         surfaceOpacity,
-        surfaceBlur,
+        surfaceBlur,);
+}
+
+class DashedBorderSignal {
+  final List<double> borderStyle;
+
+  const DashedBorderSignal({
+    this.borderStyle = const [5, 5],
+  });
+}
+
+/// Adds a dashed border mode
+class DashBorderMode extends StatelessWidget {
+  final List<double> borderstyle;
+  final PylonBuilder builder;
+  const DashBorderMode(
+      {super.key, required this.borderstyle, required this.builder});
+
+  @override
+  Widget build(BuildContext context) => Pylon<DashedBorderSignal?>(
+        value: DashedBorderSignal(borderStyle: borderstyle),
+        builder: builder,
+      );
+}
+
+/// Removes the dashed border mode
+class SolidBorderMode extends StatelessWidget {
+  final PylonBuilder builder;
+
+  const SolidBorderMode({super.key, required this.builder});
+
+  @override
+  Widget build(BuildContext context) => PylonRemove<DashedBorderSignal>(
+        builder: builder,
       );
 }
 
@@ -140,6 +176,7 @@ class OutlinedContainer extends StatefulWidget {
   final double? width;
   final double? height;
   final Duration? duration;
+
   const OutlinedContainer({
     super.key,
     required this.child,
@@ -166,6 +203,7 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
   final GlobalKey _mainContainerKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
+    DashedBorderSignal? signal = context.pylonOr<DashedBorderSignal>();
     final ThemeData theme = Theme.of(context);
     final scaling = theme.scaling;
     final compTheme = ComponentTheme.maybeOf<OutlinedContainerTheme>(context);
@@ -242,7 +280,22 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
         child: widget.child,
       ),
     );
-    if (surfaceBlur != null && surfaceBlur > 0) {
+
+    if (signal != null) {
+      childWidget = DottedBorder(
+          color: widget.borderColor ?? theme.colorScheme.muted,
+          strokeWidth: 4,
+          dashPattern: signal.borderStyle,
+          radius: Radius.circular(8),
+          borderType: BorderType.RRect,
+          stackFit: StackFit.passthrough,
+          padding: EdgeInsets.zero,
+          strokeCap: StrokeCap.round,
+          borderPadding: EdgeInsets.all(0.5),
+          child: childWidget);
+    }
+
+    if (widget.surfaceBlur != null && widget.surfaceBlur! > 0) {
       childWidget = SurfaceBlur(
         surfaceBlur: surfaceBlur,
         borderRadius: subtractByBorder(borderRadius, borderWidth),

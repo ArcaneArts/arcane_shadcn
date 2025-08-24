@@ -1,3 +1,4 @@
+import 'package:docs/custom.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -159,6 +160,7 @@ class DocsPageState extends State<DocsPage> {
           ShadcnDocsPage('State Management', 'state'),
         ]),
         Icons.book),
+    ...customSections,
     // COMPONENTS BEGIN
     ShadcnDocsSection(
       'Animation',
@@ -475,14 +477,14 @@ class DocsPageState extends State<DocsPage> {
                 children: [
                   MenuButton(
                     child: Text(getReleaseTagName()),
-                    onPressed: (context) {
+                    onPressed: () {
                       launchUrlString(
                           'https://sunarya-thito.github.io/shadcn_flutter/');
                     },
                   ),
                   MenuButton(
                     child: const Text('Experimental'),
-                    onPressed: (context) {
+                    onPressed: () {
                       launchUrlString(
                           'https://sunarya-thito.github.io/shadcn_flutter/experimental/');
                     },
