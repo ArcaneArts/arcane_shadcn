@@ -97,12 +97,12 @@ class SelectTheme {
 /// Example:
 /// ```dart
 /// final controller = SelectController<String>('initial');
-/// 
+///
 /// // Listen to changes
 /// controller.addListener(() {
 ///   print('Selection changed to: ${controller.value}');
 /// });
-/// 
+///
 /// // Update selection
 /// controller.value = 'new_value';
 /// ```
@@ -138,7 +138,7 @@ class SelectController<T> extends ValueNotifier<T?>
 /// **Controller-based (recommended for complex state):**
 /// ```dart
 /// final controller = SelectController<String>('apple');
-/// 
+///
 /// ControlledSelect<String>(
 ///   controller: controller,
 ///   items: ['apple', 'banana', 'cherry'],
@@ -150,7 +150,7 @@ class SelectController<T> extends ValueNotifier<T?>
 /// **Callback-based (simple state management):**
 /// ```dart
 /// String? selectedFruit;
-/// 
+///
 /// ControlledSelect<String>(
 ///   initialValue: selectedFruit,
 ///   onChanged: (fruit) => setState(() => selectedFruit = fruit),
@@ -316,12 +316,12 @@ class ControlledSelect<T> extends StatelessWidget
 /// Example:
 /// ```dart
 /// final controller = MultiSelectController<String>(['apple', 'banana']);
-/// 
+///
 /// // Listen to changes
 /// controller.addListener(() {
 ///   print('Selection changed to: ${controller.value}');
 /// });
-/// 
+///
 /// // Update selection
 /// controller.value = ['apple', 'cherry'];
 /// ```
@@ -357,7 +357,7 @@ class MultiSelectController<T> extends SelectController<Iterable<T>> {
 /// **Controller-based (recommended for complex state):**
 /// ```dart
 /// final controller = MultiSelectController<String>(['apple']);
-/// 
+///
 /// ControlledMultiSelect<String>(
 ///   controller: controller,
 ///   items: ['apple', 'banana', 'cherry', 'date'],
@@ -372,7 +372,7 @@ class MultiSelectController<T> extends SelectController<Iterable<T>> {
 /// **Callback-based (simple state management):**
 /// ```dart
 /// List<String> selectedFruits = [];
-/// 
+///
 /// ControlledMultiSelect<String>(
 ///   initialValue: selectedFruits,
 ///   onChanged: (fruits) => setState(() => selectedFruits = fruits?.toList() ?? []),
@@ -390,6 +390,7 @@ class ControlledMultiSelect<T> extends StatelessWidget
   final bool enabled;
   @override
   final MultiSelectController<T>? controller;
+
   @override
   final Widget? placeholder;
   @override
@@ -784,7 +785,7 @@ class Select<T> extends StatefulWidget with SelectBase<T> {
   @override
   final ValueChanged<T?>? onChanged; // if null, then it's a disabled combobox
   @override
-  final Widget? placeholder;
+  final Widget? placeholder; // placeholder when value is null
   @override
   final bool filled;
   @override
@@ -990,7 +991,6 @@ class SelectState<T> extends State<Select<T>>
         _defaultSingleSelectValueSelectionHandler;
     var newValue = selectionHandler(widget.value, value, selected);
     widget.onChanged?.call(newValue);
-    $shadEvent?.onMenuSelection(context);
     return true;
   }
 
@@ -1299,7 +1299,7 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
       constraints: constraints,
       popupConstraints: popupConstraints,
       popupWidthConstraint: popupWidthConstraint,
-      value: value != null && value!.isEmpty ? null : value,
+      value: value,
       borderRadius: borderRadius,
       padding: padding,
       popoverAlignment: popoverAlignment,

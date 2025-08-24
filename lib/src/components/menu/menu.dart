@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-import 'package:shadcn_flutter/src/events.dart';
 
 /// {@template menu_theme}
 /// Styling options for menu widgets such as [MenuGroup] and [MenuButton].
@@ -457,7 +456,7 @@ class _MenuButtonState extends State<MenuButton> {
         ),
         ActivateIntent: CallbackAction<ActivateIntent>(
           onInvoke: (intent) {
-            widget.onPressed?.call(context);
+            widget.onPressed?.call();
             if (widget.subMenu?.isNotEmpty ?? false) {
               openSubMenu(context, true);
             }
@@ -556,7 +555,7 @@ class _MenuButtonState extends State<MenuButton> {
                             }
                           },
                           onPressed: () {
-                            widget.onPressed?.call(context);
+                            widget.onPressed?.call();
                             if (widget.subMenu != null &&
                                 widget.subMenu!.isNotEmpty) {
                               if (!menuData.popoverController.hasOpenPopover) {
