@@ -60,6 +60,7 @@ import 'package:docs/pages/docs/components/stepper_example.dart';
 import 'package:docs/pages/docs/components/steps_example.dart';
 import 'package:docs/pages/docs/components/swiper_example.dart';
 import 'package:docs/pages/docs/components/switch_example.dart';
+import 'package:docs/pages/docs/components/switcher_example.dart';
 import 'package:docs/pages/docs/components/tab_list_example.dart';
 import 'package:docs/pages/docs/components/tab_pane_example.dart';
 import 'package:docs/pages/docs/components/table_example.dart';
@@ -84,6 +85,8 @@ import 'package:docs/pages/docs/theme_page.dart';
 import 'package:docs/pages/docs/typography_page.dart';
 import 'package:docs/pages/docs/web_preloader_page.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -120,7 +123,21 @@ String getReleaseTagName() {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Interactive docs now serves as Widget Catalog
+  // if (kIsWeb) {
+  //   SemanticsBinding.instance.ensureSemantics();
+  // }
+  _docs = jsonDecode(await rootBundle.loadString('docs.json'));
+  String pubspecYml = await rootBundle.loadString('pubspec.lock');
+  var dep = loadYaml(pubspecYml)['packages']['shadcn_flutter']['version'];
+  if (dep is String) {
+    _packageLatestVersion = dep;
+  }
+  print('Running app with flavor: $flavor');
+
   initializeDocsWithArcane();
+
   GoRouter.optionURLReflectsImperativeAPIs = true;
   final prefs = await SharedPreferences.getInstance();
   var colorScheme = prefs.getString('colorScheme');
@@ -745,7 +762,13 @@ class MyAppState extends State<MyApp> {
             builder: (context, state) {
               return const ItemPickerExample();
             },
-          )
+          ),
+          GoRoute(
+              path: 'switcher',
+              name: 'switcher',
+              builder: (context, state) {
+                return const SwitcherExample();
+              }),
         ]),
   ];
   late ColorScheme colorScheme;

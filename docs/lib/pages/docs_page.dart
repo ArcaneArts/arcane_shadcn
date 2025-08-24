@@ -1,5 +1,6 @@
 import 'package:docs/custom.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
@@ -85,32 +86,32 @@ enum ShadcnFeatureTag {
     switch (this) {
       case ShadcnFeatureTag.newFeature:
         copy = theme.copyWith(
-          colorScheme: theme.colorScheme.copyWith(
-            primary: Colors.green,
+          colorScheme: () => theme.colorScheme.copyWith(
+            primary: () => Colors.green,
           ),
         );
         badgeText = 'New';
         break;
       case ShadcnFeatureTag.updated:
         copy = theme.copyWith(
-          colorScheme: theme.colorScheme.copyWith(
-            primary: Colors.blue,
+          colorScheme: () => theme.colorScheme.copyWith(
+            primary: () => Colors.blue,
           ),
         );
         badgeText = 'Updated';
         break;
       case ShadcnFeatureTag.workInProgress:
         copy = theme.copyWith(
-          colorScheme: theme.colorScheme.copyWith(
-            primary: Colors.orange,
+          colorScheme: () => theme.colorScheme.copyWith(
+            primary: () => Colors.orange,
           ),
         );
         badgeText = 'WIP';
         break;
       case ShadcnFeatureTag.experimental:
         copy = theme.copyWith(
-          colorScheme: theme.colorScheme.copyWith(
-            primary: Colors.purple,
+          colorScheme: () => theme.colorScheme.copyWith(
+            primary: () => Colors.purple,
           ),
         );
         badgeText = 'Experimental';
@@ -297,6 +298,8 @@ class DocsPageState extends State<DocsPage> {
         // aka Drawer
         ShadcnDocsPage('Navigation Sidebar', 'navigation_sidebar'),
         ShadcnDocsPage('Dot Indicator', 'dot_indicator'),
+        //
+        ShadcnDocsPage('Switcher', 'switcher', ShadcnFeatureTag.experimental),
       ],
     ),
     ShadcnDocsSection(
@@ -523,240 +526,285 @@ class DocsPageState extends State<DocsPage> {
     final theme = Theme.of(context);
 
     var hasOnThisPage = onThisPage.isNotEmpty;
-    return ClipRect(
-      child: PageStorage(
-        bucket: docsBucket,
-        child: Builder(builder: (context) {
-          return StageContainer(
-            builder: (context, padding) {
-              return Scaffold(
-                headers: [
-                  Container(
-                    color: theme.colorScheme.background.scaleAlpha(0.3),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        MediaQueryVisibility(
-                          minWidth: breakpointWidth,
-                          alternateChild: AppBar(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 12 * theme.scaling,
-                              horizontal: 18 * theme.scaling,
-                            ),
-                            leading: [
-                              GhostButton(
-                                density: ButtonDensity.icon,
-                                onPressed: () {
-                                  _openDrawer(context);
-                                },
-                                child: const Icon(Icons.menu),
+    return FocusableActionDetector(
+      autofocus: true,
+      actions: {
+        OpenSearchCommandIntent: CallbackAction<OpenSearchCommandIntent>(
+          onInvoke: (intent) {
+            showSearchBar();
+            return null;
+          },
+        ),
+      },
+      shortcuts: const {
+        SingleActivator(LogicalKeyboardKey.keyF, control: true):
+            OpenSearchCommandIntent(),
+      },
+      child: ClipRect(
+        child: PageStorage(
+          bucket: docsBucket,
+          child: Builder(builder: (context) {
+            return StageContainer(
+              builder: (context, padding) {
+                return Scaffold(
+                  headers: [
+                    Container(
+                      color: theme.colorScheme.background.scaleAlpha(0.3),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          MediaQueryVisibility(
+                            minWidth: breakpointWidth,
+                            alternateChild: AppBar(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 12 * theme.scaling,
+                                horizontal: 18 * theme.scaling,
                               ),
-                            ],
-                            trailing: [
-                              GhostButton(
-                                density: ButtonDensity.icon,
-                                onPressed: () {
-                                  openInNewTab(
-                                      'https://github.com/sunarya-thito/shadcn_flutter');
-                                },
-                                child: FaIcon(
-                                  FontAwesomeIcons.github,
-                                  color: theme.colorScheme.secondaryForeground,
-                                ).iconLarge(),
-                              ),
-                              // pub.dev icon
-                              GhostButton(
+                              leading: [
+                                GhostButton(
                                   density: ButtonDensity.icon,
                                   onPressed: () {
-                                    openInNewTab(
-                                        'https://pub.dev/packages/shadcn_flutter');
+                                    _openDrawer(context);
                                   },
-                                  child: ColorFiltered(
-                                    // turns into white
-                                    colorFilter: ColorFilter.mode(
-                                      theme.colorScheme.secondaryForeground,
-                                      BlendMode.srcIn,
-                                    ),
-                                    child: FlutterLogo(
-                                      size: 24 * theme.scaling,
-                                    ),
-                                  )),
-                            ],
-                            child: Center(
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: OutlineButton(
-                                  onPressed: () {
-                                    showSearchBar();
-                                  },
-                                  trailing: const Icon(Icons.search)
-                                      .iconSmall()
-                                      .iconMutedForeground(),
-                                  child: const Text('Search documentation...')
-                                      .muted()
-                                      .normal(),
+                                  child: const Icon(Icons.menu),
                                 ),
-                              ),
-                            ),
-                          ),
-                          child: MediaQueryVisibility(
-                            minWidth: breakpointWidth2,
-                            alternateChild: _buildAppBar(
-                                padding.copyWith(
-                                      top: 12,
-                                      bottom: 12,
-                                      right: 32,
-                                    ) *
-                                    theme.scaling,
-                                theme),
-                            child: _buildAppBar(
-                                padding.copyWith(
-                                      top: 12,
-                                      bottom: 12,
-                                    ) *
-                                    theme.scaling,
-                                theme),
-                          ),
-                        ),
-                        const Divider(),
-                      ],
-                    ),
-                  ),
-                ],
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    MediaQueryVisibility(
-                      minWidth: breakpointWidth,
-                      child: FocusTraversalGroup(
-                        child: SingleChildScrollView(
-                          key: const PageStorageKey('sidebar'),
-                          padding: EdgeInsets.only(
-                                  top: 32,
-                                  left: 24 + padding.left,
-                                  bottom: 32) *
-                              theme.scaling,
-                          child: _DocsSidebar(
-                              sections: sections, pageName: widget.name),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: FocusTraversalGroup(
-                        child: widget.scrollable
-                            ? Builder(builder: (context) {
-                                var mq = MediaQuery.of(context);
-                                return SingleChildScrollView(
-                                  controller: scrollController,
-                                  clipBehavior: Clip.none,
-                                  padding: !hasOnThisPage
-                                      ? const EdgeInsets.symmetric(
-                                                horizontal: 40,
-                                                vertical: 32,
-                                              ).copyWith(
-                                                right: padding.right + 32,
-                                              ) *
-                                              theme.scaling +
-                                          mq.padding
-                                      : const EdgeInsets.symmetric(
-                                                horizontal: 40,
-                                                vertical: 32,
-                                              ).copyWith(right: 24) *
-                                              theme.scaling +
-                                          mq.padding,
-                                  child: MediaQuery(
-                                    data: mq.copyWith(
-                                      padding: EdgeInsets.zero,
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        Breadcrumb(
-                                          separator: Breadcrumb.arrowSeparator,
-                                          children: [
-                                            TextButton(
-                                              onPressed: () {
-                                                context.goNamed('introduction');
-                                              },
-                                              density: ButtonDensity.compact,
-                                              child: const Text('Docs'),
-                                            ),
-                                            ...widget.navigationItems,
-                                            if (page != null) Text(page.title),
-                                          ],
+                              ],
+                              trailing: [
+                                Semantics(
+                                  link: true,
+                                  linkUrl: Uri.tryParse(
+                                    'https://github.com/sunarya-thito/shadcn_flutter',
+                                  ),
+                                  child: GhostButton(
+                                    density: ButtonDensity.icon,
+                                    onPressed: () {
+                                      if (!kIsWeb) {
+                                        openInNewTab(
+                                            'https://github.com/sunarya-thito/shadcn_flutter');
+                                      }
+                                    },
+                                    child: FaIcon(
+                                      FontAwesomeIcons.github,
+                                      color:
+                                          theme.colorScheme.secondaryForeground,
+                                    ).iconLarge(),
+                                  ),
+                                ),
+                                // pub.dev icon
+                                Semantics(
+                                  link: true,
+                                  linkUrl: Uri.tryParse(
+                                    'https://pub.dev/packages/shadcn_flutter',
+                                  ),
+                                  child: GhostButton(
+                                      density: ButtonDensity.icon,
+                                      onPressed: () {
+                                        if (!kIsWeb) {
+                                          openInNewTab(
+                                              'https://pub.dev/packages/shadcn_flutter');
+                                        }
+                                      },
+                                      child: ColorFiltered(
+                                        // turns into white
+                                        colorFilter: ColorFilter.mode(
+                                          theme.colorScheme.secondaryForeground,
+                                          BlendMode.srcIn,
                                         ),
-                                        Gap(16 * theme.scaling),
-                                        widget.child,
+                                        child: FlutterLogo(
+                                          size: 24 * theme.scaling,
+                                        ),
+                                      )),
+                                ),
+                              ],
+                              child: Center(
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: OutlineButton(
+                                    onPressed: () {
+                                      showSearchBar();
+                                    },
+                                    trailing: const Icon(Icons.search)
+                                        .iconSmall()
+                                        .iconMutedForeground(),
+                                    child: Row(
+                                      spacing: 8,
+                                      children: [
+                                        const Text('Search documentation...')
+                                            .muted()
+                                            .normal(),
+                                        const KeyboardDisplay.fromActivator(
+                                          activator: SingleActivator(
+                                              LogicalKeyboardKey.keyF,
+                                              control: true),
+                                        ).xSmall.withOpacity(0.8),
                                       ],
                                     ),
                                   ),
-                                );
-                              })
-                            : Container(
-                                clipBehavior: Clip.none,
-                                padding: !hasOnThisPage
-                                    ? const EdgeInsets.symmetric(
-                                          horizontal: 40,
-                                          vertical: 32,
-                                        ).copyWith(
-                                          right: padding.right + 32,
-                                          bottom: 0,
-                                        ) *
-                                        theme.scaling
-                                    : const EdgeInsets.symmetric(
-                                          horizontal: 40,
-                                          vertical: 32,
-                                        ).copyWith(
-                                          right: 24,
-                                          bottom: 0,
-                                        ) *
-                                        theme.scaling,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Breadcrumb(
-                                      separator: Breadcrumb.arrowSeparator,
-                                      children: [
-                                        TextButton(
-                                          onPressed: () {
-                                            context.goNamed('introduction');
-                                          },
-                                          density: ButtonDensity.compact,
-                                          child: const Text('Docs'),
-                                        ),
-                                        ...widget.navigationItems,
-                                        if (page != null) Text(page.title),
-                                      ],
-                                    ),
-                                    Gap(16 * theme.scaling),
-                                    Expanded(child: widget.child),
-                                  ],
                                 ),
                               ),
+                            ),
+                            child: MediaQueryVisibility(
+                              minWidth: breakpointWidth2,
+                              alternateChild: _buildAppBar(
+                                  padding.copyWith(
+                                        top: 12,
+                                        bottom: 12,
+                                        right: 32,
+                                      ) *
+                                      theme.scaling,
+                                  theme),
+                              child: _buildAppBar(
+                                  padding.copyWith(
+                                        top: 12,
+                                        bottom: 12,
+                                      ) *
+                                      theme.scaling,
+                                  theme),
+                            ),
+                          ),
+                          const Divider(),
+                        ],
                       ),
                     ),
-                    if (hasOnThisPage)
+                  ],
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
                       MediaQueryVisibility(
-                        minWidth: breakpointWidth2,
-                        child: _DocsSecondarySidebar(
-                          onThisPage: onThisPage,
-                          isVisible: isVisible,
-                          padding: padding,
+                        minWidth: breakpointWidth,
+                        child: FocusTraversalGroup(
+                          child: SingleChildScrollView(
+                            key: const PageStorageKey('sidebar'),
+                            padding: EdgeInsets.only(
+                                    top: 32,
+                                    left: 24 + padding.left,
+                                    bottom: 32) *
+                                theme.scaling,
+                            child: _DocsSidebar(
+                                sections: sections, pageName: widget.name),
+                          ),
                         ),
                       ),
-                  ],
-                ),
-              );
-            },
-          );
-        }),
+                      Expanded(
+                        child: FocusTraversalGroup(
+                          child: widget.scrollable
+                              ? Builder(builder: (context) {
+                                  var mq = MediaQuery.of(context);
+                                  return SingleChildScrollView(
+                                    controller: scrollController,
+                                    clipBehavior: Clip.none,
+                                    padding: !hasOnThisPage
+                                        ? const EdgeInsets.symmetric(
+                                                  horizontal: 40,
+                                                  vertical: 32,
+                                                ).copyWith(
+                                                  right: padding.right + 32,
+                                                ) *
+                                                theme.scaling +
+                                            mq.padding
+                                        : const EdgeInsets.symmetric(
+                                                  horizontal: 40,
+                                                  vertical: 32,
+                                                ).copyWith(right: 24) *
+                                                theme.scaling +
+                                            mq.padding,
+                                    child: MediaQuery(
+                                      data: mq.copyWith(
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          Breadcrumb(
+                                            separator:
+                                                Breadcrumb.arrowSeparator,
+                                            children: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  context
+                                                      .goNamed('introduction');
+                                                },
+                                                density: ButtonDensity.compact,
+                                                child: const Text('Docs'),
+                                              ),
+                                              ...widget.navigationItems,
+                                              if (page != null)
+                                                Text(page.title),
+                                            ],
+                                          ),
+                                          Gap(16 * theme.scaling),
+                                          widget.child,
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                })
+                              : Container(
+                                  clipBehavior: Clip.none,
+                                  padding: !hasOnThisPage
+                                      ? const EdgeInsets.symmetric(
+                                            horizontal: 40,
+                                            vertical: 32,
+                                          ).copyWith(
+                                            right: padding.right + 32,
+                                            bottom: 0,
+                                          ) *
+                                          theme.scaling
+                                      : const EdgeInsets.symmetric(
+                                            horizontal: 40,
+                                            vertical: 32,
+                                          ).copyWith(
+                                            right: 24,
+                                            bottom: 0,
+                                          ) *
+                                          theme.scaling,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Breadcrumb(
+                                        separator: Breadcrumb.arrowSeparator,
+                                        children: [
+                                          TextButton(
+                                            onPressed: () {
+                                              context.goNamed('introduction');
+                                            },
+                                            density: ButtonDensity.compact,
+                                            child: const Text('Docs'),
+                                          ),
+                                          ...widget.navigationItems,
+                                          if (page != null) Text(page.title),
+                                        ],
+                                      ),
+                                      Gap(16 * theme.scaling),
+                                      Expanded(child: widget.child),
+                                    ],
+                                  ),
+                                ),
+                        ),
+                      ),
+                      if (hasOnThisPage)
+                        MediaQueryVisibility(
+                          minWidth: breakpointWidth2,
+                          child: _DocsSecondarySidebar(
+                            onThisPage: onThisPage,
+                            isVisible: isVisible,
+                            padding: padding,
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }),
+        ),
       ),
     );
   }
@@ -801,36 +849,61 @@ class DocsPageState extends State<DocsPage> {
               },
               trailing:
                   const Icon(Icons.search).iconSmall().iconMutedForeground(),
-              child: const Text('Search documentation...').muted().normal(),
+              child: Row(
+                spacing: 16,
+                children: [
+                  const Text('Search documentation...').muted().normal(),
+                  const KeyboardDisplay.fromActivator(
+                    activator:
+                        SingleActivator(LogicalKeyboardKey.keyF, control: true),
+                  ).xSmall.withOpacity(0.8),
+                ],
+              ),
             ),
           ),
         ),
         Gap(8 * theme.scaling),
-        GhostButton(
-          density: ButtonDensity.icon,
-          onPressed: () {
-            openInNewTab('https://github.com/sunarya-thito/shadcn_flutter');
-          },
-          child: FaIcon(FontAwesomeIcons.github,
-                  color: theme.colorScheme.secondaryForeground)
-              .iconLarge(),
-        ),
-        // pub.dev icon
-        GhostButton(
+        Semantics(
+          link: true,
+          linkUrl: Uri.tryParse(
+            'https://github.com/sunarya-thito/shadcn_flutter',
+          ),
+          child: GhostButton(
             density: ButtonDensity.icon,
             onPressed: () {
-              openInNewTab('https://pub.dev/packages/shadcn_flutter');
+              if (!kIsWeb) {
+                openInNewTab('https://github.com/sunarya-thito/shadcn_flutter');
+              }
             },
-            child: ColorFiltered(
-              // turns into white
-              colorFilter: ColorFilter.mode(
-                theme.colorScheme.secondaryForeground,
-                BlendMode.srcIn,
-              ),
-              child: FlutterLogo(
-                size: 24 * theme.scaling,
-              ),
-            )),
+            child: FaIcon(FontAwesomeIcons.github,
+                    color: theme.colorScheme.secondaryForeground)
+                .iconLarge(),
+          ),
+        ),
+        // pub.dev icon
+        Semantics(
+          link: true,
+          linkUrl: Uri.tryParse(
+            'https://pub.dev/packages/shadcn_flutter',
+          ),
+          child: GhostButton(
+              density: ButtonDensity.icon,
+              onPressed: () {
+                if (!kIsWeb) {
+                  openInNewTab('https://pub.dev/packages/shadcn_flutter');
+                }
+              },
+              child: ColorFiltered(
+                // turns into white
+                colorFilter: ColorFilter.mode(
+                  theme.colorScheme.secondaryForeground,
+                  BlendMode.srcIn,
+                ),
+                child: FlutterLogo(
+                  size: 24 * theme.scaling,
+                ),
+              )),
+        ),
       ],
     );
   }
@@ -885,37 +958,44 @@ class DocsPageState extends State<DocsPage> {
                           header: Text(section.title),
                           children: [
                             for (var page in section.pages)
-                              DocsNavigationButton(
-                                onPressed: () {
-                                  if (page.tag ==
-                                      ShadcnFeatureTag.workInProgress) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: const Text('Work in Progress'),
-                                          content: const Text(
-                                              'This page is still under development. Please come back later.'),
-                                          actions: [
-                                            PrimaryButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const Text('Close')),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                    return;
-                                  }
-                                  context.goNamed(page.name);
-                                },
-                                selected: page.name == widget.name,
-                                child: Basic(
-                                  trailing: page.tag?.buildBadge(context),
-                                  trailingAlignment:
-                                      AlignmentDirectional.centerStart,
-                                  content: Text(page.title),
+                              Semantics(
+                                link: true,
+                                linkUrl: Uri.tryParse(
+                                  'https://sunarya-thito.github.io/shadcn_flutter${_goRouterNamedLocation(context, page.name)}',
+                                ),
+                                child: DocsNavigationButton(
+                                  onPressed: () {
+                                    if (page.tag ==
+                                        ShadcnFeatureTag.workInProgress) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title:
+                                                const Text('Work in Progress'),
+                                            content: const Text(
+                                                'This page is still under development. Please come back later.'),
+                                            actions: [
+                                              PrimaryButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('Close')),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                      return;
+                                    }
+                                    context.goNamed(page.name);
+                                  },
+                                  selected: page.name == widget.name,
+                                  child: Basic(
+                                    trailing: page.tag?.buildBadge(context),
+                                    trailingAlignment:
+                                        AlignmentDirectional.centerStart,
+                                    content: Text(page.title),
+                                  ),
                                 ),
                               ),
                           ],
@@ -931,6 +1011,10 @@ class DocsPageState extends State<DocsPage> {
       position: OverlayPosition.left,
     );
   }
+}
+
+class OpenSearchCommandIntent extends Intent {
+  const OpenSearchCommandIntent();
 }
 
 class _DocsSidebar extends StatefulWidget {
@@ -1075,19 +1159,33 @@ class _DocsSidebarButton extends StatefulWidget {
   State<_DocsSidebarButton> createState() => _DocsSidebarButtonState();
 }
 
+String? _goRouterNamedLocation(BuildContext context, String name) {
+  try {
+    return '/#${GoRouter.of(context).namedLocation(name)}';
+  } catch (e) {}
+  return '';
+}
+
 class _DocsSidebarButtonState extends State<_DocsSidebarButton> {
   @override
   Widget build(BuildContext context) {
-    return DocsNavigationButton(
-      onPressed: _onPressed,
-      selected: widget.page.name == widget.pageName,
-      trailing: DefaultTextStyle.merge(
-        style: const TextStyle(
-          decoration: TextDecoration.none,
-        ),
-        child: widget.page.tag?.buildBadge(context) ?? const SizedBox(),
+    return Semantics(
+      link: true,
+      label: widget.page.title,
+      linkUrl: Uri.tryParse(
+        'https://sunarya-thito.github.io/shadcn_flutter${_goRouterNamedLocation(context, widget.page.name)}',
       ),
-      child: Text(widget.page.title),
+      child: DocsNavigationButton(
+        onPressed: _onPressed,
+        selected: widget.page.name == widget.pageName,
+        trailing: DefaultTextStyle.merge(
+          style: const TextStyle(
+            decoration: TextDecoration.none,
+          ),
+          child: widget.page.tag?.buildBadge(context) ?? const SizedBox(),
+        ),
+        child: Text(widget.page.title),
+      ),
     );
   }
 

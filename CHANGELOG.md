@@ -1,3 +1,145 @@
+## 0.0.42
+* Updated dependencies
+
+## 0.0.41
+* Added AnimatedValueBuilder documentation
+* Added NumberTicker documentation
+* Added RepeatedAnimationBuilder documentation
+* Added TimelineAnimation documentation
+* Added Button documentation
+* Added Accordion documentation
+* Added Collapsible documentation
+* Added Avatar documentation
+* Added AvatarGroup documentation
+* Added CodeSnippet documentation
+* Added Table documentation
+* Added Tracker documentation
+* Added Alert documentation
+* Added AlertDialog documentation
+* Added CircularProgress documentation
+* Added Progress documentation
+* Added LinearProgress documentation
+* Added Skeleton documentation
+* Added Toast documentation
+* Added AutoComplete documentation
+* Added Checkbox documentation
+* Added ChipInput documentation
+* Added ColorPicker documentation
+* Added ControlledCheckbox documentation
+* Added ControlledChipInput documentation
+* Added ControlledDatePicker documentation
+* Added ControlledMultiSelect documentation
+* Added ControlledRadioGroup documentation
+* Added ControlledSelect documentation
+* Added ControlledSlider documentation
+* Added ControlledStarRating documentation
+* Added ControlledSwitch documentation
+* Added ControlledTimePicker documentation
+* Added ControlledToggle documentation
+* Added DatePicker documentation
+* Added DateInput documentation
+* Added DurationInput documentation
+* Added Form documentation
+* Added FormattedInput documentation
+* Added InputOTP documentation
+* Added ItemPicker documentation
+* Added MultiSelect documentation
+* Added MultiSelectChip documentation
+* Added NumberInput documentation
+* Added PhoneInput documentation
+* Added RadioCard documentation
+* Added RadioGroup documentation
+* Added Select documentation
+* Added Slider documentation
+* Added StarRating documentation
+* Added Switch documentation
+* Added TextArea documentation
+* Added TextInput documentation
+* Added TimePicker documentation
+* Added TimeInput documentation
+* Added Toggle documentation
+* Added AppBar documentation
+* Added Card documentation
+* Added CardImage documentation
+* Added Carousel documentation
+* Added Divider documentation
+* Added Resizable documentation
+* Added Scaffold documentation
+* Added Sortable documentation
+* Added SortableDragHandle documentation
+* Added Steps documentation
+* Added Stepper documentation
+* Added Timeline documentation
+* Added Breadcrumb documentation
+* Added DotIndicator documentation
+* Added Menubar documentation
+* Added NavigationBar documentation
+* Added NavigationMenu documentation
+* Added NavigationRail documentation
+* Added NavigationSidebar documentation
+* Added Pagination documentation
+* Added Switcher documentation
+* Added TabList documentation
+* Added TabPane documentation
+* Added Tabs documentation
+* Added Tree documentation
+* Added Dialog documentation
+* Added Drawer documentation
+* Added HoverCard documentation
+* Added Popover documentation
+* Added Sheet documentation
+* Added Swiper documentation
+* Added Tooltip documentation
+* Added Window documentation
+* Added Badge documentation
+* Added ButtonGroup documentation
+* Added Calendar documentation
+* Added CardButton documentation
+* Added Chip documentation
+* Added Command documentation
+* Added ComponentController documentation
+* Added ContextMenu documentation
+* Added ControlledComponent documentation
+* Added DropdownMenu documentation
+* Added IgnoreForm documentation
+* Added KeyboardDisplay documentation
+* Added OverflowMarquee documentation
+* Added RefreshTrigger documentation
+* Added StatedWidget documentation
+* Added SubFocus documentation
+
+## 0.0.40
+* Added Semantics to CodeSnippet
+* Clickable no longer handles Semantics
+* Bumped flutter version requirement to 3.35.1
+
+## 0.0.39
+* Added SubFocus component
+* Fixed ButtonStyleOverride being discarded after Button dependency update
+* Fixed ButtonGroup modifiying immutable list
+* Added alignment parameter to showDropdown
+* Added Switcher component
+* Upgraded to 3.35.1
+* FormController no longer discard detached FormValue for restoration purposes
+* Added SubFocus component
+* Enhanced keyboard shortcut accessibility Select, MultiSelect, Command, Menubar, Dropdown, etc using SubFocus component
+* Fixed directionality on Drawer and Sheet
+* Fixed auto focus issue with components inside dialog
+* Implemented New York v4 style based on original shadcn/ui design spec
+* Old New York color schemes has been renamed to LegacyColorSchemes
+* Added private constructor to LegacyColorSchemes and ColorSchemes
+* Implemented bunch of ComponentTheme for a lot of components
+
+## 0.0.38
+* Added component tiles for various UI elements (major documentation improvement)
+* Fixed missing callback invocation (#277)
+* Fixed formatted input form key type (#292)
+* Updated RefreshTrigger to support reverse scrolling behavior (#270)
+* Fixed controller attachment to use cached value directly
+* Refactored internal state classes for clarity and improved animation controller handling
+* Updated dependencies and refactored InputHintFeature for improved context handling
+* Updated funding link
+
 ## 0.0.37
 * Fixed web preloader issues
 * Fix PhoneInput initialValue not being passed
