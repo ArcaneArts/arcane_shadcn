@@ -283,10 +283,7 @@ class Card extends StatelessWidget {
           ? GhostButton(
               onPressed: onPressed,
               density: ButtonDensity.compact,
-              child: Padding(
-                padding: padding,
-                child: child,
-              ))
+              child: child)
           : child,
     );
   }
@@ -305,6 +302,7 @@ class SurfaceCard extends StatelessWidget {
   final double? surfaceOpacity;
   final double? surfaceBlur;
   final Duration? duration;
+  final VoidCallback? onPressed;
 
   const SurfaceCard({
     super.key,
@@ -320,6 +318,7 @@ class SurfaceCard extends StatelessWidget {
     this.surfaceOpacity,
     this.surfaceBlur,
     this.duration,
+    this.onPressed,
   });
 
   @override
@@ -352,7 +351,12 @@ class SurfaceCard extends StatelessWidget {
           surfaceOpacity ?? compTheme?.surfaceOpacity ?? theme.surfaceOpacity,
       surfaceBlur: surfaceBlur ?? compTheme?.surfaceBlur ?? theme.surfaceBlur,
       duration: duration ?? compTheme?.duration,
-      child: child,
+      child: onPressed != null
+          ? GhostButton(
+              onPressed: onPressed,
+              density: ButtonDensity.compact,
+              child: child)
+          : child,
     );
   }
 }
