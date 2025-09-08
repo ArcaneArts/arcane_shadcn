@@ -275,7 +275,7 @@ class Card extends StatelessWidget {
       borderColor: borderColor,
       backgroundColor: filled ? fillColor : theme.colorScheme.card,
       boxShadow: boxShadow,
-      padding: padding,
+      padding: onPressed != null ? EdgeInsets.zero : padding,
       surfaceOpacity: surfaceOpacity,
       surfaceBlur: surfaceBlur,
       duration: duration,
@@ -283,7 +283,7 @@ class Card extends StatelessWidget {
           ? GhostButton(
               onPressed: onPressed,
               density: ButtonDensity.compact,
-              child: child)
+              child: Padding(padding: padding, child: child))
           : child,
     );
   }
@@ -346,7 +346,7 @@ class SurfaceCard extends StatelessWidget {
       filled: filled,
       fillColor: fillColor,
       boxShadow: boxShadow,
-      padding: padding,
+      padding: onPressed != null ? EdgeInsets.zero : padding,
       surfaceOpacity:
           surfaceOpacity ?? compTheme?.surfaceOpacity ?? theme.surfaceOpacity,
       surfaceBlur: surfaceBlur ?? compTheme?.surfaceBlur ?? theme.surfaceBlur,
@@ -355,7 +355,7 @@ class SurfaceCard extends StatelessWidget {
           ? GhostButton(
               onPressed: onPressed,
               density: ButtonDensity.compact,
-              child: child)
+              child: Padding(padding: padding ?? EdgeInsets.zero, child: child))
           : child,
     );
   }
