@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:pylon/pylon.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 /// Builder function signature for drawer content.
@@ -1460,6 +1461,18 @@ class DrawerOverlayState extends State<DrawerOverlay> {
     });
   }
 
+  void closeLast() {
+    if (_entries.isNotEmpty) {
+      var last = _entries.last;
+      var state = last.key.currentState;
+      if (state != null) {
+        state.close();
+      } else {
+        last.completer.complete();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final parentLayer = Data.maybeOf<DrawerLayerData>(context);
@@ -1896,6 +1909,7 @@ class SheetOverlayHandler extends OverlayHandler {
     OverlayBarrier? overlayBarrier,
     LayerLink? layerLink,
   }) {
+    builder = Pylon.mirror(context, builder);
     return openRawDrawer<T>(
       context: context,
       transformBackdrop: false,

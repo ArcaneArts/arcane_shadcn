@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:shadcn_flutter/src/events.dart';
+
 import '../../../shadcn_flutter.dart';
 
 /// A controller for managing toggle state in toggle buttons and switches.
@@ -1215,7 +1217,12 @@ class ButtonState<T extends Button> extends State<T> {
               return null;
             })
           : null,
-      onPressed: widget.onPressed,
+      onPressed: widget.onPressed == null
+          ? null
+          : () {
+              $shadEvent?.onButtonPressed(context, widget.style);
+              widget.onPressed?.call();
+            },
       onTapDown: widget.onTapDown,
       onTapUp: widget.onTapUp,
       onTapCancel: widget.onTapCancel,

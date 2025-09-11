@@ -1,4 +1,5 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:shadcn_flutter/src/events.dart';
 
 /// Theme data for customizing [Tabs] widget appearance.
 ///
@@ -105,14 +106,23 @@ class Tabs extends StatelessWidget {
   final ValueChanged<int> onChanged;
   final List<TabChild> children;
   final EdgeInsetsGeometry? padding;
+  final Color? backgroundColor;
+  final Color? selectedColor;
 
   const Tabs({
     super.key,
     required this.index,
     required this.onChanged,
     required this.children,
+    this.backgroundColor,
+    this.selectedColor,
     this.padding,
   });
+
+  void onChange(BuildContext context, int v) {
+    $shadEvent?.onTabChanged(context);
+    onChanged(v);
+  }
 
   Widget _childBuilder(
     BuildContext context,
@@ -132,7 +142,7 @@ class Tabs extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () {
-        onChanged(i);
+        onChange(context, i);
       },
       child: MouseRegion(
         hitTestBehavior: HitTestBehavior.translucent,
@@ -144,8 +154,10 @@ class Tabs extends StatelessWidget {
           alignment: Alignment.center,
           padding: tabPadding,
           decoration: BoxDecoration(
+
             color: i == index ? theme.colorScheme.background : null,
             borderRadius: BorderRadius.circular(theme.radiusMd),
+
           ),
           child: (i == index ? child.foreground() : child.muted())
               .small()
@@ -174,14 +186,16 @@ class Tabs extends StatelessWidget {
     );
     return TabContainer(
       selected: index,
-      onSelect: onChanged,
+      onSelect: (v) => onChange(context, v),
       builder: (context, children) {
         return Container(
           decoration: BoxDecoration(
+
             color: backgroundColor,
             borderRadius: borderRadius is BorderRadius
                 ? borderRadius
                 : borderRadius.resolve(Directionality.of(context)),
+
           ),
           padding: containerPadding,
           child: IntrinsicHeight(

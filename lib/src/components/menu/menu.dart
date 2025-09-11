@@ -151,7 +151,7 @@ class MenuRadio<T> extends StatelessWidget {
                 ).iconSmall(),
               )
             : SizedBox(width: 16 * scaling),
-        onPressed: (context) {
+        onContextPressed: (context) {
           radioGroup.onChanged?.call(context, value);
         },
         enabled: enabled,
@@ -223,19 +223,23 @@ class MenuGap extends StatelessWidget implements MenuItem {
 class MenuButton extends StatefulWidget implements MenuItem {
   final Widget child;
   final List<MenuItem>? subMenu;
-  final ContextedCallback? onPressed;
+  final ContextedCallback? onContextPressed;
+  final VoidCallback? onPressed;
   final Widget? trailing;
   final Widget? leading;
   final bool enabled;
   final FocusNode? focusNode;
   final bool autoClose;
+  final double emptyLeadingSpace;
   @override
   final PopoverController? popoverController;
   const MenuButton({
     super.key,
     required this.child,
+    this.emptyLeadingSpace = 16,
     this.subMenu,
     this.onPressed,
+    this.onContextPressed,
     this.trailing,
     this.leading,
     this.enabled = true,
@@ -255,9 +259,11 @@ class MenuLabel extends StatelessWidget implements MenuItem {
   final Widget child;
   final Widget? trailing;
   final Widget? leading;
+  final double emptyLeadingSpace;
 
   const MenuLabel({
     super.key,
+    this.emptyLeadingSpace = 16,
     required this.child,
     this.trailing,
     this.leading,
@@ -282,7 +288,7 @@ class MenuLabel extends StatelessWidget implements MenuItem {
       child: Basic(
         contentSpacing: 8 * scaling,
         leading: leading == null && menuGroupData.hasLeading
-            ? SizedBox(width: 16 * scaling)
+            ? SizedBox(width: emptyLeadingSpace * scaling)
             : leading == null
                 ? null
                 : SizedBox(
@@ -339,7 +345,7 @@ class MenuCheckbox extends StatelessWidget implements MenuItem {
               ).iconSmall(),
             )
           : SizedBox(width: 16 * scaling),
-      onPressed: (context) {
+      onContextPressed: (context) {
         onChanged?.call(context, !value);
       },
       enabled: enabled,
@@ -450,7 +456,7 @@ class _MenuButtonState extends State<MenuButton> {
         ),
         ActivateIntent: CallbackAction<ActivateIntent>(
           onInvoke: (intent) {
-            widget.onPressed?.call(context);
+            widget.onPressed?.call();
             if (widget.subMenu?.isNotEmpty ?? false) {
               openSubMenu(context, true);
             }
@@ -549,7 +555,7 @@ class _MenuButtonState extends State<MenuButton> {
                             }
                           },
                           onPressed: () {
-                            widget.onPressed?.call(context);
+                            widget.onPressed?.call();
                             if (widget.subMenu != null &&
                                 widget.subMenu!.isNotEmpty) {
                               if (!menuData.popoverController.hasOpenPopover) {

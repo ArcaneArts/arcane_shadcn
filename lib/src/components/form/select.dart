@@ -97,12 +97,12 @@ class SelectTheme {
 /// Example:
 /// ```dart
 /// final controller = SelectController<String>('initial');
-/// 
+///
 /// // Listen to changes
 /// controller.addListener(() {
 ///   print('Selection changed to: ${controller.value}');
 /// });
-/// 
+///
 /// // Update selection
 /// controller.value = 'new_value';
 /// ```
@@ -138,7 +138,7 @@ class SelectController<T> extends ValueNotifier<T?>
 /// **Controller-based (recommended for complex state):**
 /// ```dart
 /// final controller = SelectController<String>('apple');
-/// 
+///
 /// ControlledSelect<String>(
 ///   controller: controller,
 ///   items: ['apple', 'banana', 'cherry'],
@@ -150,7 +150,7 @@ class SelectController<T> extends ValueNotifier<T?>
 /// **Callback-based (simple state management):**
 /// ```dart
 /// String? selectedFruit;
-/// 
+///
 /// ControlledSelect<String>(
 ///   initialValue: selectedFruit,
 ///   onChanged: (fruit) => setState(() => selectedFruit = fruit),
@@ -316,12 +316,12 @@ class ControlledSelect<T> extends StatelessWidget
 /// Example:
 /// ```dart
 /// final controller = MultiSelectController<String>(['apple', 'banana']);
-/// 
+///
 /// // Listen to changes
 /// controller.addListener(() {
 ///   print('Selection changed to: ${controller.value}');
 /// });
-/// 
+///
 /// // Update selection
 /// controller.value = ['apple', 'cherry'];
 /// ```
@@ -357,7 +357,7 @@ class MultiSelectController<T> extends SelectController<Iterable<T>> {
 /// **Controller-based (recommended for complex state):**
 /// ```dart
 /// final controller = MultiSelectController<String>(['apple']);
-/// 
+///
 /// ControlledMultiSelect<String>(
 ///   controller: controller,
 ///   items: ['apple', 'banana', 'cherry', 'date'],
@@ -372,7 +372,7 @@ class MultiSelectController<T> extends SelectController<Iterable<T>> {
 /// **Callback-based (simple state management):**
 /// ```dart
 /// List<String> selectedFruits = [];
-/// 
+///
 /// ControlledMultiSelect<String>(
 ///   initialValue: selectedFruits,
 ///   onChanged: (fruits) => setState(() => selectedFruits = fruits?.toList() ?? []),

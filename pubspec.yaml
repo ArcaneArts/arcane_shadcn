@@ -19,16 +19,20 @@ dependencies:
   country_flags: ^3.3.0
   phonecodes: ^0.0.4
   cross_file: ^0.3.4+2
-  image: ^4.2.0
   web: ^1.1.1
+  image: ^4.5.4
   data_widget: ^0.0.2
+  pylon: ^3.1.11
   gap: ^3.0.1
   expressions: ^0.2.5+2
-
+  dotted_border: ">=2.1.0 <3.0.0"
+  visibility_detector: ^0.4.0+2
+  rxdart: ^0.28.0
+  toxic_flutter: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^6.0.0
   icon_font_generator: ^4.0.0
   archive: any
 
