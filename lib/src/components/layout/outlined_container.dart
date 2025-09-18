@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:dotted_border/dotted_border.dart';
 import 'package:pylon/pylon.dart';
 
 import '../../../shadcn_flutter.dart';
@@ -124,7 +123,8 @@ class OutlinedContainerTheme {
         boxShadow,
         padding,
         surfaceOpacity,
-        surfaceBlur,);
+        surfaceBlur,
+      );
 }
 
 class DashedBorderSignal {
@@ -280,20 +280,6 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
         child: widget.child,
       ),
     );
-
-    if (signal != null) {
-      childWidget = DottedBorder(
-          color: widget.borderColor ?? theme.colorScheme.muted,
-          strokeWidth: 4,
-          dashPattern: signal.borderStyle,
-          radius: Radius.circular(8),
-          borderType: BorderType.RRect,
-          stackFit: StackFit.passthrough,
-          padding: EdgeInsets.zero,
-          strokeCap: StrokeCap.round,
-          borderPadding: EdgeInsets.all(0.5),
-          child: childWidget);
-    }
 
     if (widget.surfaceBlur != null && widget.surfaceBlur! > 0) {
       childWidget = SurfaceBlur(
