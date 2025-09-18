@@ -312,7 +312,7 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
           stackFit: StackFit.passthrough,
           padding: EdgeInsets.zero,
           strokeCap: StrokeCap.round,
-          borderPadding: EdgeInsets.all(0.5),
+          borderPadding: EdgeInsets.zero,
           child: childWidget);
     }
     return childWidget;
