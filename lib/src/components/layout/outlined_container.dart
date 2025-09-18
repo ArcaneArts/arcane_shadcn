@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:dotted_border/dotted_border.dart';
 import 'package:pylon/pylon.dart';
 
 import '../../../shadcn_flutter.dart';
@@ -128,23 +129,31 @@ class OutlinedContainerTheme {
 }
 
 class DashedBorderSignal {
+  final Radius radius;
+  final double strokeWidth;
   final List<double> borderStyle;
+  final BorderType borderType;
 
   const DashedBorderSignal({
+    this.strokeWidth = 4,
+    this.radius = const Radius.circular(8),
     this.borderStyle = const [5, 5],
+    this.borderType = BorderType.RRect,
   });
 }
 
 /// Adds a dashed border mode
 class DashBorderMode extends StatelessWidget {
-  final List<double> borderstyle;
+  final DashedBorderSignal signal;
   final PylonBuilder builder;
   const DashBorderMode(
-      {super.key, required this.borderstyle, required this.builder});
+      {super.key,
+      this.signal = const DashedBorderSignal(),
+      required this.builder});
 
   @override
   Widget build(BuildContext context) => Pylon<DashedBorderSignal?>(
-        value: DashedBorderSignal(borderStyle: borderstyle),
+        value: signal,
         builder: builder,
       );
 }
@@ -280,6 +289,20 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
         child: widget.child,
       ),
     );
+
+    if (signal != null) {
+      childWidget = DottedBorder(
+          color: borderColor,
+          strokeWidth: signal.strokeWidth,
+          dashPattern: signal.borderStyle,
+          radius: signal.radius,
+          borderType: signal.borderType,
+          stackFit: StackFit.passthrough,
+          padding: EdgeInsets.zero,
+          strokeCap: StrokeCap.round,
+          borderPadding: EdgeInsets.all(0.5),
+          child: childWidget);
+    }
 
     if (widget.surfaceBlur != null && widget.surfaceBlur! > 0) {
       childWidget = SurfaceBlur(
