@@ -7,18 +7,16 @@ import 'package:flutter/cupertino.dart'
     show
         CupertinoSpellCheckSuggestionsToolbar,
         cupertinoDesktopTextSelectionHandleControls;
+import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:flutter/foundation.dart'
     show IterableProperty, defaultTargetPlatform;
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart' as material;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:shadcn_flutter/src/components/layout/focus_outline.dart';
 import 'package:shadcn_flutter/src/components/layout/hidden.dart';
 
 import '../../../shadcn_flutter.dart';
-
-import 'package:flutter/material.dart' as material;
-import 'package:flutter/cupertino.dart' as cupertino;
 
 /// Theme data for customizing [TextField] appearance.
 ///
@@ -1522,7 +1520,10 @@ class TextFieldState extends State<TextField>
       (widget.focusNode ?? _focusNode)?.addListener(_handleFocusChanged);
     }
     _effectiveFocusNode.canRequestFocus = widget.enabled;
-    _effectiveFocusNode._withShiftEnter(onSubmit: widget.onSubmitted ?? (_) {}, controller: effectiveController, autoClear: widget.autoClearOnSubmit);
+    _effectiveFocusNode._withShiftEnter(
+        onSubmit: widget.onSubmitted ?? (_) {},
+        controller: effectiveController,
+        autoClear: widget.autoClearOnSubmit);
 
     for (var i = 0;
         i < max(oldWidget.features.length, widget.features.length);
@@ -2129,8 +2130,9 @@ class TextFieldState extends State<TextField>
               const TextMagnifierConfiguration(),
           // Only show the selection highlight when the text field is focused.
           selectionColor: _effectiveFocusNode.hasFocus ? selectionColor : null,
-          selectionControls:
-              widget.selectionEnabled ? textSelectionControls : null,
+          selectionControls: widget.selectionEnabled
+              ? textSelectionControls
+              : cupertino.CupertinoTextSelectionControls(),
           groupId: widget.groupId,
           onChanged: _onChanged,
           onSelectionChanged: _handleSelectionChanged,
