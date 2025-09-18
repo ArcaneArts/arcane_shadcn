@@ -305,7 +305,7 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
     if (signal != null) {
       childWidget = DottedBorder(
           color: borderColor,
-          strokeWidth: borderWidth,
+          strokeWidth: borderWidth * 2,
           dashPattern: signal.borderStyle,
           radius: borderRadius.topLeft,
           borderType: signal.borderType,
