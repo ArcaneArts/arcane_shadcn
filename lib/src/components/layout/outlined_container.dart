@@ -271,11 +271,13 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
       height: widget.height,
       decoration: BoxDecoration(
         color: backgroundColor,
-        border: Border.all(
-          color: borderColor,
-          width: borderWidth,
-          style: borderStyle,
-        ),
+        border: signal != null
+            ? Border()
+            : Border.all(
+                color: borderColor,
+                width: borderWidth,
+                style: borderStyle,
+              ),
         borderRadius: borderRadius,
         boxShadow: boxShadow,
       ),
