@@ -760,6 +760,7 @@ class TextField extends StatefulWidget with TextInput {
     this.border,
     this.borderRadius,
     this.filled,
+    this.autoClearOnSubmit = false,
     this.statesController,
     this.features = const [],
     this.submitFormatters = const [],
@@ -1037,6 +1038,8 @@ class TextField extends StatefulWidget with TextInput {
 
   @override
   State<TextField> createState() => TextFieldState();
+
+  final bool autoClearOnSubmit;
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -1519,7 +1522,7 @@ class TextFieldState extends State<TextField>
       (widget.focusNode ?? _focusNode)?.addListener(_handleFocusChanged);
     }
     _effectiveFocusNode.canRequestFocus = widget.enabled;
-    _effectiveFocusNode._withShiftEnter(onSubmit: widget.onSubmitted ?? (_) {}, controller: effectiveController);
+    _effectiveFocusNode._withShiftEnter(onSubmit: widget.onSubmitted ?? (_) {}, controller: effectiveController, autoClear: widget.autoClearOnSubmit);
 
     for (var i = 0;
         i < max(oldWidget.features.length, widget.features.length);
