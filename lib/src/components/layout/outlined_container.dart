@@ -295,6 +295,13 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
       ),
     );
 
+    if (widget.surfaceBlur != null && widget.surfaceBlur! > 0) {
+      childWidget = SurfaceBlur(
+        surfaceBlur: surfaceBlur,
+        borderRadius: subtractByBorder(borderRadius, borderWidth),
+        child: childWidget,
+      );
+    }
     if (signal != null) {
       childWidget = DottedBorder(
           color: borderColor,
@@ -305,16 +312,8 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
           stackFit: StackFit.passthrough,
           padding: EdgeInsets.zero,
           strokeCap: StrokeCap.round,
-          borderPadding: EdgeInsets.all(0.5 + (borderWidth * 1.5)),
+          borderPadding: EdgeInsets.all(0.5),
           child: childWidget);
-    }
-
-    if (widget.surfaceBlur != null && widget.surfaceBlur! > 0) {
-      childWidget = SurfaceBlur(
-        surfaceBlur: surfaceBlur,
-        borderRadius: subtractByBorder(borderRadius, borderWidth),
-        child: childWidget,
-      );
     }
     return childWidget;
   }
