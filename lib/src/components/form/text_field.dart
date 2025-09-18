@@ -1475,6 +1475,7 @@ class TextFieldState extends State<TextField>
     }
     _effectiveFocusNode.canRequestFocus = widget.enabled;
     _effectiveFocusNode.addListener(_handleFocusChanged);
+    _effectiveFocusNode._withShiftEnter(onSubmit: widget.onSubmitted ?? (_) {}, controller: effectiveController);
     _statesController = widget.statesController ?? WidgetStatesController();
     String effectiveText = widget.controller?.text ?? widget.initialValue ?? '';
     formValue = effectiveText.isEmpty ? null : effectiveText;
@@ -2308,4 +2309,28 @@ class TextFieldSetSelectionIntent extends Intent {
 
 class TextFieldSelectAllAndCopyIntent extends Intent {
   const TextFieldSelectAllAndCopyIntent();
+}
+
+extension _XFocusNode on FocusNode {
+  FocusNode _withShiftEnter(
+      {required void Function(String) onSubmit,
+      required TextEditingController controller,
+      bool autoClear = true}) {
+    onKeyEvent = (FocusNode node, KeyEvent key) {
+      if (!HardwareKeyboard.instance.isShiftPressed &&
+          key.logicalKey.keyLabel == 'Enter') {
+        if (key is KeyDownEvent || key is KeyRepeatEvent) {
+          onSubmit(controller.text);
+          if (autoClear) {
+            controller.clear();
+          }
+        }
+        return KeyEventResult.handled;
+      }
+
+      return KeyEventResult.ignored;
+    };
+
+    return this;
+  }
 }
