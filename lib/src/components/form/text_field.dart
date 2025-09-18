@@ -2130,9 +2130,8 @@ class TextFieldState extends State<TextField>
               const TextMagnifierConfiguration(),
           // Only show the selection highlight when the text field is focused.
           selectionColor: _effectiveFocusNode.hasFocus ? selectionColor : null,
-          selectionControls: widget.selectionEnabled
-              ? textSelectionControls
-              : cupertino.CupertinoTextSelectionControls(),
+          selectionControls:
+              widget.selectionEnabled ? textSelectionControls : null,
           groupId: widget.groupId,
           onChanged: _onChanged,
           onSelectionChanged: _handleSelectionChanged,
