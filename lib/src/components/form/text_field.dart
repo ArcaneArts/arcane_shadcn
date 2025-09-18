@@ -1475,7 +1475,6 @@ class TextFieldState extends State<TextField>
     }
     _effectiveFocusNode.canRequestFocus = widget.enabled;
     _effectiveFocusNode.addListener(_handleFocusChanged);
-    _effectiveFocusNode._withShiftEnter(onSubmit: widget.onSubmitted ?? (_) {}, controller: effectiveController);
     _statesController = widget.statesController ?? WidgetStatesController();
     String effectiveText = widget.controller?.text ?? widget.initialValue ?? '';
     formValue = effectiveText.isEmpty ? null : effectiveText;
@@ -1520,6 +1519,7 @@ class TextFieldState extends State<TextField>
       (widget.focusNode ?? _focusNode)?.addListener(_handleFocusChanged);
     }
     _effectiveFocusNode.canRequestFocus = widget.enabled;
+    _effectiveFocusNode._withShiftEnter(onSubmit: widget.onSubmitted ?? (_) {}, controller: effectiveController);
 
     for (var i = 0;
         i < max(oldWidget.features.length, widget.features.length);
