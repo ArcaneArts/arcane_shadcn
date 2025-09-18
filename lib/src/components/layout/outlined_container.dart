@@ -129,14 +129,10 @@ class OutlinedContainerTheme {
 }
 
 class DashedBorderSignal {
-  final Radius radius;
-  final double strokeWidth;
   final List<double> borderStyle;
   final BorderType borderType;
 
   const DashedBorderSignal({
-    this.strokeWidth = 4,
-    this.radius = const Radius.circular(8),
     this.borderStyle = const [5, 5],
     this.borderType = BorderType.RRect,
   });
@@ -185,10 +181,12 @@ class OutlinedContainer extends StatefulWidget {
   final double? width;
   final double? height;
   final Duration? duration;
+  final bool dashedBorder;
 
   const OutlinedContainer({
     super.key,
     required this.child,
+    this.dashedBorder = false,
     this.borderColor,
     this.backgroundColor,
     this.clipBehavior = Clip.antiAlias,
@@ -213,6 +211,11 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
   @override
   Widget build(BuildContext context) {
     DashedBorderSignal? signal = context.pylonOr<DashedBorderSignal>();
+
+    if (widget.dashedBorder && signal == null) {
+      signal = const DashedBorderSignal();
+    }
+
     final ThemeData theme = Theme.of(context);
     final scaling = theme.scaling;
     final compTheme = ComponentTheme.maybeOf<OutlinedContainerTheme>(context);
@@ -295,9 +298,9 @@ class _OutlinedContainerState extends State<OutlinedContainer> {
     if (signal != null) {
       childWidget = DottedBorder(
           color: borderColor,
-          strokeWidth: signal.strokeWidth,
+          strokeWidth: borderWidth,
           dashPattern: signal.borderStyle,
-          radius: signal.radius,
+          radius: borderRadius.topLeft,
           borderType: signal.borderType,
           stackFit: StackFit.passthrough,
           padding: EdgeInsets.zero,
