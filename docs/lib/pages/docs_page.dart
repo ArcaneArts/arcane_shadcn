@@ -7,7 +7,6 @@
 //
 // This is part of the docs framework (a wrapper/renderer), not a component demo.
 // Comments added for clarity; behavior unchanged.
-import 'package:docs/custom.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
