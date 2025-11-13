@@ -983,6 +983,9 @@ mixin TextInput on Widget {
 
   /// Whether to skip focus traversal for input features.
   bool get skipInputFeatureFocusTraversal;
+
+  /// Whether to automatically clear the input on submit.
+  bool get autoClearOnSubmit;
 }
 
 /// Abstract base class for stateful text input widgets.
@@ -1132,6 +1135,8 @@ abstract class TextInputStatefulWidget extends StatefulWidget with TextInput {
   final List<TextInputFormatter>? submitFormatters;
   @override
   final bool skipInputFeatureFocusTraversal;
+  @override
+  final bool autoClearOnSubmit;
 
   /// Creates a stateful text input widget with comprehensive configuration options.
   ///
@@ -1156,6 +1161,7 @@ abstract class TextInputStatefulWidget extends StatefulWidget with TextInput {
   /// See [TextInput] mixin documentation for full parameter details.
   const TextInputStatefulWidget({
     super.key,
+    this.autoClearOnSubmit = false,
     this.groupId = EditableText,
     this.controller,
     this.focusNode,
@@ -1234,6 +1240,7 @@ abstract class TextInputStatefulWidget extends StatefulWidget with TextInput {
   ///
   /// All parameters are optional and allow selective property replacement.
   TextField copyWith({
+    ValueGetter<bool>? autoClearOnSubmit,
     ValueGetter<Key?>? key,
     ValueGetter<Object>? groupId,
     ValueGetter<TextEditingController?>? controller,
@@ -1308,6 +1315,9 @@ abstract class TextInputStatefulWidget extends StatefulWidget with TextInput {
     ValueGetter<bool>? skipInputFeatureFocusTraversal,
   }) {
     return TextField(
+      autoClearOnSubmit: autoClearOnSubmit == null
+          ? this.autoClearOnSubmit
+          : autoClearOnSubmit(),
       key: key == null ? this.key : key(),
       groupId: groupId == null ? this.groupId : groupId(),
       controller: controller == null ? this.controller : controller(),
@@ -1586,6 +1596,7 @@ class TextField extends TextInputStatefulWidget {
   /// See [TextInputStatefulWidget] and [TextInput] for parameter details.
   const TextField({
     super.key,
+    super.autoClearOnSubmit,
     super.groupId,
     super.controller,
     super.initialValue,
@@ -2275,7 +2286,8 @@ class TextFieldState extends State<TextField>
                 // the cost of the ability to compute the intrinsic dimensions of
                 // this widget.
                 // See also https://github.com/flutter/flutter/issues/13715.
-                alignment: widget.stackAlignment,
+
+                // TODO: alignment: widget.stackAlignment,
                 textDirection: widget.textDirection,
                 children: <Widget>[
                   if (placeholder != null) placeholder,
