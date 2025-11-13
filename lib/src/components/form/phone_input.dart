@@ -1,5 +1,6 @@
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/services.dart';
+
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 /// Represents a phone number with country code information.
@@ -401,22 +402,22 @@ class _PhoneInputState extends State<PhoneInput>
                 children: [
                   CountryFlag.fromCountryCode(
                     item.code,
-                    // theme: ImageTheme(
-                    //   shape: styleValue(
-                    //     defaultValue: RoundedRectangle(
-                    //       theme.radiusSm,
-                    //     ),
-                    //     themeValue: componentTheme?.flagShape,
-                    //   ),
-                    //   height: styleValue(
-                    //     defaultValue: theme.scaling * 18,
-                    //     themeValue: componentTheme?.flagHeight,
-                    //   ),
-                    //   width: styleValue(
-                    //     defaultValue: theme.scaling * 24,
-                    //     themeValue: componentTheme?.flagWidth,
-                    //   ),
-                    // ), // TODO
+                    theme: ImageTheme(
+                      shape: styleValue(
+                        defaultValue: RoundedRectangle(
+                          theme.radiusSm,
+                        ),
+                        themeValue: componentTheme?.flagShape,
+                      ),
+                      height: styleValue(
+                        defaultValue: theme.scaling * 18,
+                        themeValue: componentTheme?.flagHeight,
+                      ),
+                      width: styleValue(
+                        defaultValue: theme.scaling * 24,
+                        themeValue: componentTheme?.flagWidth,
+                      ),
+                    ),
                   ),
                   Gap(
                     styleValue(
@@ -447,22 +448,22 @@ class _PhoneInputState extends State<PhoneInput>
                           children: [
                             CountryFlag.fromCountryCode(
                               country.code,
-                              // theme: ImageTheme(
-                              //   shape: styleValue(
-                              //     defaultValue: RoundedRectangle(
-                              //       theme.radiusSm,
-                              //     ),
-                              //     themeValue: componentTheme?.flagShape,
-                              //   ),
-                              //   height: styleValue(
-                              //     defaultValue: theme.scaling * 18,
-                              //     themeValue: componentTheme?.flagHeight,
-                              //   ),
-                              //   width: styleValue(
-                              //     defaultValue: theme.scaling * 24,
-                              //     themeValue: componentTheme?.flagWidth,
-                              //   ),
-                              // ), // TODO
+                              theme: ImageTheme(
+                                shape: styleValue(
+                                  defaultValue: RoundedRectangle(
+                                    theme.radiusSm,
+                                  ),
+                                  themeValue: componentTheme?.flagShape,
+                                ),
+                                height: styleValue(
+                                  defaultValue: theme.scaling * 18,
+                                  themeValue: componentTheme?.flagHeight,
+                                ),
+                                width: styleValue(
+                                  defaultValue: theme.scaling * 24,
+                                  themeValue: componentTheme?.flagWidth,
+                                ),
+                              ),
                             ),
                             Gap(
                               styleValue(
