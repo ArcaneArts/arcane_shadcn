@@ -1,5 +1,4 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-
 const Map<String, IconData> kRadixIcons = {
   'zoomOut': RadixIcons.zoomOut,
   'zoomIn': RadixIcons.zoomIn,

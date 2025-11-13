@@ -1,4 +1,3 @@
-import 'package:docs/code_highlighter.dart';
 import 'package:docs/pages/docs_page.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
@@ -6,10 +5,10 @@ class ColorsPage extends StatefulWidget {
   const ColorsPage({super.key});
 
   @override
-  ColorsPageState createState() => ColorsPageState();
+  _ColorsPageState createState() => _ColorsPageState();
 }
 
-class ColorsPageState extends State<ColorsPage> {
+class _ColorsPageState extends State<ColorsPage> {
   Map<String, ColorShades> shadeMap = {
     'Slate': Colors.slate,
     'Gray': Colors.gray,
@@ -75,7 +74,7 @@ class ColorsPageState extends State<ColorsPage> {
               children: [
                 const Text('Use this code to display this color:'),
                 const Gap(8),
-                CodeBlock(
+                CodeSnippet(
                   code: shade == 500
                       ? 'Colors.${name.toLowerCase()}'
                       : 'Colors.${name.toLowerCase()}[$shade]',
@@ -165,30 +164,19 @@ class ColorsPageState extends State<ColorsPage> {
                     mouseCursor:
                         const WidgetStatePropertyAll(SystemMouseCursors.click),
                     onPressed: () {
-                      showPopover(
+                      showColorPicker(
                         context: context,
-                        alignment: Alignment.topCenter,
-                        anchorAlignment: Alignment.bottomCenter,
+                        color: ColorDerivative.fromColor(swatch[shade]),
                         offset: const Offset(0, 8),
-                        widthConstraint: PopoverConstraint.intrinsic,
-                        heightConstraint: PopoverConstraint.intrinsic,
-                        builder: (context) {
-                          return SurfaceCard(
-                            child: ColorPicker(
-                              value: ColorDerivative.fromColor(swatch[shade]),
-                              showAlpha: false,
-                              onChanged: (value) {
-                                setState(() {
-                                  _customColor = ColorShades.shiftHSL(
-                                    value.toHSLColor(),
-                                    base: shade,
-                                    500,
-                                  );
-                                });
-                                Navigator.pop(context);
-                              },
-                            ),
-                          );
+                        showAlpha: false,
+                        onColorChanged: (value) {
+                          setState(() {
+                            _customColor = ColorShades.shiftHSL(
+                              value.toHSLColor(),
+                              base: shade,
+                              500,
+                            );
+                          });
                         },
                       );
                     },
@@ -244,7 +232,7 @@ class ColorsPageState extends State<ColorsPage> {
   }
 
   Widget buildCode() {
-    return CodeBlock(
+    return CodeSnippet(
       code: generateCode(ColorShades.fromAccentHSL(
         _customColor,
         hueShift: _hueShift,
@@ -328,7 +316,7 @@ class ColorsPageState extends State<ColorsPage> {
                   buildColorRow(context, color.key, color.value),
                 ],
               ),
-            ).withPadding(
+            ).withMargin(
               top: 32,
             ),
           const Text('Generate Color').h2().anchored(_customColorKey),

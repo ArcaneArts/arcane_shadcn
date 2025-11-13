@@ -203,14 +203,6 @@ class ToastTheme {
   }
 }
 
-/// Builder function for custom toast widgets.
-///
-/// Parameters:
-/// - [context]: The build context
-/// - [gap]: Vertical spacing between toasts
-/// - [alignment]: Visual alignment of the toast
-///
-/// Returns a widget representing the toast.
 typedef ToastBuilder = Widget Function(
     BuildContext context, ToastOverlay overlay);
 
@@ -750,15 +742,12 @@ class _ToastLayerState extends State<ToastLayer> {
         ),
       );
     }
-    return ForwardableData(
+    return Data.inherit(
       data: this,
-      child: Data.inherit(
-        data: this,
-        child: Stack(
-          clipBehavior: Clip.none,
-          fit: StackFit.passthrough,
-          children: children,
-        ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        fit: StackFit.passthrough,
+        children: children,
       ),
     );
   }
@@ -828,43 +817,17 @@ class _AttachedToastEntry implements ToastOverlay {
   }
 }
 
-/// Configuration for a single toast notification.
-///
-/// Encapsulates all properties needed to display and manage a toast,
-/// including builder, location, timing, and dismissal behavior.
 class ToastEntry {
-  /// Builder function to create the toast widget.
   final ToastBuilder builder;
-
-  /// Position where the toast should appear.
   final ToastLocation location;
-
-  /// Whether the toast can be dismissed by user interaction.
-  ///
-  /// Defaults to true. When false, toast only closes after duration expires.
   final bool dismissible;
-
-  /// Animation curve for entry/exit transitions.
   final Curve curve;
-
-  /// Duration for entry/exit animations.
   final Duration duration;
-
-  /// Captured theme data to apply to the toast.
   final CapturedThemes? themes;
-
-  /// Captured inherited widget data to apply to the toast.
   final CapturedData? data;
-
-  /// Callback invoked when toast is closed.
   final VoidCallback? onClosed;
-
-  /// How long the toast remains visible before auto-dismissing.
-  ///
-  /// Defaults to 5 seconds. If null, toast remains indefinitely.
   final Duration? showDuration;
 
-  /// Creates a toast entry configuration.
   ToastEntry({
     required this.builder,
     required this.location,
@@ -878,91 +841,32 @@ class ToastEntry {
   });
 }
 
-/// Internal widget for managing toast entry layout and animations.
-///
-/// Handles the positioning, transitions, and lifecycle of individual toast
-/// notifications. Manages expansion/collapse animations, entry/exit transitions,
-/// and stacking behavior for multiple toasts.
-///
-/// This is an internal implementation class used by the toast system and
-/// should not be used directly in application code.
 class ToastEntryLayout extends StatefulWidget {
-  /// The toast entry data containing the notification content.
   final ToastEntry entry;
-
-  /// Whether the toast is in expanded state.
   final bool expanded;
-
-  /// Whether the toast is currently visible.
   final bool visible;
-
-  /// Whether the toast can be dismissed by user interaction.
   final bool dismissible;
-
-  /// Alignment used before the current animation.
   final AlignmentGeometry previousAlignment;
-
-  /// Animation curve for transitions.
   final Curve curve;
-
-  /// Duration of transition animations.
   final Duration duration;
-
-  /// Captured theme data to apply to the toast content.
   final CapturedThemes? themes;
-
-  /// Captured inherited data to apply to the toast content.
   final CapturedData? data;
-
-  /// Notifies when the toast is closing.
   final ValueListenable<bool> closing;
-
-  /// Callback invoked when the toast has completely closed.
   final VoidCallback onClosed;
-
-  /// Offset applied when toast is in collapsed state.
   final Offset collapsedOffset;
-
-  /// Scale factor applied when toast is in collapsed state.
   final double collapsedScale;
-
-  /// Curve used for expansion animations.
   final Curve expandingCurve;
-
-  /// Duration of expansion animations.
   final Duration expandingDuration;
-
-  /// Opacity when toast is collapsed.
   final double collapsedOpacity;
-
-  /// Initial opacity when toast enters.
   final double entryOpacity;
-
-  /// The toast content widget.
   final Widget child;
-
-  /// Initial offset when toast enters.
   final Offset entryOffset;
-
-  /// Alignment of the toast entry.
   final AlignmentGeometry entryAlignment;
-
-  /// Spacing between stacked toasts.
   final double spacing;
-
-  /// Visual index in the toast stack.
   final int index;
-
-  /// Actual index in the internal list.
   final int actualIndex;
-
-  /// Callback invoked when toast starts closing.
   final VoidCallback? onClosing;
 
-  /// Creates a [ToastEntryLayout].
-  ///
-  /// Most parameters control animation and positioning behavior. This is
-  /// an internal widget used by the toast system.
   const ToastEntryLayout({
     super.key,
     required this.entry,

@@ -1,9 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-
-// Shows how to open a contextual popover anchored to a button, with a custom
-// overlay barrier and a simple form inside. The popover closes via
-// closeOverlay(context) or when the user taps outside the barrier.
 
 class PopoverExample1 extends StatelessWidget {
   const PopoverExample1({super.key});
@@ -15,7 +10,6 @@ class PopoverExample1 extends StatelessWidget {
       onPressed: () {
         showPopover(
           context: context,
-          // Position the popover above the button, shifted by 8px.
           alignment: Alignment.topCenter,
           offset: const Offset(0, 8),
           // Unless you have full opacity surface,
@@ -35,7 +29,6 @@ class PopoverExample1 extends StatelessWidget {
                     const Text('Set the dimensions for the layer.').muted(),
                     Form(
                       controller: FormController(),
-                      // Compact grid layout for label/field rows.
                       child: const FormTableLayout(
                         rows: [
                           FormField<double>(
@@ -72,7 +65,6 @@ class PopoverExample1 extends StatelessWidget {
                     ).withPadding(vertical: 16),
                     PrimaryButton(
                       onPressed: () {
-                        // Close the popover and resolve the returned future.
                         closeOverlay(context);
                       },
                       child: const Text('Submit'),
@@ -83,10 +75,7 @@ class PopoverExample1 extends StatelessWidget {
             );
           },
         ).future.then((_) {
-          // Optional completion hook after the popover is dismissed.
-          if (kDebugMode) {
-            print('Popover closed');
-          }
+          print('Popover closed');
         });
       },
       child: const Text('Open popover'),

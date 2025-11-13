@@ -5,8 +5,6 @@ class InputOTPExample3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Same layout as before but with obscured input to hide the characters
-    // (useful for sensitive OTP codes).
     return InputOTP(
       children: [
         InputOTPChild.character(allowDigit: true, obscured: true),

@@ -1,4 +1,3 @@
-import 'package:docs/code_highlighter.dart';
 import 'package:docs/radix_icons.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
@@ -10,10 +9,10 @@ class IconsPage extends StatefulWidget {
   const IconsPage({super.key});
 
   @override
-  IconsPageState createState() => IconsPageState();
+  _IconsPageState createState() => _IconsPageState();
 }
 
-class IconsPageState extends State<IconsPage> {
+class _IconsPageState extends State<IconsPage> {
   // this separates "separateByCamelCase" to "separate By Camel Case"
   List<String> _separateByCamelCase(String text) {
     List<String> result = [];
@@ -55,7 +54,7 @@ class IconsPageState extends State<IconsPage> {
               children: [
                 const Text('Use this code to display this icon:'),
                 const Gap(8),
-                CodeBlock(
+                CodeSnippet(
                   code: 'Icon($className.${entry.key})',
                   mode: 'dart',
                 ),
@@ -254,11 +253,9 @@ class IconsPageState extends State<IconsPage> {
                                 ).gap(12).p(),
                                 const Gap(32),
                                 TextField(
+                                  leading: const Icon(Icons.search),
                                   placeholder: const Text('Search icons'),
                                   controller: _controller,
-                                  features: const [
-                                    InputFeature.leading(Icon(Icons.search)),
-                                  ],
                                 ),
                               ],
                             ),
@@ -275,8 +272,7 @@ class IconsPageState extends State<IconsPage> {
                     SliverPadding(
                       padding: const EdgeInsets.only(top: 16),
                       sliver: SliverGrid(
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 120,
                           mainAxisSpacing: 8,
                           crossAxisSpacing: 8,
@@ -308,9 +304,9 @@ class IconsPageState extends State<IconsPage> {
                     ),
                     SliverPadding(
                       padding: const EdgeInsets.only(top: 16),
-                      sliver: SliverGrid(
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                      sliver
+                          : SliverGrid(
+                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 120,
                           mainAxisSpacing: 8,
                           crossAxisSpacing: 8,
@@ -343,8 +339,7 @@ class IconsPageState extends State<IconsPage> {
                     SliverPadding(
                       padding: const EdgeInsets.only(top: 16, bottom: 16),
                       sliver: SliverGrid(
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 120,
                           mainAxisSpacing: 8,
                           crossAxisSpacing: 8,

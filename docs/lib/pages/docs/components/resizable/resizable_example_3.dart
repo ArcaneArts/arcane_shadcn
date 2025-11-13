@@ -14,7 +14,6 @@ class _ResizableExample3State extends State<ResizableExample3> {
     return OutlinedContainer(
       clipBehavior: Clip.antiAlias,
       child: ResizablePanel.horizontal(
-        // Provide a custom dragger appearance/behavior for the splitters.
         draggerBuilder: (context) {
           return const HorizontalResizableDragger();
         },

@@ -3,6 +3,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 import '../docs_page.dart';
 import 'layout_page/layout_page_example_1.dart';
+import 'layout_page/layout_page_example_2.dart';
 import 'layout_page/layout_page_example_3.dart';
 import 'layout_page/layout_page_example_4.dart';
 import 'layout_page/layout_page_example_5.dart';
@@ -32,6 +33,7 @@ class _LayoutPageState extends State<LayoutPage> {
       name: 'layout',
       onThisPage: {
         'Padding': paddingKey,
+        'Margin': marginKey,
         'Center': centerKey,
         'Gapped Column': gappedColumnKey,
         'Gapped Row': gappedRowKey,
@@ -49,6 +51,11 @@ class _LayoutPageState extends State<LayoutPage> {
           const WidgetUsageExample(
             path: 'lib/pages/docs/layout_page/layout_page_example_1.dart',
             child: LayoutPageExample1(),
+          ).p(),
+          const Text('Margin').h2().anchored(marginKey),
+          const WidgetUsageExample(
+            path: 'lib/pages/docs/layout_page/layout_page_example_2.dart',
+            child: LayoutPageExample2(),
           ).p(),
           const Text('Center').h2().anchored(centerKey),
           const WidgetUsageExample(

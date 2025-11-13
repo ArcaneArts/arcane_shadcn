@@ -68,7 +68,6 @@ class _NavigationBarExample1State extends State<NavigationBarExample1> {
               runSpacing: 8,
               spacing: 8,
               children: [
-                // Configure how the items are distributed across the bar.
                 Select<NavigationBarAlignment>(
                   value: alignment,
                   itemBuilder:
@@ -92,7 +91,6 @@ class _NavigationBarExample1State extends State<NavigationBarExample1> {
                       ),
                   ])),
                 ),
-                // Control how labels are shown for each navigation item.
                 Select<NavigationLabelType>(
                   value: labelType,
                   itemBuilder:
@@ -116,7 +114,6 @@ class _NavigationBarExample1State extends State<NavigationBarExample1> {
                       ),
                   ])),
                 ),
-                // Whether the navigation bar can expand to fill width.
                 Checkbox(
                   state:
                       expands ? CheckboxState.checked : CheckboxState.unchecked,
@@ -127,7 +124,6 @@ class _NavigationBarExample1State extends State<NavigationBarExample1> {
                   },
                   trailing: const Text('Expands'),
                 ),
-                // Use custom button styles for normal vs selected states.
                 Checkbox(
                   state: customButtonStyle
                       ? CheckboxState.checked
@@ -139,7 +135,6 @@ class _NavigationBarExample1State extends State<NavigationBarExample1> {
                   },
                   trailing: const Text('Custom Button Style'),
                 ),
-                // Toggle the expanded label behavior.
                 Checkbox(
                   state: expanded
                       ? CheckboxState.checked

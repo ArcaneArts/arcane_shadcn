@@ -1,9 +1,5 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
-/// Avatar with a status badge.
-///
-/// Shows how to attach an [AvatarBadge] to indicate presence/status
-/// (e.g., online/offline) or any small highlight.
 class AvatarExample3 extends StatelessWidget {
   const AvatarExample3({super.key});
 

@@ -13,7 +13,6 @@ class _ResizableExample6State extends State<ResizableExample6> {
   Widget build(BuildContext context) {
     return const OutlinedContainer(
       clipBehavior: Clip.antiAlias,
-      // Demonstrates nesting panels: horizontal root with vertical and horizontal children.
       child: ResizablePanel.horizontal(
         children: [
           ResizablePane(
@@ -28,7 +27,6 @@ class _ResizableExample6State extends State<ResizableExample6> {
           ResizablePane(
             minSize: 100,
             initialSize: 300,
-            // Middle pane is its own vertical resizable group.
             child: ResizablePanel.vertical(
               children: [
                 ResizablePane(
@@ -42,10 +40,8 @@ class _ResizableExample6State extends State<ResizableExample6> {
                 ResizablePane(
                   minSize: 40,
                   initialSize: 120,
-                  // This pane contains a horizontal panel using flexible panes below.
                   child: ResizablePanel.horizontal(
                     children: [
-                      // Flex panes share remaining space proportionally.
                       ResizablePane.flex(
                         child: NumberedContainer(
                           index: 2,

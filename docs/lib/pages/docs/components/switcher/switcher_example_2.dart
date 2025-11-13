@@ -14,7 +14,6 @@ class _SwitcherExample2State extends State<SwitcherExample2> {
   @override
   Widget build(BuildContext context) {
     return Switcher(
-      // Toggle between login (index 0) and register (index 1) forms.
       index: _isRegister ? 1 : 0,
       onIndexChanged: (index) {
         setState(() {
@@ -65,7 +64,6 @@ class _SwitcherExample2State extends State<SwitcherExample2> {
                 const Text('Don\'t have an account? ').thenButton(
                     onPressed: () {
                       setState(() {
-                        // Switch to the register form.
                         _isRegister = true;
                       });
                     },
@@ -93,8 +91,8 @@ class _SwitcherExample2State extends State<SwitcherExample2> {
                     FormValidationMode.submitted,
                   },
                   child: TextField(
-                    initialValue: _registerController
-                        .getValue(const TextFieldKey(#email)),
+                    initialValue:
+                        _registerController.getValue(const TextFieldKey(#email)),
                     keyboardType: TextInputType.emailAddress,
                     autocorrect: false,
                     enableSuggestions: false,
@@ -129,7 +127,6 @@ class _SwitcherExample2State extends State<SwitcherExample2> {
                 const Text('Already have an account? ').thenButton(
                     onPressed: () {
                       setState(() {
-                        // Switch back to the login form.
                         _isRegister = false;
                       });
                     },

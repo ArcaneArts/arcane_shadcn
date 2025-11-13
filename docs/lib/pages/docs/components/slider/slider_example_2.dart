@@ -8,7 +8,6 @@ class SliderExample2 extends StatefulWidget {
 }
 
 class _SliderExample2State extends State<SliderExample2> {
-  // A ranged slider has a start and end thumb/value.
   SliderValue value = const SliderValue.ranged(0.5, 0.75);
   @override
   Widget build(BuildContext context) {
@@ -24,7 +23,6 @@ class _SliderExample2State extends State<SliderExample2> {
           },
         ),
         const Gap(16),
-        // Display the current ranged values below the slider.
         Text('Value: ${value.start} - ${value.end}'),
       ],
     );

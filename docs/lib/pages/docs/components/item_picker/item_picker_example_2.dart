@@ -7,7 +7,6 @@ class ItemPickerExample2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return PrimaryButton(
       onPressed: () {
-        // Dialog variant of the item picker for a more prominent selection flow.
         showItemPickerDialog<int>(
           context,
           title: const Text('Pick a number'),
@@ -22,7 +21,7 @@ class ItemPickerExample2 extends StatelessWidget {
           },
         ).then(
           (value) {
-            if (value != null && context.mounted) {
+            if (value != null) {
               showToast(
                 context: context,
                 builder: (context, overlay) {
@@ -31,7 +30,7 @@ class ItemPickerExample2 extends StatelessWidget {
                   );
                 },
               );
-            } else if (context.mounted) {
+            } else {
               showToast(
                 context: context,
                 builder: (context, overlay) {

@@ -1,8 +1,5 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
-/// Vertical dividers between columns.
-///
-/// Use [VerticalDivider] to separate horizontally-arranged content.
 class DividerExample2 extends StatelessWidget {
   const DividerExample2({super.key});
 

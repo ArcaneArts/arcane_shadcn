@@ -35,8 +35,6 @@ class _CupertinoExample1State extends State<CupertinoExample1> {
               child: const Icon(CupertinoIcons.add),
             ),
             const shadcnui.Gap(64),
-            // shadcn_flutter widgets can also be used in a Cupertino app.
-            // This card mirrors the Material example but uses Cupertino dialogs.
             shadcnui.ShadcnUI(
                 child: shadcnui.Card(
               child: Column(
@@ -47,7 +45,6 @@ class _CupertinoExample1State extends State<CupertinoExample1> {
                   const shadcnui.Gap(16),
                   shadcnui.PrimaryButton(
                     onPressed: () {
-                      // Show a native Cupertino dialog
                       showCupertinoDialog(
                         context: context,
                         builder: (context) {
@@ -71,7 +68,6 @@ class _CupertinoExample1State extends State<CupertinoExample1> {
                   const shadcnui.Gap(8),
                   shadcnui.SecondaryButton(
                     onPressed: () {
-                      // Show a shadcn_flutter dialog as a comparison
                       shadcnui.showDialog(
                         context: context,
                         builder: (context) {

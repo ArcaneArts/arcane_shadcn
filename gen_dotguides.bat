@@ -1,1 +1,0 @@
-dart run gen/bin/dotguides_gen.dart

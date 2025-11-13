@@ -10,16 +10,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'platform_interface.dart'
     if (dart.library.js_interop) 'platform/platform_implementations_web.dart';
 
-/// The main application widget for shadcn_flutter.
-///
-/// ShadcnApp provides a Material-style app structure with shadcn theming.
-/// It wraps the Flutter [WidgetsApp] and provides theme management,
-/// navigation, and other app-level configurations.
 class ShadcnApp extends StatefulWidget {
-  /// Creates a ShadcnApp with navigator-based routing.
-  ///
-  /// This constructor is used for apps that use named routes and
-  /// a Navigator for navigation.
   const ShadcnApp({
     super.key,
     this.navigatorKey,
@@ -36,7 +27,7 @@ class ShadcnApp extends StatefulWidget {
     this.onGenerateTitle,
     this.color,
     this.background,
-    this.theme = const ThemeData(),
+    required this.theme,
     this.locale,
     this.localizationsDelegates,
     this.localeListResolutionCallback,
@@ -71,10 +62,6 @@ class ShadcnApp extends StatefulWidget {
         backButtonDispatcher = null,
         routerConfig = null;
 
-  /// Creates a ShadcnApp with router-based routing.
-  ///
-  /// This constructor is used for apps that use the Router API
-  /// for declarative navigation.
   const ShadcnApp.router({
     super.key,
     this.routeInformationProvider,
@@ -88,7 +75,7 @@ class ShadcnApp extends StatefulWidget {
     this.onNavigationNotification,
     this.color,
     this.background,
-    this.theme = const ThemeData(),
+    required this.theme,
     this.locale,
     this.localizationsDelegates,
     this.localeListResolutionCallback,
@@ -127,160 +114,80 @@ class ShadcnApp extends StatefulWidget {
         routes = null,
         initialRoute = null;
 
-  /// A key to use when building the [Navigator].
   final GlobalKey<NavigatorState>? navigatorKey;
 
-  /// The scaling strategy for the app.
   final AdaptiveScaling? scaling;
 
-  /// The widget for the default route of the app.
   final Widget? home;
 
-  /// The application's top-level routing table.
   final Map<String, WidgetBuilder>? routes;
 
-  /// The name of the first route to show.
   final String? initialRoute;
 
-  /// The route generator callback used when the app is navigated to a named route.
   final RouteFactory? onGenerateRoute;
 
-  /// The route generator callback used to generate initial routes.
   final InitialRouteListFactory? onGenerateInitialRoutes;
 
-  /// Called when [onGenerateRoute] fails to generate a route.
   final RouteFactory? onUnknownRoute;
 
-  /// Called when a navigation notification is dispatched.
   final NotificationListenerCallback<NavigationNotification>?
       onNavigationNotification;
 
-  /// The list of observers for the [Navigator] created for this app.
   final List<NavigatorObserver>? navigatorObservers;
 
-  /// The route information provider for router-based navigation.
   final RouteInformationProvider? routeInformationProvider;
 
-  /// The route information parser for router-based navigation.
   final RouteInformationParser<Object>? routeInformationParser;
 
-  /// The router delegate for router-based navigation.
   final RouterDelegate<Object>? routerDelegate;
 
-  /// The back button dispatcher for router-based navigation.
   final BackButtonDispatcher? backButtonDispatcher;
 
-  /// The router configuration for router-based navigation.
   final RouterConfig<Object>? routerConfig;
 
-  /// A builder that wraps the app's content.
   final TransitionBuilder? builder;
 
-  /// A one-line description used by the device to identify the app.
   final String title;
 
-  /// A callback that produces the app title based on the context.
   final GenerateAppTitle? onGenerateTitle;
 
-  /// The theme data for the app.
   final ThemeData theme;
-
-  /// The dark theme data for the app.
   final ThemeData? darkTheme;
-
-  /// Determines which theme will be used by the app.
   final ThemeMode themeMode;
-
-  /// The primary color to use for the app's widgets.
   final Color? color;
-
-  /// The background color for the app.
   final Color? background;
-
-  /// The initial locale for this app's [Localizations] widget.
   final Locale? locale;
 
-  /// The delegates for this app's [Localizations] widget.
   final Iterable<LocalizationsDelegate<dynamic>>? localizationsDelegates;
-
-  /// Callback that receives the list of locales and returns the best match.
   final LocaleListResolutionCallback? localeListResolutionCallback;
-
-  /// Callback that receives locale and supported locales and returns the best match.
   final LocaleResolutionCallback? localeResolutionCallback;
-
-  /// The list of locales that this app has been localized for.
   final Iterable<Locale> supportedLocales;
-
-  /// Whether to show the performance overlay.
   final bool showPerformanceOverlay;
-
-  /// Whether to show the semantics debugger.
   final bool showSemanticsDebugger;
-
-  /// Whether to show the debug banner.
   final bool debugShowCheckedModeBanner;
-
-  /// The default map of shortcuts to intents for the application.
   final Map<ShortcutActivator, Intent>? shortcuts;
-
-  /// The default map of intent types to actions for the application.
   final Map<Type, Action<Intent>>? actions;
-
-  /// The identifier to use for state restoration of the app.
   final String? restorationScopeId;
-
-  /// The scroll behavior for the app.
   final ScrollBehavior? scrollBehavior;
-
-  /// Whether to show the Material grid in debug mode.
   final bool debugShowMaterialGrid;
-
-  /// The Material theme to use for Material widgets.
   final m.ThemeData? materialTheme;
-
-  /// The Cupertino theme to use for Cupertino widgets.
   final c.CupertinoThemeData? cupertinoTheme;
-
-  /// Whether to disable the browser context menu.
   final bool disableBrowserContextMenu;
-
-  /// The initial list of recent colors.
   final List<Color> initialRecentColors;
-
-  /// The maximum number of recent colors to track.
   final int maxRecentColors;
-
-  /// Called when the list of recent colors changes.
   final ValueChanged<List<Color>>? onRecentColorsChanged;
-
-  /// Whether to snap widgets to physical pixels.
   final bool pixelSnap;
-
-  /// Whether to enable scroll interception.
   final bool enableScrollInterception;
-
-  /// The overlay handler for popovers.
   final OverlayHandler? popoverHandler;
-
-  /// The overlay handler for tooltips.
   final OverlayHandler? tooltipHandler;
-
-  /// The overlay handler for menus.
   final OverlayHandler? menuHandler;
-
-  /// Whether to animate theme changes.
   final bool enableThemeAnimation;
 
   @override
   State<ShadcnApp> createState() => _ShadcnAppState();
 }
 
-/// Default scroll behavior for shadcn_flutter applications.
-///
-/// Provides bouncing physics and platform-appropriate scrollbars.
 class ShadcnScrollBehavior extends ScrollBehavior {
-  /// Creates a shadcn scroll behavior.
   const ShadcnScrollBehavior();
 
   @override
@@ -309,12 +216,6 @@ class ShadcnScrollBehavior extends ScrollBehavior {
           case TargetPlatform.fuchsia:
           case TargetPlatform.iOS:
             return child;
-          // ignore: unreachable_switch_default
-          default:
-            return Scrollbar(
-              controller: details.controller,
-              child: child,
-            );
         }
     }
   }
@@ -338,9 +239,6 @@ class ShadcnScrollBehavior extends ScrollBehavior {
         );
       case TargetPlatform.fuchsia:
         break;
-      // ignore: unreachable_switch_default
-      default:
-        return child;
     }
     return GlowingOverscrollIndicator(
       axisDirection: details.direction,
@@ -441,35 +339,33 @@ class _ShadcnAppState extends State<ShadcnApp> {
   Widget _buildWidgetApp(BuildContext context) {
     final Color primaryColor = widget.color ?? widget.theme.colorScheme.primary;
     if (_usesRouter) {
-      return DataMessengerRoot(
-        child: WidgetsApp.router(
-          key: GlobalObjectKey(this),
-          routeInformationProvider: widget.routeInformationProvider,
-          routeInformationParser: widget.routeInformationParser,
-          routerDelegate: widget.routerDelegate,
-          routerConfig: widget.routerConfig,
-          backButtonDispatcher: widget.backButtonDispatcher,
-          builder: _builder,
-          title: widget.title,
-          onGenerateTitle: widget.onGenerateTitle,
-          textStyle: widget.theme.typography.sans.copyWith(
-            color: widget.theme.colorScheme.foreground,
-          ),
-          color: primaryColor,
-          locale: widget.locale,
-          localizationsDelegates: _localizationsDelegates,
-          localeResolutionCallback: widget.localeResolutionCallback,
-          localeListResolutionCallback: widget.localeListResolutionCallback,
-          supportedLocales: widget.supportedLocales,
-          showPerformanceOverlay: widget.showPerformanceOverlay,
-          // checkerboardRasterCacheImages: widget.checkerboardRasterCacheImages,
-          // checkerboardOffscreenLayers: widget.checkerboardOffscreenLayers,
-          showSemanticsDebugger: widget.showSemanticsDebugger,
-          debugShowCheckedModeBanner: widget.debugShowCheckedModeBanner,
-          shortcuts: widget.shortcuts,
-          actions: widget.actions,
-          restorationScopeId: widget.restorationScopeId,
+      return WidgetsApp.router(
+        key: GlobalObjectKey(this),
+        routeInformationProvider: widget.routeInformationProvider,
+        routeInformationParser: widget.routeInformationParser,
+        routerDelegate: widget.routerDelegate,
+        routerConfig: widget.routerConfig,
+        backButtonDispatcher: widget.backButtonDispatcher,
+        builder: _builder,
+        title: widget.title,
+        onGenerateTitle: widget.onGenerateTitle,
+        textStyle: widget.theme.typography.sans.copyWith(
+          color: widget.theme.colorScheme.foreground,
         ),
+        color: primaryColor,
+        locale: widget.locale,
+        localizationsDelegates: _localizationsDelegates,
+        localeResolutionCallback: widget.localeResolutionCallback,
+        localeListResolutionCallback: widget.localeListResolutionCallback,
+        supportedLocales: widget.supportedLocales,
+        showPerformanceOverlay: widget.showPerformanceOverlay,
+        // checkerboardRasterCacheImages: widget.checkerboardRasterCacheImages,
+        // checkerboardOffscreenLayers: widget.checkerboardOffscreenLayers,
+        showSemanticsDebugger: widget.showSemanticsDebugger,
+        debugShowCheckedModeBanner: widget.debugShowCheckedModeBanner,
+        shortcuts: widget.shortcuts,
+        actions: widget.actions,
+        restorationScopeId: widget.restorationScopeId,
       );
     }
 
@@ -522,41 +418,37 @@ class _ShadcnAppState extends State<ShadcnApp> {
       }
       return true;
     }());
-    return Data<_ShadcnAppState>.inherit(
-      data: this,
-      child: m.Theme(
-        data: widget.materialTheme ??
-            m.ThemeData.from(
-              colorScheme: m.ColorScheme.fromSeed(
-                seedColor: widget.theme.colorScheme.primary,
-                brightness: widget.theme.brightness,
-                surface: widget.theme.colorScheme.background,
-                primary: widget.theme.colorScheme.primary,
-                secondary: widget.theme.colorScheme.secondary,
-                error: widget.theme.colorScheme.destructive,
-              ),
+    return m.Theme(
+      data: widget.materialTheme ??
+          m.ThemeData.from(
+            colorScheme: m.ColorScheme.fromSeed(
+              seedColor: widget.theme.colorScheme.primary,
+              brightness: widget.theme.brightness,
+              surface: widget.theme.colorScheme.background,
+              primary: widget.theme.colorScheme.primary,
+              secondary: widget.theme.colorScheme.secondary,
+              error: widget.theme.colorScheme.destructive,
             ),
-        child: c.CupertinoTheme(
-          data: widget.cupertinoTheme ??
-              c.CupertinoThemeData(
-                brightness: widget.theme.brightness,
-                primaryColor: widget.theme.colorScheme.primary,
-                barBackgroundColor: widget.theme.colorScheme.accent,
-                scaffoldBackgroundColor: widget.theme.colorScheme.background,
-                applyThemeToAll: true,
-                primaryContrastingColor:
-                    widget.theme.colorScheme.primaryForeground,
-              ),
-          child: m.Material(
-            color: widget.background ?? m.Colors.transparent,
-            child: m.ScaffoldMessenger(
-              child: ScrollConfiguration(
-                behavior:
-                    (widget.scrollBehavior ?? const ShadcnScrollBehavior()),
-                child: HeroControllerScope(
-                  controller: _heroController,
-                  child: result,
-                ),
+          ),
+      child: c.CupertinoTheme(
+        data: widget.cupertinoTheme ??
+            c.CupertinoThemeData(
+              brightness: widget.theme.brightness,
+              primaryColor: widget.theme.colorScheme.primary,
+              barBackgroundColor: widget.theme.colorScheme.accent,
+              scaffoldBackgroundColor: widget.theme.colorScheme.background,
+              applyThemeToAll: true,
+              primaryContrastingColor:
+                  widget.theme.colorScheme.primaryForeground,
+            ),
+        child: m.Material(
+          color: widget.background ?? m.Colors.transparent,
+          child: m.ScaffoldMessenger(
+            child: ScrollConfiguration(
+              behavior: (widget.scrollBehavior ?? const ShadcnScrollBehavior()),
+              child: HeroControllerScope(
+                controller: _heroController,
+                child: result,
               ),
             ),
           ),
@@ -566,54 +458,22 @@ class _ShadcnAppState extends State<ShadcnApp> {
   }
 }
 
-/// A layer widget that provides shadcn theme and infrastructure.
-///
-/// This widget sets up the theming, overlay handlers, scroll behavior,
-/// and other infrastructure needed for shadcn_flutter widgets to work correctly.
 class ShadcnLayer extends StatelessWidget {
-  /// The child widget to wrap with shadcn infrastructure.
   final Widget? child;
-
-  /// The light theme data.
   final ThemeData theme;
-
-  /// The dark theme data.
   final ThemeData? darkTheme;
-
-  /// Determines which theme to use.
   final ThemeMode themeMode;
-
-  /// The scaling strategy for adaptive layouts.
   final AdaptiveScaling? scaling;
-
-  /// The initial list of recent colors.
   final List<Color> initialRecentColors;
-
-  /// The maximum number of recent colors to track.
   final int maxRecentColors;
-
-  /// Called when the list of recent colors changes.
   final ValueChanged<List<Color>>? onRecentColorsChanged;
-
-  /// A builder to wrap the child widget.
   final Widget Function(BuildContext context, Widget? child)? builder;
-
-  /// Whether to enable scroll interception.
   final bool enableScrollInterception;
-
-  /// The overlay handler for popovers.
   final OverlayHandler? popoverHandler;
-
-  /// The overlay handler for tooltips.
   final OverlayHandler? tooltipHandler;
-
-  /// The overlay handler for menus.
   final OverlayHandler? menuHandler;
-
-  /// Whether to animate theme changes.
   final bool enableThemeAnimation;
 
-  /// Creates a shadcn layer.
   const ShadcnLayer({
     super.key,
     required this.theme,
@@ -637,7 +497,6 @@ class ShadcnLayer extends StatelessWidget {
     var appScaling = scaling ?? AdaptiveScaler.defaultScaling(theme);
     var platformBrightness = MediaQuery.platformBrightnessOf(context);
     var mobileMode = isMobile(theme.platform);
-    var hasShadcnApp = Data.maybeOf<_ShadcnAppState>(context) != null;
     final scaledTheme = themeMode == ThemeMode.dark ||
             (themeMode == ThemeMode.system &&
                 platformBrightness == Brightness.dark)
@@ -661,32 +520,34 @@ class ShadcnLayer extends StatelessWidget {
         data: scaledTheme,
         child: Builder(builder: (context) {
           var theme = Theme.of(context);
-          var scrollViewInterceptor = ScrollViewInterceptor(
-            enabled: enableScrollInterception,
-            child: ShadcnSkeletonizerConfigLayer(
-              theme: theme,
-              child: DefaultTextStyle.merge(
-                style: theme.typography.base.copyWith(
-                  color: theme.colorScheme.foreground,
-                ),
-                child: IconTheme.merge(
-                  data: theme.iconTheme.medium.copyWith(
+          return DataMessengerRoot(
+            child: ScrollViewInterceptor(
+              enabled: enableScrollInterception,
+              child: ShadcnSkeletonizerConfigLayer(
+                theme: theme,
+                child: DefaultTextStyle.merge(
+                  style: theme.typography.base.copyWith(
                     color: theme.colorScheme.foreground,
                   ),
-                  child: RecentColorsScope(
-                    initialRecentColors: initialRecentColors,
-                    maxRecentColors: maxRecentColors,
-                    onRecentColorsChanged: onRecentColorsChanged,
-                    child: EyeDropperLayer(
-                      child: KeyboardShortcutDisplayMapper(
-                        child: ToastLayer(
-                          child: builder != null
-                              ? Builder(
-                                  builder: (BuildContext context) {
-                                    return builder!(context, child);
-                                  },
-                                )
-                              : child ?? const SizedBox.shrink(),
+                  child: IconTheme.merge(
+                    data: theme.iconTheme.medium.copyWith(
+                      color: theme.colorScheme.foreground,
+                    ),
+                    child: RecentColorsScope(
+                      initialRecentColors: initialRecentColors,
+                      maxRecentColors: maxRecentColors,
+                      onRecentColorsChanged: onRecentColorsChanged,
+                      child: ColorPickingLayer(
+                        child: KeyboardShortcutDisplayMapper(
+                          child: ToastLayer(
+                            child: builder != null
+                                ? Builder(
+                                    builder: (BuildContext context) {
+                                      return builder!(context, child);
+                                    },
+                                  )
+                                : child ?? const SizedBox.shrink(),
+                          ),
                         ),
                       ),
                     ),
@@ -695,39 +556,19 @@ class ShadcnLayer extends StatelessWidget {
               ),
             ),
           );
-          if (!hasShadcnApp) {
-            return DataMessengerRoot(
-              child: scrollViewInterceptor,
-            );
-          } else {
-            return scrollViewInterceptor;
-          }
         }),
       ),
     );
   }
 }
 
-/// An animated theme widget for shadcn_flutter.
-///
-/// Animates theme changes over time with smooth transitions.
 class ShadcnAnimatedTheme extends StatelessWidget {
-  /// The child widget to apply the theme to.
   final Widget child;
-
-  /// The theme data to animate to.
   final ThemeData data;
-
-  /// The duration of the animation.
   final Duration duration;
-
-  /// The curve for the animation.
   final Curve curve;
-
-  /// Called when the animation completes.
   final VoidCallback? onEnd;
 
-  /// Creates an animated theme widget.
   const ShadcnAnimatedTheme({
     super.key,
     required this.data,
@@ -754,12 +595,7 @@ class ShadcnAnimatedTheme extends StatelessWidget {
   }
 }
 
-/// A custom tween for animating rectangles along an arc.
-///
-/// This tween creates more natural-looking animations for rectangles
-/// by moving them along an arc path rather than a straight line.
 class ShadcnRectArcTween extends RectTween {
-  /// Creates a rectangle arc tween.
   ShadcnRectArcTween({
     super.begin,
     super.end,
@@ -802,7 +638,6 @@ class ShadcnRectArcTween extends RectTween {
     };
   }
 
-  /// Gets the arc tween for the beginning point of the rectangle.
   ShadcnPointArcTween? get beginArc {
     if (begin == null) {
       return null;
@@ -814,8 +649,6 @@ class ShadcnRectArcTween extends RectTween {
   }
 
   late ShadcnPointArcTween _beginArc;
-
-  /// Gets the arc tween for the ending point of the rectangle.
   ShadcnPointArcTween? get endArc {
     if (end == null) {
       return null;
@@ -891,12 +724,7 @@ class _BorderRadiusCorner {
 
 const double _kOnAxisDelta = 2.0;
 
-/// A custom tween for animating points along an arc.
-///
-/// This tween creates curved motion between two points, useful for
-/// creating natural-looking animations.
 class ShadcnPointArcTween extends Tween<Offset> {
-  /// Creates a point arc tween.
   ShadcnPointArcTween({
     super.begin,
     super.end,
@@ -954,11 +782,6 @@ class ShadcnPointArcTween extends Tween<Offset> {
     _dirty = false;
   }
 
-  /// Gets the center point of the arc between [begin] and [end].
-  ///
-  /// Returns `null` if either [begin] or [end] is null.
-  ///
-  /// The center is computed lazily and cached for performance.
   Offset? get center {
     if (begin == null || end == null) {
       return null;
@@ -970,12 +793,6 @@ class ShadcnPointArcTween extends Tween<Offset> {
   }
 
   Offset? _center;
-
-  /// Gets the radius of the arc between [begin] and [end].
-  ///
-  /// Returns `null` if either [begin] or [end] is null.
-  ///
-  /// The radius is the distance from the center to either endpoint.
   double? get radius {
     if (begin == null || end == null) {
       return null;
@@ -987,12 +804,6 @@ class ShadcnPointArcTween extends Tween<Offset> {
   }
 
   double? _radius;
-
-  /// Gets the starting angle of the arc in radians.
-  ///
-  /// Returns `null` if either [begin] or [end] is null.
-  ///
-  /// Angle is measured clockwise from the positive x-axis.
   double? get beginAngle {
     if (begin == null || end == null) {
       return null;
@@ -1004,12 +815,6 @@ class ShadcnPointArcTween extends Tween<Offset> {
   }
 
   double? _beginAngle;
-
-  /// Gets the ending angle of the arc in radians.
-  ///
-  /// Returns `null` if either [begin] or [end] is null.
-  ///
-  /// Angle is measured clockwise from the positive x-axis.
   double? get endAngle {
     if (begin == null || end == null) {
       return null;
@@ -1059,17 +864,10 @@ class ShadcnPointArcTween extends Tween<Offset> {
   }
 }
 
-/// A widget that provides text and icon styling for shadcn UI components.
-///
-/// Applies consistent text styles and icon themes to its descendants.
 class ShadcnUI extends StatelessWidget {
-  /// Optional text style override.
   final TextStyle? textStyle;
-
-  /// The child widget.
   final Widget child;
 
-  /// Creates a ShadcnUI widget.
   const ShadcnUI({
     super.key,
     this.textStyle,
@@ -1107,14 +905,9 @@ class _GlobalPointerListener extends c.StatefulWidget {
       _GlobalPointerListenerState();
 }
 
-/// Data about the current pointer position.
-///
-/// Used to track mouse/pointer location in the app.
 class PointerData {
-  /// The current position of the pointer.
   final Offset position;
 
-  /// Creates pointer data with the given position.
   PointerData({
     required this.position,
   });

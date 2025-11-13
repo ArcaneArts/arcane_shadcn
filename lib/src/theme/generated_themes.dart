@@ -26,12 +26,6 @@ void _assertNotThemeModeSystem(ThemeMode mode, String label) {
   }
 }
 
-/// A collection of predefined color schemes for shadcn_flutter.
-///
-/// Provides light and dark variants of different color schemes including
-/// blue, gray, green, neutral, orange, red, rose, slate, stone, violet,
-/// yellow, and zinc.
-
 class ColorSchemes {
   ColorSchemes._();
   static const ColorScheme lightBlue = ColorScheme(

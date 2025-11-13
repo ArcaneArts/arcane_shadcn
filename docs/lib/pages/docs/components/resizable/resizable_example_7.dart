@@ -10,7 +10,6 @@ class ResizableExample7 extends StatefulWidget {
 }
 
 class _ResizableExample7State extends State<ResizableExample7> {
-  // Dynamic list of colors to render each resizable pane.
   final List<Color> _items = List.generate(2, (index) => _generateColor());
 
   static Color _generateColor() {
@@ -35,7 +34,6 @@ class _ResizableExample7State extends State<ResizableExample7> {
             children: [
               for (int i = 0; i < _items.length; i++)
                 ResizablePane(
-                  // Use a ValueKey derived from the color so Flutter can track panes across insert/remove.
                   key: ValueKey(_items[i].toARGB32()),
                   initialSize: 200,
                   minSize: 100,
@@ -49,7 +47,6 @@ class _ResizableExample7State extends State<ResizableExample7> {
                             child: const Text('Insert Before'),
                             onPressed: () {
                               setState(() {
-                                // Insert a new pane before the current one.
                                 _items.insert(i, _generateColor());
                               });
                             },
@@ -58,7 +55,6 @@ class _ResizableExample7State extends State<ResizableExample7> {
                             child: const Text('Remove'),
                             onPressed: () {
                               setState(() {
-                                // Remove this pane.
                                 _items.removeAt(i);
                               });
                             },
@@ -67,7 +63,6 @@ class _ResizableExample7State extends State<ResizableExample7> {
                             child: const Text('Insert After'),
                             onPressed: () {
                               setState(() {
-                                // Insert a new pane after the current one.
                                 _items.insert(i + 1, _generateColor());
                               });
                             },
@@ -83,7 +78,6 @@ class _ResizableExample7State extends State<ResizableExample7> {
             child: const Text('Add'),
             onPressed: () {
               setState(() {
-                // Append a new pane at the end.
                 _items.add(_generateColor());
               });
             },

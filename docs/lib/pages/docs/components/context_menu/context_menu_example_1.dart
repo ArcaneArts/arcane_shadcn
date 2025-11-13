@@ -1,14 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
-/// Context menu with shortcuts, submenu, checkboxes, and radio group.
-///
-/// Right-click (or long-press) the dashed area to open the menu. This
-/// demonstrates:
-/// - [MenuButton] items with keyboard [MenuShortcut]s.
-/// - Nested submenu via [MenuButton.subMenu].
-/// - [MenuCheckbox] with `autoClose: false` to keep menu open while toggling.
-/// - [MenuRadioGroup] for mutually exclusive choices.
 class ContextMenuExample1 extends StatefulWidget {
   const ContextMenuExample1({super.key});
 
@@ -25,7 +17,6 @@ class _ContextMenuExample1State extends State<ContextMenuExample1> {
     final theme = Theme.of(context);
     return ContextMenu(
         items: [
-          // Simple command with Ctrl+[ shortcut.
           const MenuButton(
             trailing: MenuShortcut(
               activator: SingleActivator(
@@ -35,7 +26,6 @@ class _ContextMenuExample1State extends State<ContextMenuExample1> {
             ),
             child: Text('Back'),
           ),
-          // Disabled command example with Ctrl+] shortcut.
           const MenuButton(
             trailing: MenuShortcut(
               activator: SingleActivator(
@@ -46,7 +36,6 @@ class _ContextMenuExample1State extends State<ContextMenuExample1> {
             enabled: false,
             child: Text('Forward'),
           ),
-          // Enabled command with Ctrl+R shortcut.
           const MenuButton(
             trailing: MenuShortcut(
               activator: SingleActivator(
@@ -56,7 +45,6 @@ class _ContextMenuExample1State extends State<ContextMenuExample1> {
             ),
             child: Text('Reload'),
           ),
-          // Submenu with additional tools and a divider.
           const MenuButton(
             subMenu: [
               MenuButton(
@@ -82,7 +70,6 @@ class _ContextMenuExample1State extends State<ContextMenuExample1> {
             child: Text('More Tools'),
           ),
           const MenuDivider(),
-          // Checkbox item; keep menu open while toggling for quick changes.
           MenuCheckbox(
             value: showBookmarksBar,
             onChanged: (context, value) {
@@ -113,7 +100,6 @@ class _ContextMenuExample1State extends State<ContextMenuExample1> {
           const MenuDivider(),
           const MenuLabel(child: Text('People')),
           const MenuDivider(),
-          // Radio group; only one person can be selected at a time.
           MenuRadioGroup(
             value: people,
             onChanged: (context, value) {
@@ -136,7 +122,6 @@ class _ContextMenuExample1State extends State<ContextMenuExample1> {
           ),
         ],
         child: DashedContainer(
-          // Right-click target with a dashed border and rounded corners.
           borderRadius: BorderRadius.circular(theme.radiusMd),
           strokeWidth: 2,
           gap: 2,

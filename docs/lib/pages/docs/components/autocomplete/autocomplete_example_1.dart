@@ -1,10 +1,5 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
-/// AutoComplete with a TextField and filtered suggestions.
-///
-/// Typing in the field updates the current word under the caret using
-/// [TextEditingController.currentWord] and filters a static list of fruits.
-/// The [AutoComplete] widget displays suggestions provided via `suggestions`.
 class AutoCompleteExample1 extends StatefulWidget {
   const AutoCompleteExample1({super.key});
 
@@ -13,7 +8,6 @@ class AutoCompleteExample1 extends StatefulWidget {
 }
 
 class _AutoCompleteExample1State extends State<AutoCompleteExample1> {
-  // Source data for suggestions.
   final List<String> suggestions = [
     'Apple',
     'Banana',
@@ -31,12 +25,9 @@ class _AutoCompleteExample1State extends State<AutoCompleteExample1> {
     'Watermelon',
   ];
 
-  // Filtered suggestions for the current input word.
   List<String> _currentSuggestions = [];
-  // Controller for reading the current text and word at the caret.
   final TextEditingController _controller = TextEditingController();
 
-  // Update the filtered suggestions based on the current word being typed.
   void _updateSuggestions(String value) {
     String? currentWord = _controller.currentWord;
     if (currentWord == null || currentWord.isEmpty) {
@@ -56,15 +47,15 @@ class _AutoCompleteExample1State extends State<AutoCompleteExample1> {
   @override
   Widget build(BuildContext context) {
     return AutoComplete(
-      // Provide the list to be shown in the overlay.
       suggestions: _currentSuggestions,
       child: TextField(
         controller: _controller,
-        // Each keystroke recalculates the suggestions.
         onChanged: _updateSuggestions,
-        features: const [
-          InputFeature.clear(),
-        ],
+        trailing: const IconButton.text(
+          density: ButtonDensity.compact,
+          icon: Icon(Icons.clear),
+          onPressed: clearActiveTextInput,
+        ),
       ),
     );
   }

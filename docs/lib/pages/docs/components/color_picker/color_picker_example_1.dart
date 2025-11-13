@@ -20,30 +20,28 @@ class _ColorPickerExample1State extends State<ColorPickerExample1> {
             width: 32,
             height: 32,
             child: ColorInput(
-              // A compact square color input that opens a popover prompt.
-              value: color,
-              orientation: Axis.horizontal,
-              promptMode: PromptMode.popover,
+              color: color,
+              mode: PromptMode.popover,
               onChanged: (value) {
                 setState(() {
                   color = value;
                 });
               },
+              storage: ColorHistoryStorage.of(context),
             ),
           ),
           const Gap(16),
           ColorInput(
-            value: color,
-            // Full dialog mode with a title.
-            promptMode: PromptMode.dialog,
+            color: color,
+            mode: PromptMode.dialog,
             dialogTitle: const Text('Select Color'),
             onChanged: (value) {
               setState(() {
                 color = value;
               });
             },
-            // Show the textual label/hex alongside the swatch.
             showLabel: true,
+            storage: ColorHistoryStorage.of(context),
           ),
         ],
       ),

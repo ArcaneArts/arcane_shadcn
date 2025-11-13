@@ -1,12 +1,4 @@
-// Docs page scaffold and navigation structure.
-//
-// Provides the high-level layout for documentation pages, including:
-// - Sidebar sections and pages (DocsPageState.sections) with routing names.
-// - On-this-page anchors with visibility tracking for in-page nav.
-// - Optional scrollability and per-page navigation items.
-//
-// This is part of the docs framework (a wrapper/renderer), not a component demo.
-// Comments added for clarity; behavior unchanged.
+import 'package:docs/custom.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -171,13 +163,6 @@ class DocsPageState extends State<DocsPage> {
     ...customSections,
     // COMPONENTS BEGIN
     ShadcnDocsSection(
-      'Application',
-      [
-        ShadcnDocsPage('ShadcnApp', 'app'),
-        ShadcnDocsPage('ShadcnLayer', 'wrapper'),
-      ],
-    ),
-    ShadcnDocsSection(
       'Animation',
       [
         ShadcnDocsPage('Animated Value', 'animated_value_builder'),
@@ -206,6 +191,10 @@ class DocsPageState extends State<DocsPage> {
       [
         ShadcnDocsPage('Avatar', 'avatar'),
         ShadcnDocsPage('Avatar Group', 'avatar_group'),
+        // ShadcnDocsPage(
+        // 'Data Table', 'data_table', ShadcnFeatureTag.experimental),
+        // TODO also make it zoomable like: https://zoom-chart-demo.vercel.app/
+        // ShadcnDocsPage('Chart', 'chart', ShadcnFeatureTag.workInProgress),
         ShadcnDocsPage('Code Snippet', 'code_snippet'),
         ShadcnDocsPage('Table', 'table'),
         ShadcnDocsPage('Tracker', 'tracker'),
@@ -226,25 +215,40 @@ class DocsPageState extends State<DocsPage> {
     ShadcnDocsSection(
       'Form',
       [
+        // mostly same as file input, except it only accepts audio file
+        // and adds the ability to play the audio
+        // ShadcnDocsPage(
+        //     'Audio Input', 'audio_input', ShadcnFeatureTag.workInProgress),
+        // update: NVM, merge the component with file input
+        // ShadcnDocsPage('Button', 'button'),
+        // moved to control
         ShadcnDocsPage('Checkbox', 'checkbox'),
         ShadcnDocsPage('Chip Input', 'chip_input'),
         ShadcnDocsPage('Color Picker', 'color_picker'),
-        ShadcnDocsPage('Linear Gradient Picker', 'linear_gradient_picker',
-            ShadcnFeatureTag.workInProgress),
-        ShadcnDocsPage('Radial Gradient Picker', 'radial_gradient_picker',
-            ShadcnFeatureTag.workInProgress),
-        ShadcnDocsPage('Sweep Gradient Picker', 'sweep_gradient_picker',
-            ShadcnFeatureTag.workInProgress),
         ShadcnDocsPage('Date Picker', 'date_picker'),
+        // TODO: https://file-vault-delta.vercel.app/ also https://uploader.sadmn.com/
+        ShadcnDocsPage(
+            'File Picker', 'file_picker', ShadcnFeatureTag.workInProgress),
         ShadcnDocsPage('Form', 'form'),
         ShadcnDocsPage(
             'Formatted Input', 'formatted_input', ShadcnFeatureTag.newFeature),
+        // TODO: Image Input (with cropper and rotate tool, upload from file or take photo from camera)
+        // ShadcnDocsPage(
+        // 'Image Input', 'image_input', ShadcnFeatureTag.workInProgress),
+        // replaced with File Input
         ShadcnDocsPage('Text Input', 'input'),
+        // TODO: same as text input, but has dropdown autocomplete like chip input, the difference is, it does not convert
+        // the value into chips
         ShadcnDocsPage('AutoComplete', 'autocomplete'),
+        // TODO: same as input, except it only accepts number, and can be increased or decreased
+        // using scroll, also has increment and decrement button
+        // in between increment and decrement button, theres
+        // a divider that can be dragged to increase or decrease the value
         ShadcnDocsPage('Number Input', 'number_input'),
         ShadcnDocsPage('Input OTP', 'input_otp'),
         ShadcnDocsPage('Phone Input', 'phone_input'),
         ShadcnDocsPage('Radio Group', 'radio_group'),
+        //https://www.radix-ui.com/themes/docs/components/radio-cards
         ShadcnDocsPage('Radio Card', 'radio_card'),
         ShadcnDocsPage('Select', 'select'),
         ShadcnDocsPage('Slider', 'slider'),
@@ -265,6 +269,7 @@ class DocsPageState extends State<DocsPage> {
         ShadcnDocsPage('Carousel', 'carousel'),
         ShadcnDocsPage('Divider', 'divider'),
         ShadcnDocsPage('Resizable', 'resizable'),
+        // https://nextjs-shadcn-dnd.vercel.app/ (make it headless)
         ShadcnDocsPage('Sortable', 'sortable'),
         ShadcnDocsPage('Steps', 'steps'),
         ShadcnDocsPage('Stepper', 'stepper'),
@@ -283,6 +288,7 @@ class DocsPageState extends State<DocsPage> {
         ShadcnDocsPage('Pagination', 'pagination'),
         ShadcnDocsPage('Tabs', 'tabs'),
         ShadcnDocsPage('Tab List', 'tab_list'),
+        // TODO: like a chrome tab, complete with its view
         ShadcnDocsPage('Tab Pane', 'tab_pane'),
         ShadcnDocsPage('Tree', 'tree'),
         // aka Bottom Navigation Bar
@@ -306,6 +312,7 @@ class DocsPageState extends State<DocsPage> {
         ShadcnDocsPage('Sheet', 'sheet'),
         ShadcnDocsPage('Swiper', 'swiper', ShadcnFeatureTag.newFeature),
         ShadcnDocsPage('Tooltip', 'tooltip'),
+        // TODO: window as in like a window in desktop
         ShadcnDocsPage('Window', 'window', ShadcnFeatureTag.experimental),
       ],
     ),
@@ -319,7 +326,13 @@ class DocsPageState extends State<DocsPage> {
         ShadcnDocsPage('Command', 'command'),
         ShadcnDocsPage('Context Menu', 'context_menu'),
         ShadcnDocsPage('Dropdown Menu', 'dropdown_menu'),
+        // TODO https://www.radix-ui.com/themes/docs/components/kbd
         ShadcnDocsPage('Keyboard Display', 'keyboard_display'),
+        // TODO: Same progress as image input
+        ShadcnDocsPage(
+            'Image Tools', 'image_tools', ShadcnFeatureTag.workInProgress),
+        // TODO: Mostly same as refresh indicator, but it does not provide indicator
+        // the indicator itself is provided by scaffold
         ShadcnDocsPage('Refresh Trigger', 'refresh_trigger'),
         ShadcnDocsPage('Overflow Marquee', 'overflow_marquee'),
       ],
@@ -1123,9 +1136,8 @@ class _DocsSidebarButton extends StatefulWidget {
 String? _goRouterNamedLocation(BuildContext context, String name) {
   try {
     return '/#${GoRouter.of(context).namedLocation(name)}';
-  } catch (e) {
-    return null;
-  }
+  } catch (e) {}
+  return '';
 }
 
 class _DocsSidebarButtonState extends State<_DocsSidebarButton> {

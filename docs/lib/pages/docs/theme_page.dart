@@ -1,4 +1,3 @@
-import 'package:docs/code_highlighter.dart';
 import 'package:docs/main.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
@@ -253,7 +252,7 @@ class _ThemePageState extends State<ThemePage> {
 
           const Text('Code').h2().anchored(codeKey),
           const Text('Use the following code to apply the color scheme.').p(),
-          CodeBlock(
+          CodeSnippet(
             code: customColorScheme ? buildCustomCode() : buildPremadeCode(),
             mode: 'dart',
           ).p(),
@@ -271,20 +270,20 @@ class _ThemePageState extends State<ThemePage> {
     buffer +=
         '\n\t\t\tbrightness: ${isDark ? 'Brightness.dark' : 'Brightness.light'},';
     for (var key in colors.keys) {
-      String hex = colorToHex(colors[key]!, true, false);
+      String hex = colors[key]!.value.toRadixString(16);
       buffer += '\n\t\t\t$key: Color(0x$hex),';
     }
     buffer += '\n\t\t),';
     buffer += '\n\t\tradius: $radius,';
-    if (surfaceOpacity != 1) {
-      buffer += '\n\t\tsurfaceOpacity: $surfaceOpacity,';
-    }
-    if (surfaceBlur != 0) {
-      buffer += '\n\t\tsurfaceBlur: $surfaceBlur,';
-    }
     buffer += '\n\t),';
     if (scaling != 1) {
       buffer += '\n\tscaling: const AdaptiveScaling($scaling),';
+    }
+    if (surfaceOpacity != 1) {
+      buffer += '\n\tsurfaceOpacity: $surfaceOpacity,';
+    }
+    if (surfaceBlur != 0) {
+      buffer += '\n\tsurfaceBlur: $surfaceBlur,';
     }
     buffer += '\n...';
     buffer += '\n)';
@@ -299,15 +298,15 @@ class _ThemePageState extends State<ThemePage> {
     buffer += '\n\ttheme: ThemeData(';
     buffer += '\n\t\tcolorScheme: ColorSchemes.$name,';
     buffer += '\n\t\tradius: $radius,';
-    if (surfaceOpacity != 1) {
-      buffer += '\n\t\tsurfaceOpacity: $surfaceOpacity,';
-    }
-    if (surfaceBlur != 0) {
-      buffer += '\n\t\tsurfaceBlur: $surfaceBlur,';
-    }
     buffer += '\n\t),';
     if (scaling != 1) {
       buffer += '\n\tscaling: const AdaptiveScaling($scaling),';
+    }
+    if (surfaceOpacity != 1) {
+      buffer += '\n\tsurfaceOpacity: $surfaceOpacity,';
+    }
+    if (surfaceBlur != 0) {
+      buffer += '\n\tsurfaceBlur: $surfaceBlur,';
     }
     buffer += '\n...';
     buffer += '\n)';
@@ -399,31 +398,20 @@ class _ThemePageState extends State<ThemePage> {
       child: Builder(builder: (context) {
         return GestureDetector(
           onTap: () {
-            showPopover(
+            showColorPicker(
               context: context,
-              alignment: Alignment.topLeft,
-              anchorAlignment: Alignment.bottomLeft,
+              color: ColorDerivative.fromColor(colors[name]!),
               offset: const Offset(0, 8),
-              widthConstraint: PopoverConstraint.intrinsic,
-              heightConstraint: PopoverConstraint.intrinsic,
-              builder: (context) {
-                return SurfaceCard(
-                  child: ColorPicker(
-                    value: ColorDerivative.fromColor(colors[name]!),
-                    onChanging: (value) {
-                      setState(() {
-                        colors[name] = value.toColor();
-                        customColorScheme = true;
-                        if (applyDirectly) {
-                          MyAppState state = Data.of(context);
-                          state.changeColorScheme(ColorScheme.fromColors(
-                              colors: colors,
-                              brightness: colorScheme.brightness));
-                        }
-                      });
-                    },
-                  ),
-                );
+              onColorChanged: (value) {
+                setState(() {
+                  colors[name] = value.toColor();
+                  customColorScheme = true;
+                  if (applyDirectly) {
+                    MyAppState state = Data.of(context);
+                    state.changeColorScheme(ColorScheme.fromColors(
+                        colors: colors, brightness: colorScheme.brightness));
+                  }
+                });
               },
             );
           },
@@ -447,7 +435,7 @@ class _ThemePageState extends State<ThemePage> {
                       right: 0,
                       bottom: 0,
                       child: Text(
-                        colorToHex(colors[name]!),
+                        colors[name]!.value.toRadixString(16),
                         style: TextStyle(
                           color: getInvertedColor(colors[name]!),
                         ),

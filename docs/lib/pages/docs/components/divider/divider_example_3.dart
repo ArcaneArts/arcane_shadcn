@@ -1,8 +1,5 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
-/// Dividers with centered labels.
-///
-/// [Divider.child] can render text or other widgets inline with the rule.
 class DividerExample3 extends StatelessWidget {
   const DividerExample3({super.key});
 

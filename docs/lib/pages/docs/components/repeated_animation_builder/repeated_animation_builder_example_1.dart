@@ -6,15 +6,11 @@ class RepeatedAnimationBuilderExample1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepeatedAnimationBuilder(
-      // Animate a value from 'start' to 'end' and repeat.
-      // The builder below receives the animated Offset each tick.
       start: const Offset(-100, 0),
       end: const Offset(100, 0),
-      // One second per run from start to end.
       duration: const Duration(seconds: 1),
       builder: (context, value, child) {
         return Transform.translate(
-          // Move a square horizontally based on the current animated value.
           offset: value,
           child: Container(
             width: 100,

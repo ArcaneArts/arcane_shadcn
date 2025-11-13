@@ -1,9 +1,5 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
-/// Calendar in read-only mode (no selection).
-///
-/// [CalendarSelectionMode.none] displays the month grid without allowing
-/// user selections; useful for a visual calendar-only view.
 class CalendarExample4 extends StatefulWidget {
   const CalendarExample4({super.key});
 
@@ -60,7 +56,6 @@ class _CalendarExample4State extends State<CalendarExample4> {
                 });
               },
               now: DateTime.now(),
-              // Disable all selection (view-only).
               selectionMode: CalendarSelectionMode.none,
             ),
           ],

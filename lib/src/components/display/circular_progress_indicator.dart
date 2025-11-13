@@ -56,7 +56,6 @@ class CircularProgressIndicatorTheme {
     this.strokeWidth,
   });
 
-  /// Creates a copy of this theme with the given fields replaced.
   CircularProgressIndicatorTheme copyWith({
     ValueGetter<Color?>? color,
     ValueGetter<Color?>? backgroundColor,

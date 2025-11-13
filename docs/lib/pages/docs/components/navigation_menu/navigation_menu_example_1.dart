@@ -6,14 +6,10 @@ class NavigationMenuExample1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // NavigationMenu displays a horizontal menu with items that can reveal
-    // rich content on hover/press. Each NavigationMenuItem below demonstrates
-    // different kinds of content lists and grid layouts.
     return NavigationMenu(
       children: [
         NavigationMenuItem(
           content: NavigationMenuContentList(
-            // Reverse places the text/content list before the hero card.
             reverse: true,
             children: [
               NavigationMenuContent(
@@ -100,7 +96,6 @@ class NavigationMenuExample1 extends StatelessWidget {
         ),
         NavigationMenuItem(
           content: NavigationMenuContentList(
-            // Use a simple 2-column grid for a more "news board" feel.
             crossAxisCount: 2,
             children: [
               // latest news

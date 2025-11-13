@@ -18,9 +18,7 @@ class AutocompleteTile extends StatelessWidget implements IComponentPage {
           children: [
             const TextField(
               placeholder: Text('Search fruits...'),
-              features: [
-                InputFeature.trailing(Icon(LucideIcons.search)),
-              ],
+              trailing: Icon(LucideIcons.search),
             ),
             const Gap(8),
             OutlinedContainer(
