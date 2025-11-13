@@ -1,16 +1,39 @@
 import '../../../shadcn_flutter.dart';
 
+/// Theme configuration for [Basic] layout widgets.
+///
+/// Defines default alignment, spacing, and padding properties for Basic
+/// layout components. These properties control how leading, trailing, title,
+/// subtitle, and content elements are positioned and spaced.
 class BasicTheme {
+  /// Alignment for the leading widget.
   final AlignmentGeometry? leadingAlignment;
+
+  /// Alignment for the trailing widget.
   final AlignmentGeometry? trailingAlignment;
+
+  /// Alignment for the title widget.
   final AlignmentGeometry? titleAlignment;
+
+  /// Alignment for the subtitle widget.
   final AlignmentGeometry? subtitleAlignment;
+
+  /// Alignment for the content widget.
   final AlignmentGeometry? contentAlignment;
+
+  /// Spacing between content elements.
   final double? contentSpacing;
+
+  /// Spacing between title and subtitle.
   final double? titleSpacing;
+
+  /// Main axis alignment for the overall layout.
   final MainAxisAlignment? mainAxisAlignment;
+
+  /// Padding around the entire Basic widget.
   final EdgeInsetsGeometry? padding;
 
+  /// Creates a [BasicTheme].
   const BasicTheme({
     this.leadingAlignment,
     this.trailingAlignment,
@@ -23,6 +46,7 @@ class BasicTheme {
     this.padding,
   });
 
+  /// Creates a copy of this theme with the given fields replaced.
   BasicTheme copyWith({
     ValueGetter<AlignmentGeometry?>? leadingAlignment,
     ValueGetter<AlignmentGeometry?>? trailingAlignment,
@@ -37,16 +61,16 @@ class BasicTheme {
     return BasicTheme(
       leadingAlignment:
           leadingAlignment == null ? this.leadingAlignment : leadingAlignment(),
-      trailingAlignment:
-          trailingAlignment == null ? this.trailingAlignment : trailingAlignment(),
+      trailingAlignment: trailingAlignment == null
+          ? this.trailingAlignment
+          : trailingAlignment(),
       titleAlignment:
           titleAlignment == null ? this.titleAlignment : titleAlignment(),
       subtitleAlignment: subtitleAlignment == null
           ? this.subtitleAlignment
           : subtitleAlignment(),
-      contentAlignment: contentAlignment == null
-          ? this.contentAlignment
-          : contentAlignment(),
+      contentAlignment:
+          contentAlignment == null ? this.contentAlignment : contentAlignment(),
       contentSpacing:
           contentSpacing == null ? this.contentSpacing : contentSpacing(),
       titleSpacing: titleSpacing == null ? this.titleSpacing : titleSpacing(),
@@ -85,22 +109,65 @@ class BasicTheme {
       );
 }
 
+/// A versatile layout widget for arranging leading, title, subtitle, content, and trailing elements.
+///
+/// Provides a flexible row-based layout commonly used for list items, cards, or
+/// any UI requiring a structured arrangement of multiple content sections. Each
+/// section can be independently aligned and spaced.
+///
+/// Example:
+/// ```dart
+/// Basic(
+///   leading: Icon(Icons.person),
+///   title: Text('John Doe'),
+///   subtitle: Text('john@example.com'),
+///   trailing: Icon(Icons.chevron_right),
+/// )
+/// ```
 class Basic extends StatelessWidget {
+  /// Leading widget, typically an icon or avatar.
   final Widget? leading;
+
+  /// Primary title widget.
   final Widget? title;
+
+  /// Secondary subtitle widget, displayed below title.
   final Widget? subtitle;
+
+  /// Main content widget, displayed below title/subtitle.
   final Widget? content;
+
+  /// Trailing widget, typically an icon or action button.
   final Widget? trailing;
+
+  /// Alignment for the [leading] widget.
   final AlignmentGeometry? leadingAlignment;
+
+  /// Alignment for the [trailing] widget.
   final AlignmentGeometry? trailingAlignment;
+
+  /// Alignment for the [title] widget.
   final AlignmentGeometry? titleAlignment;
+
+  /// Alignment for the [subtitle] widget.
   final AlignmentGeometry? subtitleAlignment;
+
+  /// Alignment for the [content] widget.
   final AlignmentGeometry? contentAlignment;
+
+  /// Spacing between content elements (default: 16).
   final double? contentSpacing;
+
+  /// Spacing between title and subtitle (default: 4).
   final double? titleSpacing;
+
+  /// Main axis alignment for the overall layout.
   final MainAxisAlignment? mainAxisAlignment;
+
+  /// Padding around the entire widget.
   final EdgeInsetsGeometry? padding;
 
+  /// Creates a [Basic] layout widget.
   const Basic({
     super.key,
     this.leading,
@@ -225,22 +292,61 @@ class Basic extends StatelessWidget {
   }
 }
 
-/// Same as basic, but without forcing the text style
+/// Same as [Basic], but without forcing text styles.
+///
+/// Provides the same layout structure as [Basic] but doesn't apply default
+/// text styling to title and subtitle elements. Use this when you need full
+/// control over text appearance.
+///
+/// Example:
+/// ```dart
+/// BasicLayout(
+///   leading: Icon(Icons.star),
+///   title: Text('Custom styled title', style: myStyle),
+///   subtitle: Text('Custom styled subtitle', style: myStyle),
+/// )
+/// ```
 class BasicLayout extends StatelessWidget {
+  /// Leading widget, typically an icon or avatar.
   final Widget? leading;
+
+  /// Primary title widget.
   final Widget? title;
+
+  /// Secondary subtitle widget, displayed below title.
   final Widget? subtitle;
+
+  /// Main content widget, displayed below title/subtitle.
   final Widget? content;
+
+  /// Trailing widget, typically an icon or action button.
   final Widget? trailing;
+
+  /// Alignment for the [leading] widget.
   final AlignmentGeometry? leadingAlignment;
+
+  /// Alignment for the [trailing] widget.
   final AlignmentGeometry? trailingAlignment;
+
+  /// Alignment for the [title] widget.
   final AlignmentGeometry? titleAlignment;
+
+  /// Alignment for the [subtitle] widget.
   final AlignmentGeometry? subtitleAlignment;
+
+  /// Alignment for the [content] widget.
   final AlignmentGeometry? contentAlignment;
+
+  /// Spacing between content elements.
   final double? contentSpacing;
+
+  /// Spacing between title and subtitle.
   final double? titleSpacing;
+
+  /// Size constraints for the layout.
   final BoxConstraints? constraints;
 
+  /// Creates a [BasicLayout] widget.
   const BasicLayout({
     super.key,
     this.leading,
@@ -347,11 +453,35 @@ class BasicLayout extends StatelessWidget {
   }
 }
 
+/// A layout widget for labels with optional leading and trailing elements.
+///
+/// Arranges a main label with optional leading and trailing widgets in a
+/// horizontal layout with consistent spacing.
+///
+/// Example:
+/// ```dart
+/// Label(
+///   leading: Icon(Icons.person),
+///   child: Text('Name'),
+///   trailing: Icon(Icons.edit),
+/// )
+/// ```
 class Label extends StatelessWidget {
+  /// Optional leading widget displayed before the label.
   final Widget? leading;
+
+  /// The main label content.
   final Widget child;
+
+  /// Optional trailing widget displayed after the label.
   final Widget? trailing;
 
+  /// Creates a [Label].
+  ///
+  /// Parameters:
+  /// - [child] (`Widget`, required): Main label content.
+  /// - [leading] (`Widget?`, optional): Leading widget.
+  /// - [trailing] (`Widget?`, optional): Trailing widget.
   const Label({
     super.key,
     this.leading,

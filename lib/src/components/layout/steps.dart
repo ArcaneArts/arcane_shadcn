@@ -14,6 +14,7 @@ class StepsTheme {
   /// Thickness of the connector line.
   final double? connectorThickness;
 
+  /// Creates a [StepsTheme].
   const StepsTheme({
     this.indicatorSize,
     this.spacing,
@@ -21,6 +22,7 @@ class StepsTheme {
     this.connectorThickness,
   });
 
+  /// Creates a copy of this theme with the given fields replaced.
   StepsTheme copyWith({
     ValueGetter<double?>? indicatorSize,
     ValueGetter<double?>? spacing,
@@ -101,6 +103,10 @@ class StepsTheme {
 /// );
 /// ```
 class Steps extends StatelessWidget {
+  /// List of widgets representing each step in the sequence.
+  ///
+  /// Each widget will be displayed with an automatically numbered
+  /// circular indicator showing its position in the sequence.
   final List<Widget> children;
 
   /// Creates a [Steps] widget.
@@ -109,7 +115,7 @@ class Steps extends StatelessWidget {
   /// displayed with an automatically numbered circular indicator.
   ///
   /// Parameters:
-  /// - [children] (List<Widget>, required): list of widgets representing each step
+  /// - [children] (`List<Widget>`, required): list of widgets representing each step
   ///
   /// Example:
   /// ```dart
@@ -131,13 +137,10 @@ class Steps extends StatelessWidget {
     final theme = Theme.of(context);
     final scaling = theme.scaling;
     final compTheme = ComponentTheme.maybeOf<StepsTheme>(context);
-    final indicatorSize =
-        compTheme?.indicatorSize ?? 28 * scaling;
+    final indicatorSize = compTheme?.indicatorSize ?? 28 * scaling;
     final spacing = compTheme?.spacing ?? 18 * scaling;
-    final indicatorColor =
-        compTheme?.indicatorColor ?? theme.colorScheme.muted;
-    final connectorThickness =
-        compTheme?.connectorThickness ?? 1 * scaling;
+    final indicatorColor = compTheme?.indicatorColor ?? theme.colorScheme.muted;
+    final connectorThickness = compTheme?.connectorThickness ?? 1 * scaling;
     List<Widget> mapped = [];
     for (var i = 0; i < children.length; i++) {
       mapped.add(IntrinsicHeight(
@@ -187,10 +190,29 @@ class Steps extends StatelessWidget {
   }
 }
 
+/// A vertical step indicator widget that displays a step's title and content.
+///
+/// Typically used as children within [Steps] to create a multi-step
+/// process visualization. Displays a title in bold followed by content items.
+///
+/// Example:
+/// ```dart
+/// StepItem(
+///   title: Text('Step Title'),
+///   content: [
+///     Text('Step description'),
+///     Text('Additional details'),
+///   ],
+/// )
+/// ```
 class StepItem extends StatelessWidget {
+  /// The title of this step, displayed prominently.
   final Widget title;
+
+  /// List of content widgets to display under the title.
   final List<Widget> content;
 
+  /// Creates a [StepItem].
   const StepItem({
     super.key,
     required this.title,

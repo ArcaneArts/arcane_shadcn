@@ -21,7 +21,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart';
 /// **Controller-based (recommended for complex state):**
 /// ```dart
 /// final controller = DatePickerController(DateTime.now());
-/// 
+///
 /// DateInput(
 ///   controller: controller,
 ///   mode: PromptMode.popover,
@@ -32,7 +32,7 @@ import 'package:shadcn_flutter/shadcn_flutter.dart';
 /// **Callback-based (simple state management):**
 /// ```dart
 /// DateTime? selectedDate;
-/// 
+///
 /// DateInput(
 ///   initialValue: selectedDate,
 ///   onChanged: (date) => setState(() => selectedDate = date),
@@ -50,17 +50,40 @@ class DateInput extends StatefulWidget with ControlledComponent<DateTime?> {
   @override
   final DatePickerController? controller;
 
+  /// Placeholder widget shown when no date is selected.
   final Widget? placeholder;
+
+  /// Presentation mode for date picker (dialog or popover).
   final PromptMode mode;
+
+  /// Initial calendar view to display.
   final CalendarView? initialView;
+
+  /// Alignment of popover relative to anchor.
   final AlignmentGeometry? popoverAlignment;
+
+  /// Alignment of anchor for popover positioning.
   final AlignmentGeometry? popoverAnchorAlignment;
+
+  /// Padding inside the popover.
   final EdgeInsetsGeometry? popoverPadding;
+
+  /// Title widget for dialog mode.
   final Widget? dialogTitle;
+
+  /// Initial view type (date, month, or year).
   final CalendarViewType? initialViewType;
+
+  /// Callback to determine date state (enabled/disabled).
   final DateStateBuilder? stateBuilder;
+
+  /// Order of date components in the input display.
   final List<DatePart>? datePartsOrder;
+
+  /// Separator widget between date parts.
   final InputPart? separator;
+
+  /// Custom placeholders for individual date parts.
   final Map<DatePart, Widget>? placeholders;
 
   /// Creates a [DateInput].
@@ -72,7 +95,7 @@ class DateInput extends StatefulWidget with ControlledComponent<DateTime?> {
   /// Parameters:
   /// - [controller] (DatePickerController?, optional): external state controller
   /// - [initialValue] (DateTime?, optional): starting date when no controller
-  /// - [onChanged] (ValueChanged<DateTime?>?, optional): date change callback
+  /// - [onChanged] (`ValueChanged<DateTime?>?`, optional): date change callback
   /// - [enabled] (bool, default: true): whether input is interactive
   /// - [placeholder] (Widget?, optional): widget shown when no date selected
   /// - [mode] (PromptMode, default: dialog): date picker presentation mode
@@ -83,9 +106,9 @@ class DateInput extends StatefulWidget with ControlledComponent<DateTime?> {
   /// - [dialogTitle] (Widget?, optional): title for dialog mode
   /// - [initialViewType] (CalendarViewType?, optional): calendar view type
   /// - [stateBuilder] (DateStateBuilder?, optional): custom date state builder
-  /// - [datePartsOrder] (List<DatePart>?, optional): order of date components
+  /// - [datePartsOrder] (`List<DatePart>?`, optional): order of date components
   /// - [separator] (InputPart?, optional): separator between date parts
-  /// - [placeholders] (Map<DatePart, Widget>?, optional): placeholders for date parts
+  /// - [placeholders] (`Map<DatePart, Widget>?`, optional): placeholders for date parts
   ///
   /// Example:
   /// ```dart
@@ -120,10 +143,32 @@ class DateInput extends StatefulWidget with ControlledComponent<DateTime?> {
   State<DateInput> createState() => _DateInputState();
 }
 
+/// Represents a date with nullable components (year, month, day).
+///
+/// Useful for date input scenarios where individual date parts may be
+/// missing or incomplete. Can convert to [DateTime] when all parts are present.
+///
+/// Example:
+/// ```dart
+/// final date = NullableDate(year: 2024, month: 1, day: 15);
+/// print(date.nullableDate); // DateTime(2024, 1, 15)
+/// ```
 class NullableDate {
+  /// The year component (nullable).
   final int? year;
+
+  /// The month component (nullable).
   final int? month;
+
+  /// The day component (nullable).
   final int? day;
+
+  /// Creates a [NullableDate].
+  ///
+  /// Parameters:
+  /// - [year] (`int?`, optional): Year value.
+  /// - [month] (`int?`, optional): Month value (1-12).
+  /// - [day] (`int?`, optional): Day value (1-31).
   NullableDate({this.year, this.month, this.day});
 
   @override
@@ -144,6 +189,14 @@ class NullableDate {
   @override
   int get hashCode => Object.hash(year, month, day);
 
+  /// Creates a copy with specified parts replaced.
+  ///
+  /// Parameters:
+  /// - [year] (`ValueGetter<int?>?`, optional): New year value.
+  /// - [month] (`ValueGetter<int?>?`, optional): New month value.
+  /// - [day] (`ValueGetter<int?>?`, optional): New day value.
+  ///
+  /// Returns: A new [NullableDate] with updated parts.
   NullableDate copyWith({
     ValueGetter<int?>? year,
     ValueGetter<int?>? month,
@@ -156,10 +209,16 @@ class NullableDate {
     );
   }
 
+  /// Converts to [DateTime], using 0 for missing parts.
+  ///
+  /// Returns: A [DateTime] instance (may be invalid if parts are null/0).
   DateTime get date {
     return DateTime(year ?? 0, month ?? 0, day ?? 0);
   }
 
+  /// Converts to [DateTime] only if all parts are present.
+  ///
+  /// Returns: A [DateTime] if complete, otherwise null.
   DateTime? get nullableDate {
     if (year == null || month == null || day == null) {
       return null;
@@ -167,6 +226,12 @@ class NullableDate {
     return date;
   }
 
+  /// Retrieves the value of a specific date part.
+  ///
+  /// Parameters:
+  /// - [part] (`DatePart`, required): The date part to retrieve.
+  ///
+  /// Returns: The value of the specified part, or null if not set.
   int? operator [](DatePart part) {
     switch (part) {
       case DatePart.year:
@@ -178,6 +243,9 @@ class NullableDate {
     }
   }
 
+  /// Converts to a map of date parts.
+  ///
+  /// Returns: A `Map<DatePart, int>` with non-null parts.
   Map<DatePart, int> toMap() {
     return {
       if (year != null) DatePart.year: year!,
@@ -345,11 +413,32 @@ class _DateInputState extends State<DateInput> {
   }
 }
 
+/// Represents a time with nullable components (hour, minute, second).
+///
+/// Useful for time input scenarios where individual time parts may be
+/// missing or incomplete. Can convert to [TimeOfDay] when hour and minute are present.
+///
+/// Example:
+/// ```dart
+/// final time = NullableTimeOfDay(hour: 14, minute: 30, second: 0);
+/// print(time.toTimeOfDay); // TimeOfDay(hour: 14, minute: 30)
+/// ```
 class NullableTimeOfDay {
+  /// The hour component (nullable, 0-23).
   final int? hour;
+
+  /// The minute component (nullable, 0-59).
   final int? minute;
+
+  /// The second component (nullable, 0-59).
   final int? second;
 
+  /// Creates a [NullableTimeOfDay].
+  ///
+  /// Parameters:
+  /// - [hour] (`int?`, optional): Hour value (0-23).
+  /// - [minute] (`int?`, optional): Minute value (0-59).
+  /// - [second] (`int?`, optional): Second value (0-59).
   NullableTimeOfDay({this.hour, this.minute, this.second});
 
   @override
@@ -370,6 +459,14 @@ class NullableTimeOfDay {
   @override
   int get hashCode => Object.hash(hour, minute, second);
 
+  /// Creates a copy with specified parts replaced.
+  ///
+  /// Parameters:
+  /// - [hour] (`ValueGetter<int?>?`, optional): New hour value.
+  /// - [minute] (`ValueGetter<int?>?`, optional): New minute value.
+  /// - [second] (`ValueGetter<int?>?`, optional): New second value.
+  ///
+  /// Returns: A new [NullableTimeOfDay] with updated parts.
   NullableTimeOfDay copyWith({
     ValueGetter<int?>? hour,
     ValueGetter<int?>? minute,
@@ -382,6 +479,9 @@ class NullableTimeOfDay {
     );
   }
 
+  /// Converts to [TimeOfDay] if hour and minute are present.
+  ///
+  /// Returns: A [TimeOfDay] instance, or null if hour or minute is missing.
   TimeOfDay? get toTimeOfDay {
     if (hour == null || minute == null) {
       return null;
@@ -389,6 +489,12 @@ class NullableTimeOfDay {
     return TimeOfDay(hour: hour!, minute: minute!);
   }
 
+  /// Creates a [NullableTimeOfDay] from a [TimeOfDay].
+  ///
+  /// Parameters:
+  /// - [timeOfDay] (`TimeOfDay?`, optional): The time to convert.
+  ///
+  /// Returns: A [NullableTimeOfDay] instance, or null if input is null.
   static NullableTimeOfDay? fromTimeOfDay(TimeOfDay? timeOfDay) {
     if (timeOfDay == null) {
       return null;
@@ -400,6 +506,12 @@ class NullableTimeOfDay {
     );
   }
 
+  /// Retrieves the value of a specific time part.
+  ///
+  /// Parameters:
+  /// - [part] (`TimePart`, required): The time part to retrieve.
+  ///
+  /// Returns: The value of the specified part, or null if not set.
   int? operator [](TimePart part) {
     switch (part) {
       case TimePart.hour:
@@ -411,6 +523,9 @@ class NullableTimeOfDay {
     }
   }
 
+  /// Converts to a map of time parts.
+  ///
+  /// Returns: A `Map<TimePart, int>` with non-null parts.
   Map<TimePart, int> toMap() {
     return {
       if (hour != null) TimePart.hour: hour!,
@@ -440,7 +555,7 @@ class NullableTimeOfDay {
 /// **Controller-based (recommended for complex state):**
 /// ```dart
 /// final controller = ComponentController<TimeOfDay?>(TimeOfDay.now());
-/// 
+///
 /// TimeInput(
 ///   controller: controller,
 ///   showSeconds: true,
@@ -451,7 +566,7 @@ class NullableTimeOfDay {
 /// **Callback-based (simple state management):**
 /// ```dart
 /// TimeOfDay? selectedTime;
-/// 
+///
 /// TimeInput(
 ///   initialValue: selectedTime,
 ///   onChanged: (time) => setState(() => selectedTime = time),
@@ -469,9 +584,16 @@ class TimeInput extends StatefulWidget with ControlledComponent<TimeOfDay?> {
   @override
   final ComponentController<TimeOfDay?>? controller;
 
+  /// Placeholder widget shown when no time is selected.
   final Widget? placeholder;
+
+  /// Whether to show seconds input field.
   final bool showSeconds;
+
+  /// Separator widget between time parts.
   final InputPart? separator;
+
+  /// Custom placeholders for individual time parts.
   final Map<TimePart, Widget>? placeholders;
 
   /// Creates a [TimeInput].
@@ -481,14 +603,14 @@ class TimeInput extends StatefulWidget with ControlledComponent<TimeOfDay?> {
   /// patterns with structured time component entry.
   ///
   /// Parameters:
-  /// - [controller] (ComponentController<TimeOfDay?>?, optional): external state controller
+  /// - [controller] (`ComponentController<TimeOfDay?>?`, optional): external state controller
   /// - [initialValue] (TimeOfDay?, optional): starting time when no controller
-  /// - [onChanged] (ValueChanged<TimeOfDay?>?, optional): time change callback
+  /// - [onChanged] (`ValueChanged<TimeOfDay?>?`, optional): time change callback
   /// - [enabled] (bool, default: true): whether input is interactive
   /// - [placeholder] (Widget?, optional): widget shown when no time selected
   /// - [showSeconds] (bool, default: false): whether to include seconds input
   /// - [separator] (InputPart?, optional): separator between time components
-  /// - [placeholders] (Map<TimePart, Widget>?, optional): placeholders for time parts
+  /// - [placeholders] (`Map<TimePart, Widget>?`, optional): placeholders for time parts
   ///
   /// Example:
   /// ```dart
@@ -657,7 +779,7 @@ class _TimeInputState extends State<TimeInput> {
 /// **Controller-based (recommended for complex state):**
 /// ```dart
 /// final controller = ComponentController<Duration?>(Duration(hours: 1, minutes: 30));
-/// 
+///
 /// DurationInput(
 ///   controller: controller,
 ///   showSeconds: true,
@@ -668,7 +790,7 @@ class _TimeInputState extends State<TimeInput> {
 /// **Callback-based (simple state management):**
 /// ```dart
 /// Duration? selectedDuration;
-/// 
+///
 /// DurationInput(
 ///   initialValue: selectedDuration,
 ///   onChanged: (duration) => setState(() => selectedDuration = duration),
@@ -686,9 +808,16 @@ class DurationInput extends StatefulWidget with ControlledComponent<Duration?> {
   @override
   final ComponentController<Duration?>? controller;
 
+  /// Placeholder widget shown when no duration is selected.
   final Widget? placeholder;
+
+  /// Whether to show seconds input field.
   final bool showSeconds;
+
+  /// Separator widget between duration parts.
   final InputPart? separator;
+
+  /// Custom placeholders for individual time parts.
   final Map<TimePart, Widget>? placeholders;
 
   /// Creates a [DurationInput].
@@ -698,14 +827,14 @@ class DurationInput extends StatefulWidget with ControlledComponent<Duration?> {
   /// patterns with structured duration component entry.
   ///
   /// Parameters:
-  /// - [controller] (ComponentController<Duration?>?, optional): external state controller
+  /// - [controller] (`ComponentController<Duration?>?`, optional): external state controller
   /// - [initialValue] (Duration?, optional): starting duration when no controller
-  /// - [onChanged] (ValueChanged<Duration?>?, optional): duration change callback
+  /// - [onChanged] (`ValueChanged<Duration?>?`, optional): duration change callback
   /// - [enabled] (bool, default: true): whether input is interactive
   /// - [placeholder] (Widget?, optional): widget shown when no duration selected
   /// - [showSeconds] (bool, default: false): whether to include seconds input
   /// - [separator] (InputPart?, optional): separator between duration components
-  /// - [placeholders] (Map<TimePart, Widget>?, optional): placeholders for time parts
+  /// - [placeholders] (`Map<TimePart, Widget>?`, optional): placeholders for time parts
   ///
   /// Example:
   /// ```dart

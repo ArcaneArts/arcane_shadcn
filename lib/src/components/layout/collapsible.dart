@@ -208,9 +208,9 @@ class Collapsible extends StatefulWidget {
   /// Creates a [Collapsible] widget with the specified children.
   ///
   /// Parameters:
-  /// - [children] (List<Widget>, required): Widgets to display in the collapsible container.
+  /// - [children] (`List<Widget>`, required): Widgets to display in the collapsible container.
   /// - [isExpanded] (bool?, optional): Initial expansion state for uncontrolled mode.
-  /// - [onExpansionChanged] (ValueChanged<bool>?, optional): Callback for controlled mode.
+  /// - [onExpansionChanged] (`ValueChanged<bool>?`, optional): Callback for controlled mode.
   ///
   /// ## Mode Selection
   /// - **Uncontrolled Mode**: When [onExpansionChanged] is null, the widget manages
@@ -232,7 +232,7 @@ class Collapsible extends StatefulWidget {
   /// Example (Controlled):
   /// ```dart
   /// bool _expanded = false;
-  /// 
+  ///
   /// Collapsible(
   ///   isExpanded: _expanded,
   ///   onExpansionChanged: (expanded) => setState(() => _expanded = !_expanded),
@@ -255,6 +255,10 @@ class Collapsible extends StatefulWidget {
   State<Collapsible> createState() => CollapsibleState();
 }
 
+/// State class for [Collapsible] widget.
+///
+/// Manages the expansion/collapse animation state and handles transitions
+/// between expanded and collapsed states.
 class CollapsibleState extends State<Collapsible> {
   late bool _isExpanded;
 

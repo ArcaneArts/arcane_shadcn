@@ -2,6 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
+/// Builder function type for creating custom keyboard key displays.
+///
+/// Takes the build context and logical keyboard key, and returns
+/// a widget representing that key.
 typedef KeyboardShortcutDisplayBuilder = Widget Function(
   BuildContext context,
   LogicalKeyboardKey key,
@@ -51,16 +55,26 @@ class KeyboardShortcutTheme {
   int get hashCode => Object.hash(spacing, keyPadding, keyShadow);
 }
 
+/// Handle for accessing keyboard shortcut display builders.
+///
+/// Wraps a keyboard shortcut display builder function to provide
+/// a consistent API for building key displays.
 class KeyboardShortcutDisplayHandle {
   final KeyboardShortcutDisplayBuilder _builder;
 
+  /// Creates a handle with the specified builder.
   const KeyboardShortcutDisplayHandle(this._builder);
 
+  /// Builds a display widget for the specified keyboard key.
   Widget buildKeyboardDisplay(BuildContext context, LogicalKeyboardKey key) {
     return _builder(context, key);
   }
 }
 
+/// Widget that provides keyboard shortcut display customization.
+///
+/// Allows customization of how keyboard shortcuts are displayed
+/// throughout the widget tree using a builder function.
 class KeyboardShortcutDisplayMapper extends StatefulWidget {
   static Widget _defaultBuilder(BuildContext context, LogicalKeyboardKey key) {
     switch (key) {
@@ -95,9 +109,13 @@ class KeyboardShortcutDisplayMapper extends StatefulWidget {
     }
   }
 
+  /// The builder function for creating key displays.
   final KeyboardShortcutDisplayBuilder builder;
+
+  /// The child widget that will have access to this mapper.
   final Widget child;
 
+  /// Creates a keyboard shortcut display mapper.
   const KeyboardShortcutDisplayMapper({
     super.key,
     this.builder = _defaultBuilder,
@@ -182,7 +200,7 @@ class KeyboardDisplay extends StatelessWidget {
   /// over which keys are displayed.
   ///
   /// Parameters:
-  /// - [keys] (List<LogicalKeyboardKey>, required): Keys to display
+  /// - [keys] (`List<LogicalKeyboardKey>`, required): Keys to display
   /// - [spacing] (double?, optional): Gap between key displays
   ///
   /// Example:
@@ -286,7 +304,7 @@ class KeyboardKeyDisplay extends StatelessWidget {
   /// Parameters:
   /// - [keyboardKey] (LogicalKeyboardKey, required): Key to display
   /// - [padding] (EdgeInsetsGeometry?, optional): Internal padding
-  /// - [boxShadow] (List<BoxShadow>?, optional): Shadow effects
+  /// - [boxShadow] (`List<BoxShadow>?`, optional): Shadow effects
   ///
   /// Example:
   /// ```dart
@@ -325,6 +343,17 @@ class KeyboardKeyDisplay extends StatelessWidget {
   }
 }
 
+/// Converts a [ShortcutActivator] into a list of logical keyboard keys.
+///
+/// Extracts modifier keys (control, alt, meta, shift) and the primary key from
+/// a shortcut activator, returning them as a list of `List<LogicalKeyboardKey>`.
+///
+/// Parameters:
+/// - [activator] (`ShortcutActivator`, required): The shortcut to convert.
+///
+/// Returns: `List<LogicalKeyboardKey>` — all keys involved in the shortcut.
+///
+/// Supports [CharacterActivator] and [SingleActivator] types.
 List<LogicalKeyboardKey> shortcutActivatorToKeySet(
     ShortcutActivator activator) {
   List<LogicalKeyboardKey> keys = [];

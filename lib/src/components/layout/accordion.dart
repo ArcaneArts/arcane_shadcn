@@ -56,7 +56,7 @@ class Accordion extends StatefulWidget {
   /// Creates an [Accordion] widget with the specified items.
   ///
   /// Parameters:
-  /// - [items] (List<Widget>, required): List of [AccordionItem] widgets to display.
+  /// - [items] (`List<Widget>`, required): List of [AccordionItem] widgets to display.
   ///
   /// The accordion automatically handles:
   /// - State management for mutual exclusion of expanded items
@@ -85,6 +85,10 @@ class Accordion extends StatefulWidget {
   AccordionState createState() => AccordionState();
 }
 
+/// State class for [Accordion] widget.
+///
+/// Manages the expansion state of accordion items, ensuring only one
+/// item can be expanded at a time in single-expansion mode.
 class AccordionState extends State<Accordion> {
   final ValueNotifier<_AccordionItemState?> _expanded = ValueNotifier(null);
 

@@ -1,5 +1,3 @@
-import 'package:shadcn_flutter/src/components/layout/focus_outline.dart';
-
 import '../../../shadcn_flutter.dart';
 
 /// Theme data for customizing [Radio] widget appearance.
@@ -13,14 +11,37 @@ import '../../../shadcn_flutter.dart';
 /// selected and unselected states, including border, background,
 /// and active indicator colors.
 class RadioTheme {
+  /// Color of the radio indicator when selected.
   final Color? activeColor;
+
+  /// Border color of the radio button.
   final Color? borderColor;
+
+  /// Background color of the radio button.
   final Color? backgroundColor;
+
+  /// Size of the radio button.
   final double? size;
 
+  /// Creates a [RadioTheme].
+  ///
+  /// Parameters:
+  /// - [activeColor] (`Color?`, optional): Selected indicator color.
+  /// - [borderColor] (`Color?`, optional): Border color.
+  /// - [backgroundColor] (`Color?`, optional): Background color.
+  /// - [size] (`double?`, optional): Radio button size.
   const RadioTheme(
       {this.activeColor, this.borderColor, this.size, this.backgroundColor});
 
+  /// Creates a copy of this theme with the given fields replaced.
+  ///
+  /// Parameters:
+  /// - [activeColor] (`ValueGetter<Color?>?`, optional): New active color.
+  /// - [borderColor] (`ValueGetter<Color?>?`, optional): New border color.
+  /// - [backgroundColor] (`ValueGetter<Color?>?`, optional): New background color.
+  /// - [size] (`ValueGetter<double?>?`, optional): New size.
+  ///
+  /// Returns: A new [RadioTheme] with updated properties.
   RadioTheme copyWith({
     ValueGetter<Color?>? activeColor,
     ValueGetter<Color?>? borderColor,
@@ -81,31 +102,31 @@ class Radio extends StatelessWidget {
   /// When true, displays the inner selection indicator.
   /// When false, shows only the outer circle border.
   final bool value;
-  
+
   /// Whether this radio button currently has focus.
   ///
   /// When true, displays a focus outline around the radio button
   /// for accessibility and keyboard navigation indication.
   final bool focusing;
-  
+
   /// Size of the radio button in logical pixels.
   ///
   /// Controls both the width and height of the circular radio button.
   /// If null, uses the size from the current [RadioTheme].
   final double? size;
-  
+
   /// Color of the inner selection indicator when selected.
   ///
   /// Applied to the inner dot that appears when [value] is true.
   /// If null, uses the activeColor from the current [RadioTheme].
   final Color? activeColor;
-  
+
   /// Color of the outer border circle.
   ///
   /// Applied to the border of the radio button in both selected and
   /// unselected states. If null, uses the borderColor from the current [RadioTheme].
   final Color? borderColor;
-  
+
   /// Background color of the radio button circle.
   ///
   /// Applied as the fill color behind the border. If null, uses the
@@ -195,21 +216,38 @@ class Radio extends StatelessWidget {
   }
 }
 
+/// Intent for navigating to the next item in a radio group.
 class NextItemIntent extends Intent {
+  /// Creates a next item intent.
   const NextItemIntent();
 }
 
+/// Intent for navigating to the previous item in a radio group.
 class PreviousItemIntent extends Intent {
+  /// Creates a previous item intent.
   const PreviousItemIntent();
 }
 
+/// A radio button item with optional leading and trailing widgets.
+///
+/// Used within a [RadioGroup] to create selectable radio button options.
 class RadioItem<T> extends StatefulWidget {
+  /// Optional widget displayed before the radio button.
   final Widget? leading;
+
+  /// Optional widget displayed after the radio button.
   final Widget? trailing;
+
+  /// The value represented by this radio item.
   final T value;
+
+  /// Whether this radio item is enabled.
   final bool enabled;
+
+  /// Focus node for keyboard navigation.
   final FocusNode? focusNode;
 
+  /// Creates a radio item.
   const RadioItem({
     super.key,
     this.leading,
@@ -316,12 +354,23 @@ class _RadioItemState<T> extends State<RadioItem<T>> {
   }
 }
 
+/// A card-style radio button with custom content.
+///
+/// Provides a larger, card-like selection area within a [RadioGroup].
 class RadioCard<T> extends StatefulWidget {
+  /// The child widget displayed in the card.
   final Widget child;
+
+  /// The value represented by this radio card.
   final T value;
+
+  /// Whether this radio card is enabled.
   final bool enabled;
+
+  /// Focus node for keyboard navigation.
   final FocusNode? focusNode;
 
+  /// Creates a radio card.
   const RadioCard({
     super.key,
     required this.child,
@@ -609,12 +658,12 @@ class _RadioCardState<T> extends State<RadioCard<T>> {
 /// Example:
 /// ```dart
 /// final controller = RadioGroupController<String>('option1');
-/// 
+///
 /// // Listen to changes
 /// controller.addListener(() {
 ///   print('Selection changed to: ${controller.value}');
 /// });
-/// 
+///
 /// // Update selection
 /// controller.value = 'option2';
 /// ```
@@ -649,7 +698,7 @@ class RadioGroupController<T> extends ValueNotifier<T?>
 /// **Controller-based (recommended for complex state):**
 /// ```dart
 /// final controller = RadioGroupController<String>('small');
-/// 
+///
 /// ControlledRadioGroup<String>(
 ///   controller: controller,
 ///   child: Column(
@@ -665,7 +714,7 @@ class RadioGroupController<T> extends ValueNotifier<T?>
 /// **Callback-based (simple state management):**
 /// ```dart
 /// String? selectedSize;
-/// 
+///
 /// ControlledRadioGroup<String>(
 ///   initialValue: selectedSize,
 ///   onChanged: (size) => setState(() => selectedSize = size),
@@ -703,9 +752,9 @@ class ControlledRadioGroup<T> extends StatelessWidget
   /// patterns with automatic mutual exclusion between radio options.
   ///
   /// Parameters:
-  /// - [controller] (RadioGroupController<T>?, optional): external state controller
+  /// - [controller] (`RadioGroupController<T>?`, optional): external state controller
   /// - [initialValue] (T?, optional): starting selection when no controller
-  /// - [onChanged] (ValueChanged<T?>?, optional): selection change callback
+  /// - [onChanged] (`ValueChanged<T?>?`, optional): selection change callback
   /// - [enabled] (bool, default: true): whether radio group is interactive
   /// - [child] (Widget, required): layout containing radio buttons
   ///
@@ -748,11 +797,23 @@ class ControlledRadioGroup<T> extends StatelessWidget
   }
 }
 
+/// A group of radio buttons for single-selection input.
+///
+/// Manages the selection state and provides context for child radio items.
 class RadioGroup<T> extends StatefulWidget {
+  /// The child widget containing radio items.
   final Widget child;
+
+  /// The currently selected value.
   final T? value;
+
+  /// Callback invoked when the selection changes.
   final ValueChanged<T>? onChanged;
+
+  /// Whether the radio group is enabled.
   final bool? enabled;
+
+  /// Creates a radio group.
   const RadioGroup({
     super.key,
     required this.child,
@@ -765,10 +826,17 @@ class RadioGroup<T> extends StatefulWidget {
   RadioGroupState<T> createState() => RadioGroupState<T>();
 }
 
+/// Data class holding radio group state information.
+///
+/// Contains the selected item and enabled state for a radio group.
 class RadioGroupData<T> {
+  /// The currently selected item value.
   final T? selectedItem;
+
+  /// Whether the radio group is enabled.
   final bool enabled;
 
+  /// Creates radio group data.
   RadioGroupData(this.selectedItem, this.enabled);
 
   @override
@@ -783,8 +851,12 @@ class RadioGroupData<T> {
   int get hashCode => Object.hash(selectedItem, enabled);
 }
 
+/// State class for [RadioGroup] with form integration.
+///
+/// Manages selection state and integrates with the form validation system.
 class RadioGroupState<T> extends State<RadioGroup<T>>
     with FormValueSupplier<T, RadioGroup<T>> {
+  /// Whether the radio group is currently enabled.
   bool get enabled => widget.enabled ?? widget.onChanged != null;
   void _setSelected(T value) {
     if (!enabled) return;

@@ -181,14 +181,14 @@ class Menubar extends StatefulWidget {
   /// can contain nested menu items for dropdown functionality. Items are
   /// displayed horizontally in the order provided.
   final List<MenuItem> children;
-  
+
   /// Positioning offset for submenu popovers when items are opened.
   ///
   /// Type: `Offset?`. If null, uses theme defaults or calculated values based
   /// on border presence. Controls where dropdown menus appear relative to
   /// their parent menu items.
   final Offset? popoverOffset;
-  
+
   /// Whether to draw a border around the menubar container.
   ///
   /// Type: `bool`, default: `true`. When true, the menubar is wrapped with
@@ -202,7 +202,7 @@ class Menubar extends StatefulWidget {
   ///
   /// Parameters:
   /// - [key] (Key?): Widget identifier for the widget tree
-  /// - [children] (List<MenuItem>, required): Menu items to display horizontally
+  /// - [children] (`List<MenuItem>`, required): Menu items to display horizontally
   /// - [popoverOffset] (Offset?, optional): Positioning offset for dropdown menus
   /// - [border] (bool, default: true): Whether to show a border around the menubar
   ///
@@ -242,6 +242,9 @@ class Menubar extends StatefulWidget {
   State<Menubar> createState() => MenubarState();
 }
 
+/// State class for [Menubar] widget.
+///
+/// Manages the rendering and theming of the menubar container.
 class MenubarState extends State<Menubar> {
   @override
   Widget build(BuildContext context) {
@@ -272,6 +275,15 @@ class MenubarState extends State<Menubar> {
         compTheme?.subMenuOffset ?? widget.popoverOffset, border);
   }
 
+  /// Builds the container widget for the menubar.
+  ///
+  /// Parameters:
+  /// - [context] (`BuildContext`, required): build context
+  /// - [theme] (`ThemeData`, required): theme data
+  /// - [subMenuOffset] (`Offset?`, optional): offset for submenu positioning
+  /// - [border] (`bool`, required): whether to show border
+  ///
+  /// Returns: `Widget` — container with menu items
   Widget buildContainer(BuildContext context, ThemeData theme,
       Offset? subMenuOffset, bool border) {
     final scaling = theme.scaling;

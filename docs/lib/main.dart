@@ -8,6 +8,7 @@ import 'package:docs/pages/docs/components/alert_dialog_example.dart';
 import 'package:docs/pages/docs/components/alert_example.dart';
 import 'package:docs/pages/docs/components/animated_value_builder_example.dart';
 import 'package:docs/pages/docs/components/app_bar_example.dart';
+import 'package:docs/pages/docs/components/app_example.dart';
 import 'package:docs/pages/docs/components/autocomplete_example.dart';
 import 'package:docs/pages/docs/components/avatar_example.dart';
 import 'package:docs/pages/docs/components/avatar_group_example.dart';
@@ -75,6 +76,7 @@ import 'package:docs/pages/docs/components/tooltip_example.dart';
 import 'package:docs/pages/docs/components/tracker_example.dart';
 import 'package:docs/pages/docs/components/tree_example.dart';
 import 'package:docs/pages/docs/components/window_example.dart';
+import 'package:docs/pages/docs/components/wrapper_example.dart';
 import 'package:docs/pages/docs/components_page.dart';
 import 'package:docs/pages/docs/icons_page.dart';
 import 'package:docs/pages/docs/installation_page.dart';
@@ -121,28 +123,34 @@ String getReleaseTagName() {
   return latestVersion == null ? 'Release' : 'Release ($latestVersion)';
 }
 
+const bool enableWebSemantics = bool.fromEnvironment(
+  'ENABLE_WEB_SEMANTICS',
+  defaultValue: false,
+);
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Interactive docs now serves as Widget Catalog
-  // if (kIsWeb) {
-  //   SemanticsBinding.instance.ensureSemantics();
-  // }
+  // to enable web semantics, use the following command:
+  // flutter run -d chrome --dart-define=ENABLE_WEB_SEMANTICS=true
+  if (kIsWeb && enableWebSemantics) {
+    if (kDebugMode) {
+      print('Enabling web semantics as requested.');
+    }
+    SemanticsBinding.instance.ensureSemantics();
+  }
   _docs = jsonDecode(await rootBundle.loadString('docs.json'));
   String pubspecYml = await rootBundle.loadString('pubspec.lock');
   var dep = loadYaml(pubspecYml)['packages']['shadcn_flutter']['version'];
   if (dep is String) {
     _packageLatestVersion = dep;
   }
-  print('Running app with flavor: $flavor');
-
+  if (kDebugMode) {
+    print('Running app with flavor: $flavor');
+  }
   initializeDocsWithArcane();
-
   GoRouter.optionURLReflectsImperativeAPIs = true;
   final prefs = await SharedPreferences.getInstance();
   var colorScheme = prefs.getString('colorScheme');
-  // ColorScheme? initialColorScheme =
-  //     colorSchemes[colorScheme ?? 'darkZync'];
   ColorScheme? initialColorScheme;
   if (colorScheme != null) {
     if (colorScheme.startsWith('{')) {
@@ -769,6 +777,20 @@ class MyAppState extends State<MyApp> {
               builder: (context, state) {
                 return const SwitcherExample();
               }),
+          GoRoute(
+            path: 'app',
+            name: 'app',
+            builder: (context, state) {
+              return const AppExample();
+            },
+          ),
+          GoRoute(
+            path: 'wrapper',
+            name: 'wrapper',
+            builder: (context, state) {
+              return const WrapperExample();
+            },
+          ),
         ]),
   ];
   late ColorScheme colorScheme;

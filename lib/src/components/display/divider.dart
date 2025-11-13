@@ -2,12 +2,27 @@ import 'dart:ui';
 
 import '../../../shadcn_flutter.dart';
 
+/// Immutable properties for divider appearance.
+///
+/// [DividerProperties] stores the visual characteristics of a divider,
+/// including color, thickness, and indentation. This class is used for
+/// theme interpolation and default value management.
+///
+/// All properties are required and non-nullable.
 class DividerProperties {
+  /// The color of the divider line.
   final Color color;
+
+  /// The thickness of the divider line in logical pixels.
   final double thickness;
+
+  /// The amount of empty space to the leading edge of the divider.
   final double indent;
+
+  /// The amount of empty space to the trailing edge of the divider.
   final double endIndent;
 
+  /// Creates divider properties with the specified values.
   const DividerProperties({
     required this.color,
     required this.thickness,
@@ -15,6 +30,10 @@ class DividerProperties {
     required this.endIndent,
   });
 
+  /// Linearly interpolates between two [DividerProperties] objects.
+  ///
+  /// Used for smooth theme transitions. Parameter [t] should be between 0.0 and 1.0,
+  /// where 0.0 returns [a] and 1.0 returns [b].
   static DividerProperties lerp(
       DividerProperties a, DividerProperties b, double t) {
     return DividerProperties(
@@ -142,14 +161,28 @@ class DividerTheme {
 /// );
 /// ```
 class Divider extends StatelessWidget implements PreferredSizeWidget {
+  /// The color of the divider line.
   final Color? color;
+
+  /// The total height of the divider (including padding).
   final double? height;
+
+  /// The thickness of the divider line.
   final double? thickness;
+
+  /// The amount of empty space before the divider line starts.
   final double? indent;
+
+  /// The amount of empty space after the divider line ends.
   final double? endIndent;
+
+  /// Optional child widget to display alongside the divider (e.g., text label).
   final Widget? child;
+
+  /// Padding around the divider content.
   final EdgeInsetsGeometry? padding;
 
+  /// Creates a horizontal divider.
   const Divider({
     super.key,
     this.color,
@@ -285,12 +318,23 @@ class Divider extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
+/// Custom painter for drawing horizontal divider lines.
+///
+/// Renders a horizontal line with specified color, thickness, and indents.
 class DividerPainter extends CustomPainter {
+  /// The color of the divider line.
   final Color color;
+
+  /// The thickness of the divider line.
   final double thickness;
+
+  /// The indent from the start edge.
   final double indent;
+
+  /// The indent from the end edge.
   final double endIndent;
 
+  /// Creates a divider painter with the specified properties.
   DividerPainter({
     required this.color,
     required this.thickness,
@@ -318,12 +362,23 @@ class DividerPainter extends CustomPainter {
   }
 }
 
+/// Custom painter for drawing vertical divider lines.
+///
+/// Renders a vertical line with specified color, thickness, and indents.
 class VerticalDividerPainter extends CustomPainter {
+  /// The color of the divider line.
   final Color color;
+
+  /// The thickness of the divider line.
   final double thickness;
+
+  /// The indent from the top edge.
   final double indent;
+
+  /// The indent from the bottom edge.
   final double endIndent;
 
+  /// Creates a vertical divider painter with the specified properties.
   const VerticalDividerPainter({
     required this.color,
     required this.thickness,
@@ -351,15 +406,33 @@ class VerticalDividerPainter extends CustomPainter {
   }
 }
 
+/// A vertical line used to separate content in a layout.
+///
+/// Similar to [Divider] but renders vertically, useful for separating
+/// content in horizontal layouts like rows or navigation panels.
 class VerticalDivider extends StatelessWidget implements PreferredSizeWidget {
+  /// The color of the divider line.
   final Color? color;
+
+  /// The total width of the divider (including padding).
   final double? width;
+
+  /// The thickness of the divider line.
   final double? thickness;
+
+  /// The amount of empty space before the divider line starts.
   final double? indent;
+
+  /// The amount of empty space after the divider line ends.
   final double? endIndent;
+
+  /// Optional child widget to display alongside the divider.
   final Widget? child;
+
+  /// Padding around the divider content.
   final EdgeInsetsGeometry? padding;
 
+  /// Creates a vertical divider.
   const VerticalDivider({
     super.key,
     this.color,

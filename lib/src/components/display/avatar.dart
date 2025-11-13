@@ -101,8 +101,7 @@ class AvatarTheme {
   }) {
     return AvatarTheme(
       size: size == null ? this.size : size(),
-      borderRadius:
-          borderRadius == null ? this.borderRadius : borderRadius(),
+      borderRadius: borderRadius == null ? this.borderRadius : borderRadius(),
       backgroundColor:
           backgroundColor == null ? this.backgroundColor : backgroundColor(),
       badgeAlignment:
@@ -378,7 +377,7 @@ class Avatar extends StatefulWidget implements AvatarWidget {
         );
 
   @override
-  _AvatarState createState() => _AvatarState();
+  State<Avatar> createState() => _AvatarState();
 }
 
 class _AvatarState extends State<Avatar> {
@@ -684,7 +683,7 @@ class AvatarGroup extends StatelessWidget {
   ///
   /// Parameters:
   /// - [alignment] (AlignmentGeometry, required): Direction of overlap
-  /// - [children] (List<AvatarWidget>, required): Avatars to arrange
+  /// - [children] (`List<AvatarWidget>`, required): Avatars to arrange
   /// - [gap] (double?, optional): Spacing between avatars
   /// - [clipBehavior] (Clip?, optional): Clipping behavior
   ///
@@ -710,7 +709,7 @@ class AvatarGroup extends StatelessWidget {
   /// of previous avatars, creating a rightward flow.
   ///
   /// Parameters:
-  /// - [children] (List<AvatarWidget>, required): Avatars to arrange
+  /// - [children] (`List<AvatarWidget>`, required): Avatars to arrange
   /// - [gap] (double?, optional): Spacing between overlapping edges
   /// - [offset] (double, default: 0.5): Amount of overlap (0.0 to 1.0)
   ///
@@ -741,7 +740,7 @@ class AvatarGroup extends StatelessWidget {
   /// of previous avatars, creating a leftward flow.
   ///
   /// Parameters:
-  /// - [children] (List<AvatarWidget>, required): Avatars to arrange
+  /// - [children] (`List<AvatarWidget>`, required): Avatars to arrange
   /// - [gap] (double?, optional): Spacing between overlapping edges
   /// - [offset] (double, default: 0.5): Amount of overlap (0.0 to 1.0)
   ///
@@ -772,7 +771,7 @@ class AvatarGroup extends StatelessWidget {
   /// In RTL locales, behaves like [toRight].
   ///
   /// Parameters:
-  /// - [children] (List<AvatarWidget>, required): Avatars to arrange
+  /// - [children] (`List<AvatarWidget>`, required): Avatars to arrange
   /// - [gap] (double?, optional): Spacing between overlapping edges
   /// - [offset] (double, default: 0.5): Amount of overlap (0.0 to 1.0)
   ///
@@ -802,7 +801,7 @@ class AvatarGroup extends StatelessWidget {
   /// In RTL locales, behaves like [toLeft].
   ///
   /// Parameters:
-  /// - [children] (List<AvatarWidget>, required): Avatars to arrange
+  /// - [children] (`List<AvatarWidget>`, required): Avatars to arrange
   /// - [gap] (double?, optional): Spacing between overlapping edges
   /// - [offset] (double, default: 0.5): Amount of overlap (0.0 to 1.0)
   ///
@@ -832,7 +831,7 @@ class AvatarGroup extends StatelessWidget {
   /// of previous avatars, creating a downward flow.
   ///
   /// Parameters:
-  /// - [children] (List<AvatarWidget>, required): Avatars to arrange
+  /// - [children] (`List<AvatarWidget>`, required): Avatars to arrange
   /// - [gap] (double?, optional): Spacing between overlapping edges
   /// - [offset] (double, default: 0.5): Amount of overlap (0.0 to 1.0)
   ///
@@ -862,7 +861,7 @@ class AvatarGroup extends StatelessWidget {
   /// of previous avatars, creating an upward flow.
   ///
   /// Parameters:
-  /// - [children] (List<AvatarWidget>, required): Avatars to arrange
+  /// - [children] (`List<AvatarWidget>`, required): Avatars to arrange
   /// - [gap] (double?, optional): Spacing between overlapping edges
   /// - [offset] (double, default: 0.5): Amount of overlap (0.0 to 1.0)
   ///
@@ -978,12 +977,24 @@ class AvatarGroup extends StatelessWidget {
   }
 }
 
+/// Custom clipper for creating overlapping avatar group effects.
+///
+/// Clips avatars to create a stacked appearance where each avatar partially
+/// overlaps the previous one, accounting for border radius and alignment.
 class AvatarGroupClipper extends CustomClipper<Path> {
+  /// The border radius for rounded corners on avatars.
   final double borderRadius;
+
+  /// The alignment of avatars within the group.
   final Alignment alignment;
+
+  /// The size of the previous avatar in the stack.
   final double previousAvatarSize;
+
+  /// The gap between overlapping avatars.
   final double gap;
 
+  /// Creates an avatar group clipper with the specified parameters.
   const AvatarGroupClipper({
     required this.borderRadius,
     required this.alignment,

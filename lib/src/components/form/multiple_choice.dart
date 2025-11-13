@@ -28,22 +28,38 @@ class MultipleChoiceTheme {
   String toString() => 'MultipleChoiceTheme(allowUnselect: $allowUnselect)';
 }
 
+/// A mixin that provides choice selection functionality.
+///
+/// [Choice] defines the interface for widgets that support item selection,
+/// typically used in multiple choice or single choice scenarios. It provides
+/// static methods to interact with choice widgets in the widget tree.
 mixin Choice<T> {
+  /// Selects an item in the nearest [Choice] ancestor.
+  ///
+  /// Parameters:
+  /// - [context]: The build context to search for Choice widget.
+  /// - [item]: The item to select.
   static void choose<T>(BuildContext context, T item) {
     Data.of<Choice<T>>(context).selectItem(item);
   }
 
+  /// Gets the current selected value(s) from the nearest [Choice] ancestor.
+  ///
+  /// Returns: The currently selected items, or null if none selected.
   static Iterable<T>? getValue<T>(BuildContext context) {
     return Data.of<Choice<T>>(context).value;
   }
 
+  /// Selects the specified item.
   void selectItem(T item);
+
+  /// Gets the currently selected items.
   Iterable<T>? get value;
 }
 
 /// A controller for managing [ControlledMultipleAnswer] selections programmatically.
 ///
-/// This controller extends [ValueNotifier<Iterable<T>?>] to provide reactive
+/// This controller extends `ValueNotifier<Iterable<T>?>` to provide reactive
 /// state management for multiple selection components. It implements [ComponentController]
 /// to integrate with the controlled component system, allowing external control
 /// and listening to selection changes.
@@ -60,13 +76,13 @@ class MultipleAnswerController<T> extends ValueNotifier<Iterable<T>?>
   /// Creates a [MultipleAnswerController] with an optional initial selection.
   ///
   /// Parameters:
-  /// - [value] (Iterable<T>?, optional): Initial selection of items
+  /// - [value] (`Iterable<T>?`, optional): Initial selection of items
   MultipleAnswerController([super.value]);
 }
 
 /// A controller for managing [ControlledMultipleChoice] selection programmatically.
 ///
-/// This controller extends [ValueNotifier<T?>] to provide reactive state
+/// This controller extends `ValueNotifier<T?>` to provide reactive state
 /// management for single-choice components. It implements [ComponentController]
 /// to integrate with the controlled component system, allowing external control
 /// and listening to selection changes.
@@ -124,13 +140,13 @@ class ControlledMultipleAnswer<T> extends StatelessWidget
   final ValueChanged<Iterable<T>?>? onChanged;
   @override
   final bool enabled;
-  
+
   /// Whether selected items can be deselected by selecting them again.
   ///
   /// When true, users can toggle selections by clicking selected items to
   /// deselect them. When false, items remain selected once chosen.
   final bool? allowUnselect;
-  
+
   /// The widget subtree containing selectable choice items.
   ///
   /// Child widgets should provide choice items that use [Choice.choose]
@@ -144,9 +160,9 @@ class ControlledMultipleAnswer<T> extends StatelessWidget
   /// that integrate with the multiple selection system.
   ///
   /// Parameters:
-  /// - [controller] (MultipleAnswerController<T>?, optional): External controller for programmatic control
-  /// - [initialValue] (Iterable<T>?, optional): Initial selection when no controller provided
-  /// - [onChanged] (ValueChanged<Iterable<T>?>?, optional): Callback for selection changes
+  /// - [controller] (`MultipleAnswerController<T>?`, optional): External controller for programmatic control
+  /// - [initialValue] (`Iterable<T>?`, optional): Initial selection when no controller provided
+  /// - [onChanged] (`ValueChanged<Iterable<T>?>?`, optional): Callback for selection changes
   /// - [enabled] (bool, default: true): Whether selections can be modified
   /// - [allowUnselect] (bool?, optional): Whether items can be deselected by re-selection
   /// - [child] (Widget, required): Container with selectable choice items
@@ -227,14 +243,14 @@ class ControlledMultipleChoice<T> extends StatelessWidget
   final ValueChanged<T?>? onChanged;
   @override
   final bool enabled;
-  
+
   /// Whether the selected item can be deselected by selecting it again.
   ///
   /// When true, users can deselect the current selection by clicking it again,
   /// setting the value to null. When false, once an item is selected, it
   /// remains selected until another item is chosen.
   final bool? allowUnselect;
-  
+
   /// The widget subtree containing selectable choice items.
   ///
   /// Child widgets should provide choice items that use [Choice.choose]
@@ -248,9 +264,9 @@ class ControlledMultipleChoice<T> extends StatelessWidget
   /// that integrate with the single selection system.
   ///
   /// Parameters:
-  /// - [controller] (MultipleChoiceController<T>?, optional): External controller for programmatic control
+  /// - [controller] (`MultipleChoiceController<T>?`, optional): External controller for programmatic control
   /// - [initialValue] (T?, optional): Initial selection when no controller provided
-  /// - [onChanged] (ValueChanged<T?>?, optional): Callback for selection changes
+  /// - [onChanged] (`ValueChanged<T?>?`, optional): Callback for selection changes
   /// - [enabled] (bool, default: true): Whether selection can be modified
   /// - [allowUnselect] (bool?, optional): Whether selection can be cleared by re-selection
   /// - [child] (Widget, required): Container with selectable choice items
@@ -294,13 +310,52 @@ class ControlledMultipleChoice<T> extends StatelessWidget
   }
 }
 
+/// A widget for single-selection choice scenarios.
+///
+/// [MultipleChoice] manages a single selected value from multiple options.
+/// It prevents multiple selections and optionally allows deselecting the
+/// current choice by clicking it again.
+///
+/// This widget is typically used with choice items like [ChoiceChip] or
+/// [ChoiceButton] which integrate with the inherited [Choice] data.
+///
+/// Example:
+/// ```dart
+/// MultipleChoice<String>(
+///   value: selectedOption,
+///   onChanged: (value) => setState(() => selectedOption = value),
+///   child: Wrap(
+///     children: [
+///       ChoiceChip(value: 'A', child: Text('Option A')),
+///       ChoiceChip(value: 'B', child: Text('Option B')),
+///     ],
+///   ),
+/// )
+/// ```
 class MultipleChoice<T> extends StatefulWidget {
+  /// The child widget tree containing choice items.
   final Widget child;
+
+  /// The currently selected value.
   final T? value;
+
+  /// Callback when the selection changes.
   final ValueChanged<T?>? onChanged;
+
+  /// Whether choices are enabled.
   final bool? enabled;
+
+  /// Whether the current selection can be unselected.
   final bool? allowUnselect;
 
+  /// Creates a [MultipleChoice].
+  ///
+  /// Parameters:
+  /// - [child] (`Widget`, required): Widget tree with choice items.
+  /// - [value] (`T?`, optional): Currently selected value.
+  /// - [onChanged] (`ValueChanged<T?>?`, optional): Selection callback.
+  /// - [enabled] (`bool?`, optional): Whether choices are enabled.
+  /// - [allowUnselect] (`bool?`, optional): Allow deselecting the current choice.
   const MultipleChoice({
     super.key,
     required this.child,
@@ -377,13 +432,52 @@ class _MultipleChoiceState<T> extends State<MultipleChoice<T>>
   }
 }
 
+/// A widget for multiple-selection choice scenarios.
+///
+/// [MultipleAnswer] manages multiple selected values from a set of options.
+/// It allows users to select and deselect multiple items independently.
+///
+/// This widget is typically used with choice items like [ChoiceChip] or
+/// [ChoiceButton] which integrate with the inherited [Choice] data.
+///
+/// Example:
+/// ```dart
+/// MultipleAnswer<String>(
+///   value: selectedOptions,
+///   onChanged: (values) => setState(() => selectedOptions = values),
+///   child: Wrap(
+///     children: [
+///       ChoiceChip(value: 'A', child: Text('Option A')),
+///       ChoiceChip(value: 'B', child: Text('Option B')),
+///       ChoiceChip(value: 'C', child: Text('Option C')),
+///     ],
+///   ),
+/// )
+/// ```
 class MultipleAnswer<T> extends StatefulWidget {
+  /// The child widget tree containing choice items.
   final Widget child;
+
+  /// The currently selected values.
   final Iterable<T>? value;
+
+  /// Callback when the selection changes.
   final ValueChanged<Iterable<T>?>? onChanged;
+
+  /// Whether choices are enabled.
   final bool? enabled;
+
+  /// Whether all selections can be unselected.
   final bool? allowUnselect;
 
+  /// Creates a [MultipleAnswer].
+  ///
+  /// Parameters:
+  /// - [child] (`Widget`, required): Widget tree with choice items.
+  /// - [value] (`Iterable<T>?`, optional): Currently selected values.
+  /// - [onChanged] (`ValueChanged<Iterable<T>?>?`, optional): Selection callback.
+  /// - [enabled] (`bool?`, optional): Whether choices are enabled.
+  /// - [allowUnselect] (`bool?`, optional): Allow deselecting all choices.
   const MultipleAnswer({
     super.key,
     required this.child,

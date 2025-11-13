@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:email_validator/email_validator.dart' as email_validator;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' as widgets;
-import 'package:shadcn_flutter/src/components/layout/focus_outline.dart';
 
 import '../../../shadcn_flutter.dart';
 
@@ -22,14 +21,14 @@ import '../../../shadcn_flutter.dart';
 ///
 /// Example:
 /// ```dart
-/// final validator = RequiredValidator<String>() & 
-///                   MinLengthValidator(3) & 
+/// final validator = RequiredValidator<String>() &
+///                   MinLengthValidator(3) &
 ///                   EmailValidator();
 /// ```
 abstract class Validator<T> {
   /// Creates a [Validator].
   const Validator();
-  
+
   /// Validates the given [value] and returns a validation result.
   ///
   /// This method performs the actual validation logic and should return
@@ -41,7 +40,7 @@ abstract class Validator<T> {
   /// - [value] (T?): The value to validate (may be null)
   /// - [lifecycle] (FormValidationMode): The current validation trigger mode
   ///
-  /// Returns a [FutureOr<ValidationResult?>] that is null for valid values
+  /// Returns a `FutureOr<ValidationResult?>` that is null for valid values
   /// or contains error information for invalid values.
   FutureOr<ValidationResult?> validate(
       BuildContext context, T? value, FormValidationMode lifecycle);
@@ -52,7 +51,7 @@ abstract class Validator<T> {
   /// If either validator fails, the combined validator fails.
   ///
   /// Parameters:
-  /// - [other] (Validator<T>): The validator to combine with this one
+  /// - [other] (`Validator<T>`): The validator to combine with this one
   ///
   /// Returns a new [CompositeValidator] that requires both validators to pass.
   ///
@@ -83,7 +82,7 @@ abstract class Validator<T> {
   /// Only if both validators fail will the combined validator fail.
   ///
   /// Parameters:
-  /// - [other] (Validator<T>): The validator to combine with this one using OR logic
+  /// - [other] (`Validator<T>`): The validator to combine with this one using OR logic
   ///
   /// Returns a new [OrValidator] that requires at least one validator to pass.
   ///
@@ -168,14 +167,14 @@ enum FormValidationMode {
   /// which can be useful for fields with default values that need immediate
   /// validation feedback.
   initial,
-  
+
   /// Validation occurs when the field value changes.
   ///
   /// This is the most common validation mode, providing immediate feedback
   /// as users interact with form fields. Validation runs after each value
   /// change event.
   changed,
-  
+
   /// Validation occurs when the form is submitted.
   ///
   /// This mode defers validation until form submission, reducing interruptions
@@ -184,10 +183,27 @@ enum FormValidationMode {
   submitted,
 }
 
+/// A validator wrapper that controls when validation occurs based on form lifecycle.
+///
+/// [ValidationMode] wraps another validator and only executes it during specific
+/// validation modes. This allows fine-grained control over when validation rules
+/// are applied during the form lifecycle (initial load, value changes, submission).
+///
+/// Example:
+/// ```dart
+/// ValidationMode(
+///   EmailValidator(),
+///   mode: {FormValidationMode.changed, FormValidationMode.submitted},
+/// )
+/// ```
 class ValidationMode<T> extends Validator<T> {
+  /// The underlying validator to execute when mode conditions are met.
   final Validator<T> validator;
+
+  /// The set of validation modes during which this validator should run.
   final Set<FormValidationMode> mode;
 
+  /// Creates a [ValidationMode] that conditionally validates based on lifecycle mode.
   const ValidationMode(this.validator,
       {this.mode = const {
         FormValidationMode.changed,
@@ -198,7 +214,7 @@ class ValidationMode<T> extends Validator<T> {
   @override
   FutureOr<ValidationResult?> validate(
       BuildContext context, T? value, FormValidationMode lifecycle) {
-    if (this.mode.contains(lifecycle)) {
+    if (mode.contains(lifecycle)) {
       return validator.validate(context, value, lifecycle);
     }
     return null;
@@ -219,7 +235,7 @@ class ValidationMode<T> extends Validator<T> {
 ///
 /// This type alias represents a predicate function that can be either synchronous
 /// or asynchronous, accepting a nullable value of type [T] and returning either
-/// a boolean or a [Future<bool>]. Used primarily for conditional validation logic.
+/// a boolean or a `Future<bool>`. Used primarily for conditional validation logic.
 ///
 /// The generic type [T] represents the type of value being evaluated.
 ///
@@ -263,7 +279,7 @@ class IgnoreForm<T> extends StatelessWidget {
   /// from registering with parent form controllers. When false, child
   /// components behave normally and participate in form operations.
   final bool ignoring;
-  
+
   /// The widget subtree to optionally isolate from form participation.
   final Widget child;
 
@@ -296,11 +312,34 @@ class IgnoreForm<T> extends StatelessWidget {
   }
 }
 
+/// A validator that applies conditional validation based on form state.
+///
+/// [ConditionalValidator] only executes validation when a predicate condition
+/// is met. This allows validation rules to depend on other form field values
+/// or dynamic conditions.
+///
+/// Example:
+/// ```dart
+/// ConditionalValidator<String>(
+///   (context, value, getFieldValue) async {
+///     final country = await getFieldValue('country');
+///     return country == 'US';
+///   },
+///   message: 'ZIP code required for US addresses',
+///   dependencies: ['country'],
+/// )
+/// ```
 class ConditionalValidator<T> extends Validator<T> {
+  /// The predicate function that determines if validation should be applied.
   final FuturePredicate<T> predicate;
+
+  /// The error message to display when validation fails.
   final String message;
+
+  /// List of form field keys this validator depends on.
   final List<FormKey> dependencies;
 
+  /// Creates a [ConditionalValidator] with the specified predicate and dependencies.
   const ConditionalValidator(this.predicate,
       {required this.message, this.dependencies = const []});
 
@@ -338,13 +377,39 @@ class ConditionalValidator<T> extends Validator<T> {
   int get hashCode => Object.hash(predicate, message);
 }
 
+/// A function type for building custom validators.
+///
+/// Parameters:
+/// - [value] (`T?`): The value to validate.
+///
+/// Returns a `FutureOr<ValidationResult?>` that is null for valid values.
 typedef ValidatorBuilderFunction<T> = FutureOr<ValidationResult?> Function(
     T? value);
 
+/// A validator that uses a custom builder function for validation logic.
+///
+/// [ValidatorBuilder] provides a flexible way to create validators using
+/// inline functions or custom validation logic without extending the Validator class.
+///
+/// Example:
+/// ```dart
+/// ValidatorBuilder<String>(
+///   (value) {
+///     if (value != null && value.contains('@')) {
+///       return null; // Valid
+///     }
+///     return InvalidResult('Must contain @');
+///   },
+/// )
+/// ```
 class ValidatorBuilder<T> extends Validator<T> {
+  /// The function that performs the validation.
   final ValidatorBuilderFunction<T> builder;
+
+  /// List of form field keys this validator depends on.
   final List<FormKey> dependencies;
 
+  /// Creates a [ValidatorBuilder] with the specified builder function.
   const ValidatorBuilder(this.builder, {this.dependencies = const []});
 
   @override
@@ -367,11 +432,28 @@ class ValidatorBuilder<T> extends Validator<T> {
   int get hashCode => builder.hashCode;
 }
 
+/// A validator that negates the result of another validator.
+///
+/// [NotValidator] inverts the validation logic - it passes when the wrapped
+/// validator fails and fails when the wrapped validator passes. Useful for
+/// creating exclusion rules.
+///
+/// Example:
+/// ```dart
+/// NotValidator(
+///   EmailValidator(),
+///   message: 'Must not be an email address',
+/// )
+/// ```
 class NotValidator<T> extends Validator<T> {
+  /// The validator whose result will be negated.
   final Validator<T> validator;
+
+  /// Custom error message, or null to use default localized message.
   final String?
       message; // if null, use default message from ShadcnLocalizations
 
+  /// Creates a [NotValidator] that negates the result of another validator.
   const NotValidator(this.validator, {this.message});
 
   @override
@@ -404,9 +486,23 @@ class NotValidator<T> extends Validator<T> {
   int get hashCode => Object.hash(validator, message);
 }
 
+/// A validator that combines multiple validators with OR logic.
+///
+/// [OrValidator] passes if at least one of the wrapped validators passes.
+/// Only fails if all validators fail. Useful for accepting multiple valid formats.
+///
+/// Example:
+/// ```dart
+/// OrValidator([
+///   EmailValidator(),
+///   PhoneValidator(),
+/// ])
+/// ```
 class OrValidator<T> extends Validator<T> {
+  /// The list of validators to combine with OR logic.
   final List<Validator<T>> validators;
 
+  /// Creates an [OrValidator] from a list of validators.
   const OrValidator(this.validators);
 
   @override
@@ -464,10 +560,23 @@ class OrValidator<T> extends Validator<T> {
   int get hashCode => validators.hashCode;
 }
 
+/// A validator that ensures a value is not null.
+///
+/// [NonNullValidator] is a simple validator that fails if the value is null.
+/// Commonly used to mark fields as required.
+///
+/// Example:
+/// ```dart
+/// NonNullValidator<String>(
+///   message: 'This field is required',
+/// )
+/// ```
 class NonNullValidator<T> extends Validator<T> {
+  /// Custom error message, or null to use default localized message.
   final String?
       message; // if null, use default message from ShadcnLocalizations
 
+  /// Creates a [NonNullValidator] with an optional custom message.
   const NonNullValidator({this.message});
 
   @override
@@ -489,7 +598,19 @@ class NonNullValidator<T> extends Validator<T> {
   int get hashCode => message.hashCode;
 }
 
+/// A validator that ensures a string is not null or empty.
+///
+/// [NotEmptyValidator] extends [NonNullValidator] to also check for empty strings.
+/// Commonly used for text field validation.
+///
+/// Example:
+/// ```dart
+/// NotEmptyValidator(
+///   message: 'Please enter a value',
+/// )
+/// ```
 class NotEmptyValidator extends NonNullValidator<String> {
+  /// Creates a [NotEmptyValidator] with an optional custom message.
   const NotEmptyValidator({super.message});
 
   @override
@@ -511,12 +632,31 @@ class NotEmptyValidator extends NonNullValidator<String> {
   int get hashCode => message.hashCode;
 }
 
+/// A validator that checks if a string's length is within specified bounds.
+///
+/// [LengthValidator] validates that a string's length falls within the minimum
+/// and/or maximum bounds. Either bound can be null to check only one direction.
+///
+/// Example:
+/// ```dart
+/// LengthValidator(
+///   min: 3,
+///   max: 20,
+///   message: 'Must be between 3 and 20 characters',
+/// )
+/// ```
 class LengthValidator extends Validator<String> {
+  /// Minimum length requirement (inclusive), or null for no minimum.
   final int? min;
+
+  /// Maximum length requirement (inclusive), or null for no maximum.
   final int? max;
+
+  /// Custom error message, or null to use default localized message.
   final String?
       message; // if null, use default message from ShadcnLocalizations
 
+  /// Creates a [LengthValidator] with optional min/max bounds.
   const LengthValidator({this.min, this.max, this.message});
 
   @override
@@ -557,21 +697,68 @@ class LengthValidator extends Validator<String> {
   int get hashCode => Object.hash(min, max, message);
 }
 
-enum CompareType { greater, greaterOrEqual, less, lessOrEqual, equal }
+/// Defines comparison operators for numeric validation.
+///
+/// Used by [CompareValidator] to specify the type of comparison to perform.
+enum CompareType {
+  /// Value must be greater than the compared value.
+  greater,
 
+  /// Value must be greater than or equal to the compared value.
+  greaterOrEqual,
+
+  /// Value must be less than the compared value.
+  less,
+
+  /// Value must be less than or equal to the compared value.
+  lessOrEqual,
+
+  /// Value must be equal to the compared value.
+  equal
+}
+
+/// A validator that compares a field's value with another form field's value.
+///
+/// [CompareWith] validates by comparing the current field's value against
+/// another field identified by a [FormKey]. Supports various comparison types
+/// including equality, greater than, less than, etc.
+///
+/// Example:
+/// ```dart
+/// CompareWith.greaterOrEqual(
+///   FormKey<int>('minAge'),
+///   message: 'Must be at least the minimum age',
+/// )
+/// ```
 class CompareWith<T extends Comparable<T>> extends Validator<T> {
+  /// The form field key to compare against.
   final FormKey<T> key;
+
+  /// The type of comparison to perform.
   final CompareType type;
+
+  /// Custom error message, or null to use default localized message.
   final String?
       message; // if null, use default message from ShadcnLocalizations
 
+  /// Creates a [CompareWith] validator with the specified comparison type.
   const CompareWith(this.key, this.type, {this.message});
+
+  /// Creates a validator that checks for equality with another field.
   const CompareWith.equal(this.key, {this.message}) : type = CompareType.equal;
+
+  /// Creates a validator that checks if value is greater than another field.
   const CompareWith.greater(this.key, {this.message})
       : type = CompareType.greater;
+
+  /// Creates a validator that checks if value is greater than or equal to another field.
   const CompareWith.greaterOrEqual(this.key, {this.message})
       : type = CompareType.greaterOrEqual;
+
+  /// Creates a validator that checks if value is less than another field.
   const CompareWith.less(this.key, {this.message}) : type = CompareType.less;
+
+  /// Creates a validator that checks if value is less than or equal to another field.
   const CompareWith.lessOrEqual(this.key, {this.message})
       : type = CompareType.lessOrEqual;
 
@@ -653,14 +840,40 @@ class CompareWith<T extends Comparable<T>> extends Validator<T> {
   int get hashCode => Object.hash(key, type, message);
 }
 
+/// A validator for ensuring password strength and security requirements.
+///
+/// [SafePasswordValidator] checks passwords against common security criteria:
+/// digits, lowercase letters, uppercase letters, and special characters.
+/// Each requirement can be individually enabled or disabled.
+///
+/// Example:
+/// ```dart
+/// SafePasswordValidator(
+///   requireDigit: true,
+///   requireLowercase: true,
+///   requireUppercase: true,
+///   requireSpecialChar: true,
+///   message: 'Password must meet security requirements',
+/// )
+/// ```
 class SafePasswordValidator extends Validator<String> {
+  /// Custom error message, or null to use default localized messages.
   final String?
       message; // if null, use default message from ShadcnLocalizations
+
+  /// Whether password must contain at least one digit.
   final bool requireDigit;
+
+  /// Whether password must contain at least one lowercase letter.
   final bool requireLowercase;
+
+  /// Whether password must contain at least one uppercase letter.
   final bool requireUppercase;
+
+  /// Whether password must contain at least one special character.
   final bool requireSpecialChar;
 
+  /// Creates a [SafePasswordValidator] with configurable requirements.
   const SafePasswordValidator(
       {this.requireDigit = true,
       this.requireLowercase = true,
@@ -719,12 +932,31 @@ class SafePasswordValidator extends Validator<String> {
       requireUppercase, requireSpecialChar, message);
 }
 
+/// A validator that checks if a numeric value meets a minimum threshold.
+///
+/// [MinValidator] ensures that numeric values are greater than (or equal to)
+/// a specified minimum value. Useful for enforcing minimum quantities, ages, etc.
+///
+/// Example:
+/// ```dart
+/// MinValidator<int>(
+///   18,
+///   inclusive: true,
+///   message: 'Must be at least 18 years old',
+/// )
+/// ```
 class MinValidator<T extends num> extends Validator<T> {
+  /// The minimum acceptable value.
   final T min;
+
+  /// Whether the minimum value itself is acceptable (true) or must be exceeded (false).
   final bool inclusive;
+
+  /// Custom error message, or null to use default localized message.
   final String?
       message; // if null, use default message from ShadcnLocalizations
 
+  /// Creates a [MinValidator] with the specified minimum value.
   const MinValidator(this.min, {this.inclusive = true, this.message});
 
   @override
@@ -765,12 +997,31 @@ class MinValidator<T extends num> extends Validator<T> {
   int get hashCode => Object.hash(min, inclusive, message);
 }
 
+/// A validator that checks if a numeric value does not exceed a maximum threshold.
+///
+/// [MaxValidator] ensures that numeric values are less than (or equal to)
+/// a specified maximum value. Useful for enforcing maximum quantities, limits, etc.
+///
+/// Example:
+/// ```dart
+/// MaxValidator<int>(
+///   100,
+///   inclusive: true,
+///   message: 'Must not exceed 100',
+/// )
+/// ```
 class MaxValidator<T extends num> extends Validator<T> {
+  /// The maximum acceptable value.
   final T max;
+
+  /// Whether the maximum value itself is acceptable (true) or must not be reached (false).
   final bool inclusive;
+
+  /// Custom error message, or null to use default localized message.
   final String?
       message; // if null, use default message from ShadcnLocalizations
 
+  /// Creates a [MaxValidator] with the specified maximum value.
   const MaxValidator(this.max, {this.inclusive = true, this.message});
 
   @override
@@ -811,13 +1062,35 @@ class MaxValidator<T extends num> extends Validator<T> {
   int get hashCode => Object.hash(max, inclusive, message);
 }
 
+/// A validator that checks if a numeric value falls within a specified range.
+///
+/// [RangeValidator] ensures values are between minimum and maximum bounds.
+/// Both bounds can be inclusive or exclusive depending on configuration.
+///
+/// Example:
+/// ```dart
+/// RangeValidator<double>(
+///   0.0,
+///   100.0,
+///   inclusive: true,
+///   message: 'Must be between 0 and 100',
+/// )
+/// ```
 class RangeValidator<T extends num> extends Validator<T> {
+  /// The minimum acceptable value.
   final T min;
+
+  /// The maximum acceptable value.
   final T max;
+
+  /// Whether the bounds are inclusive (true) or exclusive (false).
   final bool inclusive;
+
+  /// Custom error message, or null to use default localized message.
   final String?
       message; // if null, use default message from ShadcnLocalizations
 
+  /// Creates a [RangeValidator] with the specified min and max bounds.
   const RangeValidator(this.min, this.max,
       {this.inclusive = true, this.message});
 
@@ -855,13 +1128,32 @@ class RangeValidator<T extends num> extends Validator<T> {
         other.inclusive == inclusive &&
         other.message == message;
   }
+
+  @override
+  int get hashCode => Object.hash(min, max, inclusive, message);
 }
 
+/// A validator that checks if a string matches a regular expression pattern.
+///
+/// [RegexValidator] provides flexible pattern-based validation using regular
+/// expressions. Useful for validating formats like phone numbers, postal codes, etc.
+///
+/// Example:
+/// ```dart
+/// RegexValidator(
+///   RegExp(r'^\d{3}-\d{3}-\d{4}$'),
+///   message: 'Must be in format: XXX-XXX-XXXX',
+/// )
+/// ```
 class RegexValidator extends Validator<String> {
+  /// The regular expression pattern to match against.
   final RegExp pattern;
+
+  /// Custom error message, or null to use default localized message.
   final String?
       message; // if null, use default message from ShadcnLocalizations
 
+  /// Creates a [RegexValidator] with the specified pattern.
   const RegexValidator(this.pattern, {this.message});
 
   @override
@@ -890,11 +1182,23 @@ class RegexValidator extends Validator<String> {
   int get hashCode => Object.hash(pattern, message);
 }
 
-// email validator using email_validator package
+/// A validator that checks if a string is a valid email address.
+///
+/// [EmailValidator] uses the email_validator package to validate email
+/// addresses according to standard email format rules.
+///
+/// Example:
+/// ```dart
+/// EmailValidator(
+///   message: 'Please enter a valid email address',
+/// )
+/// ```
 class EmailValidator extends Validator<String> {
+  /// Custom error message, or null to use default localized message.
   final String?
       message; // if null, use default message from ShadcnLocalizations
 
+  /// Creates an [EmailValidator] with an optional custom message.
   const EmailValidator({this.message});
 
   @override
@@ -921,10 +1225,23 @@ class EmailValidator extends Validator<String> {
   int get hashCode => message.hashCode;
 }
 
+/// A validator that checks if a string is a valid URL.
+///
+/// [URLValidator] validates URLs using Dart's Uri parsing capabilities
+/// to ensure the string represents a valid web address.
+///
+/// Example:
+/// ```dart
+/// URLValidator(
+///   message: 'Please enter a valid URL',
+/// )
+/// ```
 class URLValidator extends Validator<String> {
+  /// Custom error message, or null to use default localized message.
   final String?
       message; // if null, use default message from ShadcnLocalizations
 
+  /// Creates a [URLValidator] with an optional custom message.
   const URLValidator({this.message});
 
   @override
@@ -952,19 +1269,48 @@ class URLValidator extends Validator<String> {
   int get hashCode => message.hashCode;
 }
 
+/// A validator that compares a value against a static comparison value.
+///
+/// [CompareTo] validates by comparing the field value against a fixed value
+/// (unlike [CompareWith] which compares against another field). Supports
+/// various comparison types.
+///
+/// Example:
+/// ```dart
+/// CompareTo.greaterOrEqual(
+///   18,
+///   message: 'Must be at least 18',
+/// )
+/// ```
 class CompareTo<T extends Comparable<T>> extends Validator<T> {
+  /// The value to compare against.
   final T? value;
+
+  /// The type of comparison to perform.
   final CompareType type;
+
+  /// Custom error message, or null to use default localized message.
   final String?
       message; // if null, use default message from ShadcnLocalizations
 
+  /// Creates a [CompareTo] validator with the specified comparison type.
   const CompareTo(this.value, this.type, {this.message});
+
+  /// Creates a validator that checks for equality with a value.
   const CompareTo.equal(this.value, {this.message}) : type = CompareType.equal;
+
+  /// Creates a validator that checks if field value is greater than the specified value.
   const CompareTo.greater(this.value, {this.message})
       : type = CompareType.greater;
+
+  /// Creates a validator that checks if field value is greater than or equal to the specified value.
   const CompareTo.greaterOrEqual(this.value, {this.message})
       : type = CompareType.greaterOrEqual;
+
+  /// Creates a validator that checks if field value is less than the specified value.
   const CompareTo.less(this.value, {this.message}) : type = CompareType.less;
+
+  /// Creates a validator that checks if field value is less than or equal to the specified value.
   const CompareTo.lessOrEqual(this.value, {this.message})
       : type = CompareType.lessOrEqual;
 
@@ -1037,9 +1383,25 @@ class CompareTo<T extends Comparable<T>> extends Validator<T> {
   int get hashCode => Object.hash(value, type, message);
 }
 
+/// A validator that combines multiple validators with AND logic.
+///
+/// [CompositeValidator] runs multiple validators sequentially and only passes
+/// if all validators pass. If any validator fails, validation stops and returns
+/// that error. Created automatically when using the `&` operator between validators.
+///
+/// Example:
+/// ```dart
+/// CompositeValidator([
+///   NonNullValidator(),
+///   MinLengthValidator(3),
+///   EmailValidator(),
+/// ])
+/// ```
 class CompositeValidator<T> extends Validator<T> {
+  /// The list of validators to run sequentially.
   final List<Validator<T>> validators;
 
+  /// Creates a [CompositeValidator] from a list of validators.
   const CompositeValidator(this.validators);
 
   @override
@@ -1097,19 +1459,40 @@ class CompositeValidator<T> extends Validator<T> {
   int get hashCode => validators.hashCode;
 }
 
+/// Abstract base class representing the result of a validation operation.
+///
+/// [ValidationResult] encapsulates the outcome of validating a form field value.
+/// Subclasses include [InvalidResult] for validation failures and [ValidResult]
+/// for successful validation.
 abstract class ValidationResult {
+  /// The form validation mode that triggered this result.
   final FormValidationMode state;
+
+  /// Creates a [ValidationResult] with the specified validation state.
   const ValidationResult({required this.state});
+
+  /// The form field key associated with this validation result.
   FormKey get key;
+
+  /// Attaches a form field key to this validation result.
   ValidationResult attach(FormKey key);
 }
 
+/// A validation result that indicates a value should be replaced.
+///
+/// [ReplaceResult] is used when validation determines that the submitted
+/// value should be transformed or replaced with a different value. For example,
+/// trimming whitespace or formatting input.
 class ReplaceResult<T> extends ValidationResult {
+  /// The replacement value to use.
   final T value;
+
   final FormKey? _key;
 
+  /// Creates a [ReplaceResult] with the specified replacement value.
   const ReplaceResult(this.value, {required super.state}) : _key = null;
 
+  /// Creates a [ReplaceResult] already attached to a form field key.
   const ReplaceResult.attached(this.value,
       {required FormKey key, required super.state})
       : _key = key;
@@ -1126,11 +1509,21 @@ class ReplaceResult<T> extends ValidationResult {
   }
 }
 
+/// A validation result indicating that validation failed.
+///
+/// [InvalidResult] contains an error message describing why validation failed.
+/// This is the most common validation result type returned by validators when
+/// a value doesn't meet the validation criteria.
 class InvalidResult extends ValidationResult {
+  /// The error message describing the validation failure.
   final String message;
+
   final FormKey? _key;
 
+  /// Creates an [InvalidResult] with the specified error message.
   const InvalidResult(this.message, {required super.state}) : _key = null;
+
+  /// Creates an [InvalidResult] already attached to a form field key.
   const InvalidResult.attached(this.message,
       {required FormKey key, required super.state})
       : _key = key;
@@ -1147,28 +1540,54 @@ class InvalidResult extends ValidationResult {
   }
 }
 
+/// A notification sent when a form field's validation state changes.
+///
+/// [FormValidityNotification] is dispatched through the notification system
+/// when a field's validity transitions between valid, invalid, or null states.
+/// Useful for updating UI or tracking form validation status.
 class FormValidityNotification extends Notification {
+  /// The previous validation result, or null if there was none.
   final ValidationResult? oldValidity;
+
+  /// The new validation result, or null if now valid.
   final ValidationResult? newValidity;
 
+  /// Creates a [FormValidityNotification] with old and new validity states.
   const FormValidityNotification(this.newValidity, this.oldValidity);
 }
 
+/// A key that uniquely identifies a form field and its type.
+///
+/// [FormKey] extends [LocalKey] and is used throughout the form system to
+/// reference specific form fields. It includes type information to ensure
+/// type-safe access to form values.
+///
+/// Example:
+/// ```dart
+/// const emailKey = FormKey<String>('email');
+/// const ageKey = FormKey<int>('age');
+/// ```
 class FormKey<T> extends LocalKey {
+  /// The underlying key object.
   final Object key;
 
+  /// Creates a [FormKey] with the specified key object.
   const FormKey(this.key);
 
+  /// Gets the generic type parameter of this key.
   Type get type => T;
 
+  /// Checks if a dynamic value is an instance of this key's type.
   bool isInstanceOf(dynamic value) {
     return value is T;
   }
 
+  /// Gets the value associated with this key from the form values map.
   T? getValue(FormMapValues values) {
     return values.getValue(this);
   }
 
+  /// Operator overload to get the value from form values (same as [getValue]).
   T? operator [](FormMapValues values) {
     return values.getValue(this);
   }
@@ -1187,37 +1606,104 @@ class FormKey<T> extends LocalKey {
   }
 }
 
+// Type aliases for form field keys
+
+/// Form key type for autocomplete fields with string values.
 typedef AutoCompleteKey = FormKey<String>;
+
+/// Form key type for checkbox fields with [CheckboxState] values.
 typedef CheckboxKey = FormKey<CheckboxState>;
+
+/// Form key type for chip input fields with list values.
 typedef ChipInputKey<T> = FormKey<List<T>>;
+
+/// Form key type for color picker fields with [Color] values.
 typedef ColorPickerKey = FormKey<Color>;
+
+/// Form key type for date picker fields with [DateTime] values.
 typedef DatePickerKey = FormKey<DateTime>;
+
+/// Form key type for date input fields with [DateTime] values.
 typedef DateInputKey = FormKey<DateTime>;
+
+/// Form key type for duration picker fields with [Duration] values.
 typedef DurationPickerKey = FormKey<Duration>;
+
+/// Form key type for duration input fields with [Duration] values.
 typedef DurationInputKey = FormKey<Duration>;
+
+/// Form key type for text input fields with string values.
 typedef InputKey = FormKey<String>;
+
+/// Form key type for OTP input fields with lists of nullable integers.
 typedef InputOTPKey = FormKey<List<int?>>;
+
+/// Form key type for multi-select fields with iterable values.
 typedef MultiSelectKey<T> = FormKey<Iterable<T>>;
+
+/// Form key type for multiple answer fields with iterable values.
 typedef MultipleAnswerKey<T> = FormKey<Iterable<T>>;
+
+/// Form key type for multiple choice fields with single selected values.
 typedef MultipleChoiceKey<T> = FormKey<T>;
+
+/// Form key type for number input fields with numeric values.
 typedef NumberInputKey = FormKey<num>;
+
+/// Form key type for phone input fields with [PhoneNumber] values.
 typedef PhoneInputKey = FormKey<PhoneNumber>;
+
+/// Form key type for radio card fields with integer index values.
 typedef RadioCardKey = FormKey<int>;
+
+/// Form key type for radio group fields with integer index values.
 typedef RadioGroupKey = FormKey<int>;
+
+/// Form key type for select dropdown fields with typed values.
 typedef SelectKey<T> = FormKey<T>;
+
+/// Form key type for slider fields with [SliderValue] values.
 typedef SliderKey = FormKey<SliderValue>;
+
+/// Form key type for star rating fields with double values.
 typedef StarRatingKey = FormKey<double>;
+
+/// Form key type for switch fields with boolean values.
 typedef SwitchKey = FormKey<bool>;
+
+/// Form key type for text area fields with string values.
 typedef TextAreaKey = FormKey<String>;
+
+/// Form key type for text field inputs with string values.
 typedef TextFieldKey = FormKey<String>;
+
+/// Form key type for time picker fields with [TimeOfDay] values.
 typedef TimePickerKey = FormKey<TimeOfDay>;
+
+/// Form key type for time input fields with [TimeOfDay] values.
 typedef TimeInputKey = FormKey<TimeOfDay>;
+
+/// Form key type for toggle fields with boolean values.
 typedef ToggleKey = FormKey<bool>;
 
+/// A form field entry that wraps a form widget with validation.
+///
+/// [FormEntry] associates a [FormKey] with a form field widget and optional
+/// validator. It integrates with the form state management system to track
+/// field values and validation states.
 class FormEntry<T> extends StatefulWidget {
+  /// The form field widget to wrap.
   final Widget child;
+
+  /// Optional validator function for this form field.
+  ///
+  /// Called when form validation is triggered. Should return `null` for valid
+  /// values or a validation error message for invalid values.
   final Validator<T>? validator;
 
+  /// Creates a form entry with a typed key.
+  ///
+  /// The [key] parameter must be a [FormKey<T>] to ensure type safety.
   const FormEntry(
       {required FormKey<T> super.key, required this.child, this.validator});
 
@@ -1228,11 +1714,39 @@ class FormEntry<T> extends StatefulWidget {
   State<FormEntry> createState() => FormEntryState();
 }
 
+/// Interface for form field state management.
+///
+/// Provides methods and properties for managing form field lifecycle, validation,
+/// and value reporting. Typically mixed into state classes that participate in
+/// form validation and submission workflows.
+///
+/// Implementations should:
+/// - Track mount state to prevent operations on disposed widgets
+/// - Report value changes to parent forms
+/// - Support both synchronous and asynchronous validation
 mixin FormFieldHandle {
+  /// Whether the widget is currently mounted in the widget tree.
   bool get mounted;
+
+  /// The unique key identifying this field within its form.
   FormKey get formKey;
+
+  /// Reports a new value to the form and triggers validation.
+  ///
+  /// Parameters:
+  /// - [value] (`T?`, required): The new field value.
+  ///
+  /// Returns: `FutureOr<ValidationResult?>` — validation result if applicable.
   FutureOr<ValidationResult?> reportNewFormValue<T>(T? value);
+
+  /// Re-runs validation on the current value.
+  ///
+  /// Returns: `FutureOr<ValidationResult?>` — validation result if applicable.
   FutureOr<ValidationResult?> revalidate();
+
+  /// A listenable for the current validation state.
+  ///
+  /// Returns `null` if no validation has been performed or if validation passed.
   ValueListenable<ValidationResult?>? get validity;
 }
 
@@ -1242,6 +1756,10 @@ class _FormEntryCachedValue {
   _FormEntryCachedValue(this.value);
 }
 
+/// State class for [FormEntry] widgets.
+///
+/// Manages form field lifecycle and integrates with parent [FormController]
+/// for validation and value reporting.
 class FormEntryState extends State<FormEntry> with FormFieldHandle {
   FormController? _controller;
   _FormEntryCachedValue? _cachedValue;
@@ -1330,10 +1848,31 @@ class FormEntryState extends State<FormEntry> with FormFieldHandle {
   }
 }
 
+/// A widget that intercepts form value reports.
+///
+/// Wraps a form field to observe value changes before they reach the parent form.
+/// Useful for implementing side effects like logging, analytics, or derived state
+/// updates when form field values change.
+///
+/// Example:
+/// ```dart
+/// FormEntryInterceptor<String>(
+///   onValueReported: (value) => print('Email changed: $value'),
+///   child: TextFormField(),
+/// )
+/// ```
 class FormEntryInterceptor<T> extends StatefulWidget {
+  /// The child widget (typically a form field).
   final Widget child;
+
+  /// Callback invoked when a value is reported by the child field.
   final ValueChanged<T>? onValueReported;
 
+  /// Creates a [FormEntryInterceptor].
+  ///
+  /// Parameters:
+  /// - [child] (`Widget`, required): The form field to wrap.
+  /// - [onValueReported] (`ValueChanged<T>?`, optional): Called with new values.
   const FormEntryInterceptor(
       {super.key, required this.child, this.onValueReported});
 
@@ -1409,10 +1948,22 @@ class _FormEntryHandleInterceptor with FormFieldHandle {
   int get hashCode => Object.hash(handle, onValueReported);
 }
 
+/// Holds the current value and validator for a form field.
+///
+/// Immutable snapshot of a form field's state used internally by form controllers
+/// to track field values and their associated validation rules.
 class FormValueState<T> {
+  /// The current field value.
   final T? value;
+
+  /// The validator function for this field.
   final Validator<T>? validator;
 
+  /// Creates a [FormValueState].
+  ///
+  /// Parameters:
+  /// - [value] (`T?`, optional): Current field value.
+  /// - [validator] (`Validator<T>?`, optional): Validation function.
   FormValueState({this.value, this.validator});
 
   @override
@@ -1431,12 +1982,28 @@ class FormValueState<T> {
   int get hashCode => Object.hash(value, validator);
 }
 
+/// A map of form field keys to their values.
+///
+/// Used to collect and pass around form data, where each key uniquely identifies
+/// a form field and maps to its current value.
 typedef FormMapValues = Map<FormKey, dynamic>;
 
+/// Callback function for form submission.
+///
+/// Parameters:
+/// - [context] (`BuildContext`): The build context.
+/// - [values] (`FormMapValues`): Map of all form field values.
 typedef FormSubmitCallback = void Function(
     BuildContext context, FormMapValues values);
 
+/// Extension methods for [FormMapValues].
 extension FormMapValuesExtension on FormMapValues {
+  /// Retrieves a typed value for a specific form key.
+  ///
+  /// Parameters:
+  /// - [key] (`FormKey<T>`, required): The form key to look up.
+  ///
+  /// Returns: `T?` — the value if found and correctly typed, null otherwise.
   T? getValue<T>(FormKey<T> key) {
     Object? value = this[key];
     if (value == null) {
@@ -1463,7 +2030,7 @@ extension FormMapValuesExtension on FormMapValues {
 /// Example:
 /// ```dart
 /// final controller = FormController();
-/// 
+///
 /// Form(
 ///   controller: controller,
 ///   onSubmit: (values) async {
@@ -1521,14 +2088,14 @@ class Form extends StatefulWidget {
   /// programmatic access to form values, validation states, and submission.
   /// If null, the Form creates and manages its own internal controller.
   final FormController? controller;
-  
+
   /// The widget subtree containing form fields.
   ///
   /// This child widget should contain the form fields and other UI elements
   /// that participate in the form. Form fields within this subtree automatically
   /// register with this Form instance.
   final Widget child;
-  
+
   /// Callback invoked when the form is submitted.
   ///
   /// This callback receives a map of form values keyed by their [FormKey]
@@ -1589,16 +2156,16 @@ class _ValidatorResultStash {
 /// Example:
 /// ```dart
 /// final controller = FormController();
-/// 
+///
 /// // Listen to form state changes
 /// controller.addListener(() {
 ///   print('Form validity: ${controller.isValid}');
 ///   print('Form values: ${controller.values}');
 /// });
-/// 
+///
 /// // Submit the form
 /// await controller.submit();
-/// 
+///
 /// // Access specific field values
 /// final emailValue = controller.getValue(emailKey);
 /// ```
@@ -1614,7 +2181,7 @@ class FormController extends ChangeNotifier {
   /// fields. The map is rebuilt on each access to reflect the latest values
   /// from all active form fields.
   ///
-  /// Returns a Map<FormKey, Object?> where each key corresponds to a form field
+  /// Returns a `Map<FormKey, Object?>` where each key corresponds to a form field
   /// and each value is the current value of that field.
   Map<FormKey, Object?> get values {
     return {
@@ -1632,9 +2199,9 @@ class FormController extends ChangeNotifier {
   ///
   /// This getter provides access to the validation state of all registered
   /// form fields. Values can be either synchronous ValidationResult objects
-  /// or Future<ValidationResult?> for asynchronous validation.
+  /// or `Future<ValidationResult?>` for asynchronous validation.
   ///
-  /// Returns a Map<FormKey, FutureOr<ValidationResult?>> representing the
+  /// Returns a `Map<FormKey, FutureOr<ValidationResult?>>` representing the
   /// current validation state of all form fields.
   Map<FormKey, FutureOr<ValidationResult?>> get validities {
     return {for (var entry in _validity.entries) entry.key: entry.value.result};
@@ -1646,7 +2213,7 @@ class FormController extends ChangeNotifier {
   /// validation errors. For asynchronous validations that are still pending,
   /// a [WaitingResult] is included to indicate the validation is in progress.
   ///
-  /// Returns a Map<FormKey, ValidationResult> containing only fields with errors.
+  /// Returns a `Map<FormKey, ValidationResult>` containing only fields with errors.
   Map<FormKey, ValidationResult> get errors {
     final errors = <FormKey, ValidationResult>{};
     for (var entry in _validity.entries) {
@@ -1694,14 +2261,34 @@ class FormController extends ChangeNotifier {
     return result;
   }
 
+  /// Retrieves the current value for a specific form field.
+  ///
+  /// Parameters:
+  /// - [key] (`FormKey<T>`, required): The form key to look up.
+  ///
+  /// Returns: `T?` — the field value if exists, null otherwise.
   T? getValue<T>(FormKey<T> key) {
     return _attachedInputs[key]?.value as T?;
   }
 
+  /// Checks if a form field has a non-null value.
+  ///
+  /// Parameters:
+  /// - [key] (`FormKey`, required): The form key to check.
+  ///
+  /// Returns: `bool` — true if field has a value, false otherwise.
   bool hasValue(FormKey key) {
     return _attachedInputs[key]?.value != null;
   }
 
+  /// Revalidates all form fields with validators.
+  ///
+  /// Runs validation on all registered fields and updates their validation states.
+  /// Supports both synchronous and asynchronous validators.
+  ///
+  /// Parameters:
+  /// - [context] (`BuildContext`, required): The build context.
+  /// - [state] (`FormValidationMode`, required): Validation mode to use.
   void revalidate(BuildContext context, FormValidationMode state) {
     bool changed = false;
     for (var entry in _attachedInputs.entries) {
@@ -1741,6 +2328,20 @@ class FormController extends ChangeNotifier {
     }
   }
 
+  /// Attaches a form field to this controller.
+  ///
+  /// Registers the field and runs initial validation if a validator is provided.
+  /// Manages field lifecycle transitions (initial → changed) and coordinates
+  /// revalidation of dependent fields.
+  ///
+  /// Parameters:
+  /// - [context] (`BuildContext`, required): The build context.
+  /// - [handle] (`FormFieldHandle`, required): The field handle to attach.
+  /// - [value] (`Object?`, required): Current field value.
+  /// - [validator] (`Validator?`, optional): Validation function.
+  /// - [forceRevalidate] (`bool`, default: `false`): Force revalidation even if unchanged.
+  ///
+  /// Returns: `FutureOr<ValidationResult?>` — validation result if applicable.
   FutureOr<ValidationResult?> attach(BuildContext context,
       FormFieldHandle handle, Object? value, Validator? validator,
       [bool forceRevalidate = false]) {
@@ -1834,6 +2435,20 @@ class FormController extends ChangeNotifier {
   // }
 }
 
+/// State class for the [Form] widget that manages form controller lifecycle.
+///
+/// This state class is responsible for initializing and updating the
+/// [FormController] used by the [Form] widget. It ensures proper controller
+/// management when the controller property changes and provides the controller
+/// to descendant widgets through the data inheritance mechanism.
+///
+/// The state handles two scenarios:
+/// - Creates a default [FormController] if none is provided
+/// - Updates to a new controller when the widget's controller property changes
+///
+/// See also:
+/// - [Form], the widget that uses this state
+/// - [FormController], the controller managed by this state
 class FormState extends State<Form> {
   late FormController _controller;
 
@@ -1863,12 +2478,21 @@ class FormState extends State<Form> {
   }
 }
 
+/// Widget builder for displaying form entry validation errors.
+///
+/// Conditionally renders error messages based on validation state and modes.
 class FormEntryErrorBuilder extends StatelessWidget {
+  /// Builder function that creates the error display widget.
   final Widget Function(
       BuildContext context, ValidationResult? error, Widget? child) builder;
+
+  /// Optional child widget passed to the builder.
   final Widget? child;
+
+  /// Validation modes that trigger error display.
   final Set<FormValidationMode>? modes;
 
+  /// Creates a form entry error builder.
   const FormEntryErrorBuilder(
       {super.key, required this.builder, this.child, this.modes});
 
@@ -1894,8 +2518,14 @@ class FormEntryErrorBuilder extends StatelessWidget {
   }
 }
 
+/// Validation result indicating a validation is in progress.
+///
+/// Used when asynchronous validation is being performed and the result
+/// is not yet available.
 class WaitingResult extends ValidationResult {
   final FormKey? _key;
+
+  /// Creates a waiting result attached to a form key.
   const WaitingResult.attached({required FormKey key, required super.state})
       : _key = key;
 
@@ -1911,11 +2541,18 @@ class WaitingResult extends ValidationResult {
   }
 }
 
+/// Widget builder for displaying form-wide validation errors.
+///
+/// Provides access to all form validation errors for rendering error summaries.
 class FormErrorBuilder extends StatelessWidget {
+  /// Optional child widget passed to the builder.
   final Widget? child;
+
+  /// Builder function that creates the error display from all form errors.
   final Widget Function(BuildContext context,
       Map<FormKey, ValidationResult> errors, Widget? child) builder;
 
+  /// Creates a form error builder.
   const FormErrorBuilder({super.key, required this.builder, this.child});
 
   @override
@@ -1931,13 +2568,23 @@ class FormErrorBuilder extends StatelessWidget {
   }
 }
 
+/// Builder function type for displaying pending form validations.
+///
+/// Takes the context, map of pending validation futures, and optional child widget.
 typedef FormPendingWidgetBuilder = Widget Function(BuildContext context,
     Map<FormKey, Future<ValidationResult?>> errors, Widget? child);
 
+/// Widget builder for displaying pending form validations.
+///
+/// Shows feedback while asynchronous validations are in progress.
 class FormPendingBuilder extends StatelessWidget {
+  /// Optional child widget passed to the builder.
   final Widget? child;
+
+  /// Builder function for creating pending validation display.
   final FormPendingWidgetBuilder builder;
 
+  /// Creates a form pending builder.
   const FormPendingBuilder({super.key, required this.builder, this.child});
 
   @override
@@ -1965,7 +2612,11 @@ class FormPendingBuilder extends StatelessWidget {
   }
 }
 
+/// Extension methods on [BuildContext] for form operations.
 extension FormExtension on BuildContext {
+  /// Gets the current value for a form field by key.
+  ///
+  /// Returns null if the form or field is not found.
   T? getFormValue<T>(FormKey<T> key) {
     final formController = Data.maybeFind<FormController>(this);
     if (formController != null) {
@@ -1975,6 +2626,10 @@ extension FormExtension on BuildContext {
     return null;
   }
 
+  /// Submits the form and triggers validation.
+  ///
+  /// Returns a [SubmissionResult] with form values and any validation errors.
+  /// May return a Future if asynchronous validation is in progress.
   FutureOr<SubmissionResult> submitForm() {
     final formState = Data.maybeFind<FormState>(this);
     assert(formState != null, 'Form not found');
@@ -2027,12 +2682,19 @@ extension FormExtension on BuildContext {
   }
 }
 
+/// Mixin that provides form value management for stateful widgets.
+///
+/// Integrates a widget with the form system, managing value updates,
+/// validation, and form state synchronization.
 mixin FormValueSupplier<T, X extends StatefulWidget> on State<X> {
   _FormEntryCachedValue? _cachedValue;
   int _futureCounter = 0;
   FormFieldHandle? _entryState;
 
+  /// Gets the current form value.
   T? get formValue => _cachedValue?.value as T?;
+
+  /// Sets a new form value and triggers validation.
   set formValue(T? value) {
     if (_cachedValue != null && _cachedValue!.value == value) {
       return;
@@ -2051,6 +2713,9 @@ mixin FormValueSupplier<T, X extends StatefulWidget> on State<X> {
     }
   }
 
+  /// Called when a form value is replaced by validation logic.
+  ///
+  /// Subclasses should override this to handle value replacements.
   @protected
   void didReplaceFormValue(T value);
 
@@ -2083,10 +2748,18 @@ mixin FormValueSupplier<T, X extends StatefulWidget> on State<X> {
   }
 }
 
+/// Result of a form submission containing values and validation errors.
+///
+/// Returned when a form is submitted, containing all field values
+/// and any validation errors that occurred.
 class SubmissionResult {
+  /// Map of form field values keyed by their FormKey.
   final Map<FormKey, Object?> values;
+
+  /// Map of validation errors keyed by their FormKey.
   final Map<FormKey, ValidationResult> errors;
 
+  /// Creates a submission result.
   const SubmissionResult(this.values, this.errors);
 
   @override
@@ -2100,21 +2773,51 @@ class SubmissionResult {
         mapEquals(other.values, values) &&
         mapEquals(other.errors, errors);
   }
+
+  @override
+  int get hashCode => Object.hash(
+      Object.hashAll(values.entries), Object.hashAll(errors.entries));
 }
 
+/// A standard form field widget with label, validation, and error display.
+///
+/// Provides a consistent layout for form inputs with labels, hints,
+/// validation, and error messaging.
 class FormField<T> extends StatelessWidget {
+  /// The label widget for the form field.
   final Widget label;
+
+  /// Optional hint text displayed below the field.
   final Widget? hint;
+
+  /// The main input widget.
   final Widget child;
+
+  /// Optional widget displayed before the label.
   final Widget? leadingLabel;
+
+  /// Optional widget displayed after the label.
   final Widget? trailingLabel;
+
+  /// Alignment of the label axis.
   final MainAxisAlignment? labelAxisAlignment;
+
+  /// Gap between leading label and main label.
   final double? leadingGap;
+
+  /// Gap between main label and trailing label.
   final double? trailingGap;
+
+  /// Padding around the form field.
   final EdgeInsetsGeometry? padding;
+
+  /// Validator function for this field.
   final Validator<T>? validator;
+
+  /// Validation modes that trigger error display.
   final Set<FormValidationMode>? showErrors;
 
+  /// Creates a form field.
   const FormField({
     required FormKey<T> super.key,
     required this.label,
@@ -2208,13 +2911,27 @@ class FormField<T> extends StatelessWidget {
   }
 }
 
+/// An inline form field widget with label next to the input.
+///
+/// Provides a compact horizontal layout for form inputs with labels
+/// and validation.
 class FormInline<T> extends StatelessWidget {
+  /// The label widget for the form field.
   final Widget label;
+
+  /// Optional hint text displayed below the field.
   final Widget? hint;
+
+  /// The main input widget.
   final Widget child;
+
+  /// Validator function for this field.
   final Validator<T>? validator;
+
+  /// Validation modes that trigger error display.
   final Set<FormValidationMode>? showErrors;
 
+  /// Creates an inline form field.
   const FormInline({
     required FormKey<T> super.key,
     required this.label,
@@ -2276,10 +2993,21 @@ class FormInline<T> extends StatelessWidget {
   }
 }
 
+/// A table-based layout for multiple form fields.
+///
+/// Arranges form fields in a table layout for structured data entry.
 class FormTableLayout extends StatelessWidget {
+  /// List of form field rows to display in the table.
   final List<FormField> rows;
+
+  /// Vertical spacing between rows.
   final double? spacing;
 
+  /// Creates a [FormTableLayout].
+  ///
+  /// Parameters:
+  /// - [rows] (`List<FormField>`, required): Form fields to arrange in rows.
+  /// - [spacing] (`double?`, optional): Custom row spacing.
   const FormTableLayout({super.key, required this.rows, this.spacing});
 
   @override
@@ -2302,10 +3030,10 @@ class FormTableLayout extends StatelessWidget {
                     .label
                     .textSmall()
                     .withAlign(AlignmentDirectional.centerEnd)
-                    .withMargin(right: 16 * scaling)
                     .sized(height: 32 * scaling)
                     .withPadding(
                       top: i == 0 ? 0 : spacing,
+                      right: 16 * scaling,
                       left: 16 * scaling,
                     ),
                 FormEntry(
@@ -2369,24 +3097,91 @@ class FormTableLayout extends StatelessWidget {
   }
 }
 
+/// A button that automatically handles form submission states.
+///
+/// Renders different content based on form validation state:
+/// - Default: Shows [child] with optional leading/trailing widgets
+/// - Loading: Shows [loading] during async validation
+/// - Error: Shows [error] when validation fails
+///
+/// Automatically disables during validation and enables when form is valid.
+///
+/// Example:
+/// ```dart
+/// SubmitButton(
+///   child: Text('Submit'),
+///   loading: Text('Validating...'),
+///   error: Text('Fix errors'),
+/// )
+/// ```
 class SubmitButton extends StatelessWidget {
+  /// Button style configuration.
   final AbstractButtonStyle? style;
+
+  /// Default button content.
   final Widget child;
+
+  /// Content shown during async validation (loading state).
   final Widget? loading;
+
+  /// Content shown when validation errors exist.
   final Widget? error;
+
+  /// Leading widget in default state.
   final Widget? leading;
+
+  /// Trailing widget in default state.
   final Widget? trailing;
+
+  /// Leading widget in loading state.
   final Widget? loadingLeading;
+
+  /// Trailing widget in loading state.
   final Widget? loadingTrailing;
+
+  /// Leading widget in error state.
   final Widget? errorLeading;
+
+  /// Trailing widget in error state.
   final Widget? errorTrailing;
+
+  /// Content alignment within the button.
   final AlignmentGeometry? alignment;
+
+  /// Whether to disable hover effects.
   final bool disableHoverEffect;
+
+  /// Whether the button is enabled (null uses form state).
   final bool? enabled;
+
+  /// Whether to enable haptic feedback on press.
   final bool? enableFeedback;
+
+  /// Whether to disable state transition animations.
   final bool disableTransition;
+
+  /// Focus node for keyboard navigation.
   final FocusNode? focusNode;
 
+  /// Creates a [SubmitButton].
+  ///
+  /// Parameters:
+  /// - [child] (`Widget`, required): Default button content.
+  /// - [style] (`AbstractButtonStyle?`, optional): Button styling.
+  /// - [loading] (`Widget?`, optional): Loading state content.
+  /// - [error] (`Widget?`, optional): Error state content.
+  /// - [leading] (`Widget?`, optional): Leading widget (default state).
+  /// - [trailing] (`Widget?`, optional): Trailing widget (default state).
+  /// - [loadingLeading] (`Widget?`, optional): Leading widget (loading state).
+  /// - [loadingTrailing] (`Widget?`, optional): Trailing widget (loading state).
+  /// - [errorLeading] (`Widget?`, optional): Leading widget (error state).
+  /// - [errorTrailing] (`Widget?`, optional): Trailing widget (error state).
+  /// - [alignment] (`AlignmentGeometry?`, optional): Content alignment.
+  /// - [disableHoverEffect] (`bool`, default: `false`): Disable hover.
+  /// - [enabled] (`bool?`, optional): Override enabled state.
+  /// - [enableFeedback] (`bool?`, optional): Enable haptic feedback.
+  /// - [disableTransition] (`bool`, default: `false`): Disable animations.
+  /// - [focusNode] (`FocusNode?`, optional): Focus node.
   const SubmitButton({
     super.key,
     required this.child,

@@ -101,10 +101,30 @@ class _SlashSeparator extends StatelessWidget {
 /// );
 /// ```
 class Breadcrumb extends StatelessWidget {
+  /// Default arrow separator widget (>).
+  ///
+  /// Can be used as the [separator] parameter for arrow-style navigation.
   static const Widget arrowSeparator = _ArrowSeparator();
+
+  /// Default slash separator widget (/).
+  ///
+  /// Can be used as the [separator] parameter for slash-style navigation.
   static const Widget slashSeparator = _SlashSeparator();
+
+  /// The list of breadcrumb navigation items.
+  ///
+  /// Each widget represents a step in the navigation trail, from root to
+  /// current location. The last item is styled as the current page.
   final List<Widget> children;
+
+  /// Widget displayed between breadcrumb items.
+  ///
+  /// If `null`, uses the default separator from the theme.
   final Widget? separator;
+
+  /// Padding around the entire breadcrumb widget.
+  ///
+  /// If `null`, uses default padding from the theme.
   final EdgeInsetsGeometry? padding;
 
   /// Creates a [Breadcrumb] navigation trail.
@@ -113,7 +133,7 @@ class Breadcrumb extends StatelessWidget {
   /// is styled differently from the preceding navigation items.
   ///
   /// Parameters:
-  /// - [children] (List<Widget>, required): breadcrumb items from root to current
+  /// - [children] (`List<Widget>`, required): breadcrumb items from root to current
   /// - [separator] (Widget?, optional): custom separator between items
   /// - [padding] (EdgeInsetsGeometry?, optional): padding around the breadcrumb
   ///

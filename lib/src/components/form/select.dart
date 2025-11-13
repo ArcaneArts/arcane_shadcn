@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:shadcn_flutter/src/components/control/hover.dart';
-import 'package:shadcn_flutter/src/components/layout/focus_outline.dart';
 
 /// Theme data for customizing [Select] widget appearance and behavior.
 ///
@@ -13,15 +12,31 @@ import 'package:shadcn_flutter/src/components/layout/focus_outline.dart';
 /// interaction behaviors. These properties can be set at the theme level
 /// to provide consistent behavior across the application.
 class SelectTheme {
+  /// Constraints for the popup menu size.
   final BoxConstraints? popupConstraints;
+
+  /// Alignment of the popover relative to the anchor.
   final AlignmentGeometry? popoverAlignment;
+
+  /// Anchor alignment for the popover.
   final AlignmentGeometry? popoverAnchorAlignment;
+
+  /// Border radius for select items.
   final BorderRadiusGeometry? borderRadius;
+
+  /// Padding inside select items.
   final EdgeInsetsGeometry? padding;
+
+  /// Whether to disable hover effects on items.
   final bool? disableHoverEffect;
+
+  /// Whether the selected item can be unselected.
   final bool? canUnselect;
+
+  /// Whether to automatically close the popover after selection.
   final bool? autoClosePopover;
 
+  /// Creates a select theme.
   const SelectTheme({
     this.popupConstraints,
     this.popoverAlignment,
@@ -33,6 +48,7 @@ class SelectTheme {
     this.autoClosePopover,
   });
 
+  /// Creates a copy of this theme with the given fields replaced.
   SelectTheme copyWith({
     ValueGetter<BoxConstraints?>? popupConstraints,
     ValueGetter<AlignmentGeometry?>? popoverAlignment,
@@ -213,9 +229,9 @@ class ControlledSelect<T> extends StatelessWidget
   /// patterns depending on application architecture needs.
   ///
   /// Parameters:
-  /// - [controller] (SelectController<T>?, optional): external state controller
+  /// - [controller] (`SelectController<T>?`, optional): external state controller
   /// - [initialValue] (T?, optional): starting selection when no controller
-  /// - [onChanged] (ValueChanged<T?>?, optional): selection change callback
+  /// - [onChanged] (`ValueChanged<T?>?`, optional): selection change callback
   /// - [enabled] (bool, default: true): whether select is interactive
   /// - [placeholder] (Widget?, optional): widget shown when no item selected
   /// - [filled] (bool, default: false): whether to use filled appearance
@@ -231,10 +247,10 @@ class ControlledSelect<T> extends StatelessWidget
   /// - [canUnselect] (bool, default: false): allow deselecting current item
   /// - [autoClosePopover] (bool, default: true): close popup after selection
   /// - [popup] (SelectPopupBuilder, required): builder for popup content
-  /// - [itemBuilder] (SelectItemBuilder<T>, required): builder for individual items
-  /// - [valueSelectionHandler] (SelectValueSelectionHandler<T>?, optional): custom selection logic
-  /// - [valueSelectionPredicate] (SelectValueSelectionPredicate<T>?, optional): selection validation
-  /// - [showValuePredicate] (Predicate<T>?, optional): visibility filter for values
+  /// - [itemBuilder] (`SelectItemBuilder<T>`, required): builder for individual items
+  /// - [valueSelectionHandler] (`SelectValueSelectionHandler<T>?`, optional): custom selection logic
+  /// - [valueSelectionPredicate] (`SelectValueSelectionPredicate<T>?`, optional): selection validation
+  /// - [showValuePredicate] (`Predicate<T>?`, optional): visibility filter for values
   ///
   /// Example:
   /// ```dart
@@ -332,7 +348,7 @@ class MultiSelectController<T> extends SelectController<Iterable<T>> {
   /// Can be null or empty to start with no selections.
   ///
   /// Parameters:
-  /// - [value] (Iterable<T>?, optional): Initial selected items
+  /// - [value] (`Iterable<T>?`, optional): Initial selected items
   MultiSelectController([super.value]);
 }
 
@@ -429,6 +445,8 @@ class ControlledMultiSelect<T> extends StatelessWidget
   final SelectValueSelectionPredicate<Iterable<T>>? valueSelectionPredicate;
   @override
   final Predicate<Iterable<T>>? showValuePredicate;
+
+  /// Builder for rendering individual items in multi-select mode.
   final SelectValueBuilder<T> multiItemBuilder;
 
   /// Creates a [ControlledMultiSelect].
@@ -438,9 +456,9 @@ class ControlledMultiSelect<T> extends StatelessWidget
   /// patterns with multiple item selection capabilities.
   ///
   /// Parameters:
-  /// - [controller] (MultiSelectController<T>?, optional): external state controller
-  /// - [initialValue] (Iterable<T>?, optional): starting selection when no controller
-  /// - [onChanged] (ValueChanged<Iterable<T>?>?, optional): selection change callback
+  /// - [controller] (`MultiSelectController<T>?`, optional): external state controller
+  /// - [initialValue] (`Iterable<T>?`, optional): starting selection when no controller
+  /// - [onChanged] (`ValueChanged<Iterable<T>?>?`, optional): selection change callback
   /// - [enabled] (bool, default: true): whether select is interactive
   /// - [placeholder] (Widget?, optional): widget shown when no items selected
   /// - [filled] (bool, default: false): whether to use filled appearance
@@ -456,11 +474,11 @@ class ControlledMultiSelect<T> extends StatelessWidget
   /// - [canUnselect] (bool, default: false): allow deselecting all items
   /// - [autoClosePopover] (bool, default: false): close popup after each selection
   /// - [popup] (SelectPopupBuilder, required): builder for popup content
-  /// - [itemBuilder] (SelectItemBuilder<T>, required): builder for individual items
-  /// - [multiItemBuilder] (SelectValueBuilder<T>, required): builder for selected items display
-  /// - [valueSelectionHandler] (SelectValueSelectionHandler<Iterable<T>>?, optional): custom selection logic
-  /// - [valueSelectionPredicate] (SelectValueSelectionPredicate<Iterable<T>>?, optional): selection validation
-  /// - [showValuePredicate] (Predicate<Iterable<T>>?, optional): visibility filter for values
+  /// - [itemBuilder] (`SelectItemBuilder<T>`, required): builder for individual items
+  /// - [multiItemBuilder] (`SelectValueBuilder<T>`, required): builder for selected items display
+  /// - [valueSelectionHandler] (`SelectValueSelectionHandler<Iterable<T>>?`, optional): custom selection logic
+  /// - [valueSelectionPredicate] (`SelectValueSelectionPredicate<Iterable<T>>?`, optional): selection validation
+  /// - [showValuePredicate] (`Predicate<Iterable<T>>?`, optional): visibility filter for values
   ///
   /// Example:
   /// ```dart
@@ -535,12 +553,23 @@ class ControlledMultiSelect<T> extends StatelessWidget
   }
 }
 
+/// A button widget representing a selectable item in a dropdown menu.
+///
+/// Used within select dropdowns to create clickable option items.
 class SelectItemButton<T> extends StatelessWidget {
+  /// The value this item represents.
   final T value;
+
+  /// The child widget to display as the item content.
   final Widget child;
+
+  /// The button style for this item.
   final AbstractButtonStyle style;
+
+  /// Whether this item is enabled.
   final bool? enabled;
 
+  /// Creates a select item button.
   const SelectItemButton({
     super.key,
     required this.value,
@@ -599,11 +628,21 @@ class SelectItemButton<T> extends StatelessWidget {
   }
 }
 
+/// A container for grouping related select items with optional headers and footers.
+///
+/// Organizes select menu items into logical sections with optional header
+/// and footer widgets.
 class SelectGroup extends StatelessWidget {
+  /// Optional header widgets displayed above the group.
   final List<Widget>? headers;
+
+  /// The list of select items in this group.
   final List<Widget> children;
+
+  /// Optional footer widgets displayed below the group.
   final List<Widget>? footers;
 
+  /// Creates a select group.
   const SelectGroup({
     super.key,
     this.headers,
@@ -624,10 +663,31 @@ class SelectGroup extends StatelessWidget {
   }
 }
 
+/// Represents a selectable item in a dropdown menu.
+///
+/// Used within select popups to define individual selectable options.
+/// Automatically applies selected state styling when the item matches
+/// the current selection.
+///
+/// Example:
+/// ```dart
+/// SelectItem(
+///   value: 'option1',
+///   builder: (context) => Text('Option 1'),
+/// )
+/// ```
 class SelectItem extends StatelessWidget {
+  /// Builder for the item's content.
   final WidgetBuilder builder;
+
+  /// The value associated with this item.
   final Object? value;
 
+  /// Creates a [SelectItem].
+  ///
+  /// Parameters:
+  /// - [value] (`Object?`, required): Item value.
+  /// - [builder] (`WidgetBuilder`, required): Content builder.
   const SelectItem({super.key, required this.value, required this.builder});
 
   @override
@@ -641,9 +701,24 @@ class SelectItem extends StatelessWidget {
   }
 }
 
+/// A label widget for grouping items in a select popup.
+///
+/// Displays a non-selectable label to organize dropdown items into categories.
+///
+/// Example:
+/// ```dart
+/// SelectLabel(
+///   child: Text('Category Name'),
+/// )
+/// ```
 class SelectLabel extends StatelessWidget {
+  /// The label content.
   final Widget child;
 
+  /// Creates a [SelectLabel].
+  ///
+  /// Parameters:
+  /// - [child] (`Widget`, required): Label content.
   const SelectLabel({super.key, required this.child});
 
   @override
@@ -657,10 +732,38 @@ class SelectLabel extends StatelessWidget {
   }
 }
 
+/// Builder function for select popup content.
+///
+/// Returns the widget tree for the dropdown/popup menu.
 typedef SelectPopupBuilder = Widget Function(BuildContext context);
+
+/// Builder function for rendering selected values.
+///
+/// Parameters:
+/// - [context] (`BuildContext`): Build context.
+/// - [value] (`T`): The selected value.
+///
+/// Returns: Widget representation of the value.
 typedef SelectValueBuilder<T> = Widget Function(BuildContext context, T value);
+
+/// Handler for custom selection logic.
+///
+/// Parameters:
+/// - [oldValue] (`T?`): Previous selection.
+/// - [value] (`Object?`): Newly selected item.
+/// - [selected] (`bool`): Whether item is being selected (true) or deselected (false).
+///
+/// Returns: `T?` — the new selection state.
 typedef SelectValueSelectionHandler<T> = T? Function(
     T? oldValue, Object? value, bool selected);
+
+/// Predicate for testing value selection state.
+///
+/// Parameters:
+/// - [value] (`T?`): Current selection.
+/// - [test] (`Object?`): Value to test against.
+///
+/// Returns: `bool` — true if test matches selection.
 typedef SelectValueSelectionPredicate<T> = bool Function(
     T? value, Object? test);
 
@@ -712,25 +815,66 @@ bool _defaultMultiSelectValueSelectionPredicate<T>(
   return value.contains(test);
 }
 
+/// Common interface for select components.
+///
+/// Defines the contract for both single and multi-select widgets, providing
+/// properties for popup behavior, styling, and value handling.
 mixin SelectBase<T> {
+  /// Callback when selection changes.
   ValueChanged<T?>? get onChanged;
+
+  /// Placeholder widget shown when nothing is selected.
   Widget? get placeholder;
+
+  /// Whether to use filled appearance style.
   bool get filled;
+
+  /// Focus node for keyboard navigation.
   FocusNode? get focusNode;
+
+  /// Size constraints for the select trigger.
   BoxConstraints? get constraints;
+
+  /// Size constraints for the popup menu.
   BoxConstraints? get popupConstraints;
+
+  /// How popup width should relate to trigger width.
   PopoverConstraint get popupWidthConstraint;
+
+  /// Border radius of the select trigger.
   BorderRadiusGeometry? get borderRadius;
+
+  /// Internal padding of the select trigger.
   EdgeInsetsGeometry? get padding;
+
+  /// Alignment of popup relative to trigger.
   AlignmentGeometry get popoverAlignment;
+
+  /// Alignment of anchor point for popup positioning.
   AlignmentGeometry? get popoverAnchorAlignment;
+
+  /// Whether to disable hover effects.
   bool get disableHoverEffect;
+
+  /// Whether clicking selected item deselects it.
   bool get canUnselect;
+
+  /// Whether popup auto-closes after selection.
   bool? get autoClosePopover;
+
+  /// Builder for popup content.
   SelectPopupBuilder get popup;
+
+  /// Builder for rendering selected values.
   SelectValueBuilder<T> get itemBuilder;
+
+  /// Custom selection handler logic.
   SelectValueSelectionHandler<T>? get valueSelectionHandler;
+
+  /// Predicate for testing selection state.
   SelectValueSelectionPredicate<T>? get valueSelectionPredicate;
+
+  /// Predicate for showing value in trigger.
   Predicate<T>? get showValuePredicate;
 }
 
@@ -796,7 +940,10 @@ class Select<T> extends StatefulWidget with SelectBase<T> {
   final BoxConstraints? popupConstraints;
   @override
   final PopoverConstraint popupWidthConstraint;
+
+  /// The currently selected value.
   final T? value;
+
   @override
   final BorderRadiusGeometry? borderRadius;
   @override
@@ -811,6 +958,8 @@ class Select<T> extends StatefulWidget with SelectBase<T> {
   final bool canUnselect;
   @override
   final bool? autoClosePopover;
+
+  /// Whether the select is enabled for user interaction.
   final bool? enabled;
   @override
   final SelectPopupBuilder popup;
@@ -823,6 +972,34 @@ class Select<T> extends StatefulWidget with SelectBase<T> {
   @override
   final Predicate<T>? showValuePredicate;
 
+  /// Creates a single-selection dropdown widget.
+  ///
+  /// The [popup] and [itemBuilder] parameters are required to define the
+  /// dropdown content and how selected values are displayed.
+  ///
+  /// Parameters:
+  /// - [key] (Key?): Widget key for controlling widget identity
+  /// - [onChanged] (`ValueChanged<T?>?`): Callback when selection changes; if null, select is disabled
+  /// - [placeholder] (Widget?): Widget shown when no value is selected
+  /// - [filled] (bool): Whether to use filled background style, defaults to false
+  /// - [focusNode] (FocusNode?): Focus node for keyboard interaction
+  /// - [constraints] (BoxConstraints?): Size constraints for the select button
+  /// - [popupConstraints] (BoxConstraints?): Size constraints for the popup menu
+  /// - [popupWidthConstraint] (PopoverConstraint): Width constraint mode for popup, defaults to `PopoverConstraint.anchorFixedSize`
+  /// - [value] (T?): Currently selected value
+  /// - [disableHoverEffect] (bool): Whether to disable hover visual feedback, defaults to false
+  /// - [borderRadius] (BorderRadiusGeometry?): Custom border radius
+  /// - [padding] (EdgeInsetsGeometry?): Custom padding
+  /// - [popoverAlignment] (AlignmentGeometry): Popup alignment, defaults to `Alignment.topCenter`
+  /// - [popoverAnchorAlignment] (AlignmentGeometry?): Anchor alignment for popup positioning
+  /// - [canUnselect] (bool): Whether user can deselect current value, defaults to false
+  /// - [autoClosePopover] (bool?): Whether popup closes after selection, defaults to true
+  /// - [enabled] (bool?): Whether select is enabled for interaction
+  /// - [valueSelectionHandler] (`SelectValueSelectionHandler<T>?`): Custom selection logic
+  /// - [valueSelectionPredicate] (`SelectValueSelectionPredicate<T>?`): Predicate for allowing selection
+  /// - [showValuePredicate] (`Predicate<T>?`): Predicate for showing items
+  /// - [popup] (SelectPopupBuilder): Required builder for popup content
+  /// - [itemBuilder] (`SelectValueBuilder<T>`): Required builder for selected value display
   const Select({
     super.key,
     this.onChanged,
@@ -852,6 +1029,21 @@ class Select<T> extends StatefulWidget with SelectBase<T> {
   SelectState<T> createState() => SelectState<T>();
 }
 
+/// State class for the [Select] widget managing selection and popup interactions.
+///
+/// This state class handles the select dropdown's internal state including:
+/// - Focus management for keyboard navigation
+/// - Popup controller for opening/closing the dropdown menu
+/// - Value change notifications
+/// - Theme integration
+///
+/// The state implements [FormValueSupplier] to integrate with form validation
+/// and value management systems.
+///
+/// See also:
+/// - [Select], the widget that uses this state
+/// - [PopoverController], used to control the dropdown popup
+/// - [FormValueSupplier], the mixin providing form integration
 class SelectState<T> extends State<Select<T>>
     with FormValueSupplier<T, Select<T>> {
   late FocusNode _focusNode;
@@ -1149,8 +1341,13 @@ class SelectState<T> extends State<Select<T>>
 /// );
 /// ```
 class MultiSelectChip extends StatelessWidget {
+  /// The value this chip represents in the selection.
   final Object? value;
+
+  /// The content displayed inside the chip.
   final Widget child;
+
+  /// The chip styling.
   final AbstractButtonStyle style;
 
   /// Creates a [MultiSelectChip].
@@ -1201,6 +1398,20 @@ class MultiSelectChip extends StatelessWidget {
   }
 }
 
+/// A customizable dropdown selection widget for multi-value selection.
+///
+/// Extends the base select functionality to support selecting multiple items
+/// simultaneously. Displays selected items as removable chips within the trigger.
+///
+/// Example:
+/// ```dart
+/// MultiSelect<String>(
+///   value: selectedItems,
+///   onChanged: (items) => setState(() => selectedItems = items),
+///   popup: SelectPopup.menu(children: [...]),
+///   multiItemBuilder: (context, item) => Text(item),
+/// )
+/// ```
 class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
   @override
   final ValueChanged<Iterable<T>?>?
@@ -1217,7 +1428,10 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
   final BoxConstraints? popupConstraints;
   @override
   final PopoverConstraint popupWidthConstraint;
+
+  /// The currently selected values.
   final Iterable<T>? value;
+
   @override
   final BorderRadiusGeometry? borderRadius;
   @override
@@ -1232,7 +1446,10 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
   final bool canUnselect;
   @override
   final bool? autoClosePopover;
+
+  /// Whether the multi-select is enabled for user interaction.
   final bool? enabled;
+
   @override
   final SelectPopupBuilder popup;
   @override
@@ -1243,10 +1460,41 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
   final SelectValueSelectionHandler<Iterable<T>>? valueSelectionHandler;
   @override
   final SelectValueSelectionPredicate<Iterable<T>>? valueSelectionPredicate;
+
+  /// Builder for rendering individual items in the chip display.
   final SelectValueBuilder<T> multiItemBuilder;
+
   @override
   final Predicate<Iterable<T>>? showValuePredicate;
 
+  /// Creates a multi-selection dropdown widget.
+  ///
+  /// Allows selecting multiple items from a dropdown list, displaying them as chips.
+  /// The [value], [popup], and [itemBuilder] parameters are required.
+  ///
+  /// Parameters:
+  /// - [key] (Key?): Widget key for controlling widget identity
+  /// - [onChanged] (`ValueChanged<Iterable<T>?>?`): Callback when selection changes; if null, widget is disabled
+  /// - [placeholder] (Widget?): Widget shown when no values are selected
+  /// - [filled] (bool): Whether to use filled background style, defaults to false
+  /// - [focusNode] (FocusNode?): Focus node for keyboard interaction
+  /// - [constraints] (BoxConstraints?): Size constraints for the select button
+  /// - [popupConstraints] (BoxConstraints?): Size constraints for the popup menu
+  /// - [popupWidthConstraint] (PopoverConstraint): Width constraint mode for popup, defaults to `PopoverConstraint.anchorFixedSize`
+  /// - [value] (`Iterable<T>`): Required currently selected values
+  /// - [disableHoverEffect] (bool): Whether to disable hover visual feedback, defaults to false
+  /// - [borderRadius] (BorderRadiusGeometry?): Custom border radius
+  /// - [padding] (EdgeInsetsGeometry?): Custom padding
+  /// - [popoverAlignment] (AlignmentGeometry): Popup alignment, defaults to `Alignment.topCenter`
+  /// - [popoverAnchorAlignment] (AlignmentGeometry?): Anchor alignment for popup positioning
+  /// - [canUnselect] (bool): Whether user can deselect items, defaults to true
+  /// - [autoClosePopover] (bool?): Whether popup closes after selection, defaults to false
+  /// - [enabled] (bool?): Whether multi-select is enabled for interaction
+  /// - [valueSelectionHandler] (`SelectValueSelectionHandler<Iterable<T>>?`): Custom selection logic
+  /// - [valueSelectionPredicate] (`SelectValueSelectionPredicate<Iterable<T>>?`): Predicate for allowing selection
+  /// - [showValuePredicate] (`Predicate<Iterable<T>>?`): Predicate for showing items
+  /// - [popup] (SelectPopupBuilder): Required builder for popup content
+  /// - [itemBuilder] (`SelectValueBuilder<T>`): Required builder for individual chip items
   const MultiSelect({
     super.key,
     this.onChanged,
@@ -1319,15 +1567,31 @@ class MultiSelect<T> extends StatelessWidget with SelectBase<Iterable<T>> {
   }
 }
 
+/// Callback type for handling selection changes in select components.
+///
+/// Returns true if the change was successful, false otherwise.
 typedef SelectValueChanged<T> = bool Function(T value, bool selected);
 
+/// Data class holding select dropdown state and configuration.
+///
+/// Contains selection state, callbacks, and display options for select popups.
 class SelectData {
+  /// Whether to automatically close the popup after selection.
   final bool? autoClose;
+
+  /// Predicate to check if a value is currently selected.
   final Predicate<Object?> isSelected;
+
+  /// Callback invoked when selection changes.
   final SelectValueChanged<Object?> onChanged;
+
+  /// Whether any items are currently selected.
   final bool hasSelection;
+
+  /// Whether the select is enabled for interaction.
   final bool enabled;
 
+  /// Creates select data.
   const SelectData({
     required this.autoClose,
     required this.isSelected,
@@ -1352,28 +1616,65 @@ class SelectData {
       Object.hash(isSelected, onChanged, autoClose, hasSelection, enabled);
 }
 
+/// Builder function type for creating select item delegates.
+///
+/// Takes the build context and optional search query, returns a delegate
+/// for rendering select items.
 typedef SelectItemsBuilder<T> = FutureOr<SelectItemDelegate> Function(
   BuildContext context,
   String? searchQuery,
 );
 
+/// A popup widget for displaying selectable items in a dropdown.
+///
+/// Provides a searchable, scrollable list of items with various display modes.
 class SelectPopup<T> extends StatefulWidget {
+  /// Builder function for dynamically generating select items.
   final SelectItemsBuilder<T>? builder;
+
+  /// Static list of select items to display.
   final FutureOr<SelectItemDelegate?>? items;
+
+  /// Controller for the search input field.
   final TextEditingController? searchController;
+
+  /// Placeholder widget for the search field.
   final Widget? searchPlaceholder;
+
+  /// Builder for empty state display.
   final WidgetBuilder? emptyBuilder;
+
+  /// Builder for loading state display.
   final WidgetBuilder? loadingBuilder;
+
+  /// Builder for error state display.
   final ErrorWidgetBuilder? errorBuilder;
+
+  /// Blur amount for the popup surface.
   final double? surfaceBlur;
+
+  /// Opacity for the popup surface.
   final double? surfaceOpacity;
+
+  /// Whether to auto-close the popup after selection.
   final bool? autoClose;
+
+  /// Whether selected items can be unselected.
   final bool? canUnselect;
+
+  /// Whether search functionality is enabled.
   final bool enableSearch;
+
+  /// Controller for the items scroll view.
   final ScrollController? scrollController;
+
+  /// Whether the list should shrink-wrap its contents.
   final bool shrinkWrap;
+
+  /// Whether to disable item virtualization.
   final bool disableVirtualization;
 
+  /// Creates a select popup with a dynamic builder.
   const SelectPopup.builder({
     super.key,
     required this.builder,
@@ -1392,6 +1693,7 @@ class SelectPopup<T> extends StatefulWidget {
         shrinkWrap = false,
         disableVirtualization = false;
 
+  /// Creates a select popup with static items.
   const SelectPopup({
     super.key,
     this.items,
@@ -1410,6 +1712,7 @@ class SelectPopup<T> extends StatefulWidget {
         enableSearch = false,
         disableVirtualization = false;
 
+  /// Creates a select popup without virtualization optimization.
   const SelectPopup.noVirtualization({
     super.key,
     FutureOr<SelectItemList?>? this.items,
@@ -1437,10 +1740,20 @@ class SelectPopup<T> extends StatefulWidget {
   State<SelectPopup<T>> createState() => _SelectPopupState<T>();
 }
 
+/// Mixin providing select popup interaction methods.
+///
+/// Allows widgets to check selection state and update selections.
 mixin SelectPopupHandle {
+  /// Checks if the given value is currently selected.
   bool isSelected(Object? value);
+
+  /// Updates the selection state for the given value.
   void selectItem(Object? value, bool selected);
+
+  /// Whether any items are currently selected.
   bool get hasSelection;
+
+  /// Retrieves the nearest SelectPopupHandle from the widget tree.
   static SelectPopupHandle of(BuildContext context) {
     return Data.of<SelectPopupHandle>(context);
   }
@@ -1855,16 +2168,30 @@ class _SelectPopupState<T> extends State<SelectPopup<T>>
   }
 }
 
+/// Abstract base class for building select item lists.
+///
+/// Provides interface for rendering select items with optional caching
+/// and change detection.
 abstract class SelectItemDelegate with CachedValue {
+  /// An empty select item delegate constant.
   static const empty = EmptySelectItem();
+
+  /// Creates a select item delegate.
   const SelectItemDelegate();
+
+  /// Builds a widget for the item at the given index.
   Widget? build(BuildContext context, int index);
+
+  /// Estimated number of children in this delegate.
   int? get estimatedChildCount => null;
+
   @override
   bool shouldRebuild(covariant SelectItemDelegate oldDelegate);
 }
 
+/// An empty select item delegate that renders no items.
 class EmptySelectItem extends SelectItemDelegate {
+  /// Creates an empty select item.
   const EmptySelectItem();
 
   @override
@@ -1879,13 +2206,23 @@ class EmptySelectItem extends SelectItemDelegate {
   }
 }
 
+/// Builder function type for creating select item widgets.
+///
+/// Takes the build context and item index, returns the widget for that item.
 typedef SelectItemWidgetBuilder = Widget Function(
     BuildContext context, int index);
 
+/// A select item delegate that uses a builder function.
+///
+/// Provides items through a builder function with optional child count.
 class SelectItemBuilder extends SelectItemDelegate {
+  /// The builder function for creating item widgets.
   final SelectItemWidgetBuilder builder;
+
+  /// The number of children this delegate can build.
   final int? childCount;
 
+  /// Creates a select item builder.
   const SelectItemBuilder({required this.builder, this.childCount});
 
   @override
@@ -1903,9 +2240,26 @@ class SelectItemBuilder extends SelectItemDelegate {
   }
 }
 
+/// A select item delegate that uses a static list of children.
+///
+/// [SelectItemList] provides select items from a pre-defined list of widgets.
+/// This is the simplest way to create a select dropdown with a fixed set of options.
+///
+/// Example:
+/// ```dart
+/// SelectItemList(
+///   children: [
+///     SelectItem(value: 1, child: Text('Option 1')),
+///     SelectItem(value: 2, child: Text('Option 2')),
+///     SelectItem(value: 3, child: Text('Option 3')),
+///   ],
+/// )
+/// ```
 class SelectItemList extends SelectItemDelegate {
+  /// The list of widgets to display as select items.
   final List<Widget> children;
 
+  /// Creates a [SelectItemList] with the specified children.
   const SelectItemList({required this.children});
 
   @override

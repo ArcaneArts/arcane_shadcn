@@ -1,4 +1,3 @@
-
 import '../../../shadcn_flutter.dart';
 
 /// Theme configuration for [DatePicker] widget styling and behavior.
@@ -60,6 +59,7 @@ class DatePickerTheme {
     this.popoverPadding,
   });
 
+  /// Creates a copy of this theme with specified properties overridden.
   DatePickerTheme copyWith({
     ValueGetter<PromptMode?>? mode,
     ValueGetter<CalendarView?>? initialView,
@@ -105,32 +105,99 @@ class DatePickerTheme {
       );
 }
 
+/// A controller for managing the selected date in a [DatePicker].
+///
+/// [DatePickerController] extends [ValueNotifier] to hold the currently selected
+/// date and notify listeners when it changes. Use this to programmatically control
+/// the date picker or react to date selection changes.
+///
+/// Example:
+/// ```dart
+/// final controller = DatePickerController(DateTime.now());
+/// controller.addListener(() {
+///   print('Selected date: ${controller.value}');
+/// });
+/// ```
 class DatePickerController extends ValueNotifier<DateTime?>
     with ComponentController<DateTime?> {
+  /// Creates a [DatePickerController] with the specified initial date.
   DatePickerController(super.value);
 }
 
+/// A controlled date picker widget with comprehensive date selection features.
+///
+/// [ControlledDatePicker] provides a complete date selection interface with
+/// customizable presentation modes (popover or modal), calendar views, and
+/// flexible positioning. It integrates with [DatePickerController] for
+/// programmatic control.
+///
+/// Features:
+/// - Multiple presentation modes (popover, modal)
+/// - Various calendar views (month, year, decade)
+/// - Custom date state builders
+/// - Flexible positioning
+/// - Optional placeholder when no date is selected
+///
+/// Example:
+/// ```dart
+/// ControlledDatePicker(
+///   initialValue: DateTime.now(),
+///   onChanged: (date) {
+///     print('Selected: $date');
+///   },
+///   placeholder: Text('Select a date'),
+/// )
+/// ```
 class ControlledDatePicker extends StatelessWidget
     with ControlledComponent<DateTime?> {
   @override
+
+  /// The initial date value.
   final DateTime? initialValue;
+
   @override
+
+  /// Called when the selected date changes.
   final ValueChanged<DateTime?>? onChanged;
+
   @override
+
+  /// Whether the date picker is enabled.
   final bool enabled;
+
   @override
+
+  /// Optional controller for programmatic access.
   final DatePickerController? controller;
 
+  /// Widget displayed when no date is selected.
   final Widget? placeholder;
+
+  /// Presentation mode (popover or modal).
   final PromptMode? mode;
+
+  /// Initial calendar view to display.
   final CalendarView? initialView;
+
+  /// Popover alignment relative to the anchor.
   final AlignmentGeometry? popoverAlignment;
+
+  /// Anchor alignment for popover positioning.
   final AlignmentGeometry? popoverAnchorAlignment;
+
+  /// Internal padding for the popover.
   final EdgeInsetsGeometry? popoverPadding;
+
+  /// Title for the dialog when using modal mode.
   final Widget? dialogTitle;
+
+  /// Initial calendar view type.
   final CalendarViewType? initialViewType;
+
+  /// Builder for customizing date cell states.
   final DateStateBuilder? stateBuilder;
 
+  /// Creates a [ControlledDatePicker].
   const ControlledDatePicker({
     super.key,
     this.controller,
@@ -175,20 +242,48 @@ class ControlledDatePicker extends StatelessWidget
   }
 }
 
+/// A date picker widget for selecting dates.
+///
+/// Provides a date selection interface with calendar view in either
+/// popover or dialog mode.
 class DatePicker extends StatelessWidget {
+  /// The currently selected date value.
   final DateTime? value;
+
+  /// Callback invoked when the selected date changes.
   final ValueChanged<DateTime?>? onChanged;
+
+  /// Placeholder widget shown when no date is selected.
   final Widget? placeholder;
+
+  /// The display mode for the date picker (popover or dialog).
   final PromptMode? mode;
+
+  /// The initial calendar view to display.
   final CalendarView? initialView;
+
+  /// Alignment of the popover relative to the anchor.
   final AlignmentGeometry? popoverAlignment;
+
+  /// Anchor alignment for the popover.
   final AlignmentGeometry? popoverAnchorAlignment;
+
+  /// Padding inside the popover.
   final EdgeInsetsGeometry? popoverPadding;
+
+  /// Title widget for the dialog mode.
   final Widget? dialogTitle;
+
+  /// The initial calendar view type (date, month, or year).
   final CalendarViewType? initialViewType;
+
+  /// Builder function to determine the state of each date.
   final DateStateBuilder? stateBuilder;
+
+  /// Whether the date picker is enabled.
   final bool? enabled;
 
+  /// Creates a date picker.
   const DatePicker({
     super.key,
     required this.value,
@@ -272,10 +367,30 @@ class DatePicker extends StatelessWidget {
   }
 }
 
+/// Represents a range of dates with a start and end time.
+///
+/// Immutable value type for representing a continuous period between two dates.
+/// Commonly used with date range pickers to specify selected date intervals.
+///
+/// Example:
+/// ```dart
+/// final range = DateTimeRange(
+///   DateTime(2024, 1, 1),
+///   DateTime(2024, 1, 31),
+/// );
+/// ```
 class DateTimeRange {
+  /// The start date/time of the range.
   final DateTime start;
+
+  /// The end date/time of the range.
   final DateTime end;
 
+  /// Creates a [DateTimeRange].
+  ///
+  /// Parameters:
+  /// - [start] (`DateTime`, required): The beginning of the range.
+  /// - [end] (`DateTime`, required): The end of the range.
   const DateTimeRange(this.start, this.end);
 
   @override
@@ -292,6 +407,13 @@ class DateTimeRange {
     return 'DateTimeRange{start: $start, end: $end}';
   }
 
+  /// Creates a copy of this range with the given fields replaced.
+  ///
+  /// Parameters:
+  /// - [start] (`ValueGetter<DateTime>?`, optional): New start date.
+  /// - [end] (`ValueGetter<DateTime>?`, optional): New end date.
+  ///
+  /// Returns: A new [DateTimeRange] with updated values.
   DateTimeRange copyWith({
     ValueGetter<DateTime>? start,
     ValueGetter<DateTime>? end,
@@ -303,19 +425,68 @@ class DateTimeRange {
   }
 }
 
+/// A widget for selecting a date range.
+///
+/// Provides an interactive date range picker that allows users to select a start
+/// and end date. Supports both dialog and popover presentation modes with
+/// customizable calendar views and state management.
+///
+/// Example:
+/// ```dart
+/// DateRangePicker(
+///   value: currentRange,
+///   onChanged: (range) => setState(() => currentRange = range),
+///   mode: PromptMode.dialog,
+/// )
+/// ```
 class DateRangePicker extends StatelessWidget {
+  /// The currently selected date range.
   final DateTimeRange? value;
+
+  /// Callback when the date range changes.
   final ValueChanged<DateTimeRange?>? onChanged;
+
+  /// Placeholder widget shown when no range is selected.
   final Widget? placeholder;
+
+  /// Presentation mode (dialog or popover).
   final PromptMode mode;
+
+  /// Initial calendar view to display.
   final CalendarView? initialView;
+
+  /// Initial view type (date, month, or year).
   final CalendarViewType? initialViewType;
+
+  /// Alignment of popover relative to anchor.
   final AlignmentGeometry? popoverAlignment;
+
+  /// Alignment of anchor for popover positioning.
   final AlignmentGeometry? popoverAnchorAlignment;
+
+  /// Padding inside the popover.
   final EdgeInsetsGeometry? popoverPadding;
+
+  /// Title widget for dialog mode.
   final Widget? dialogTitle;
+
+  /// Callback to determine date state (enabled/disabled).
   final DateStateBuilder? stateBuilder;
 
+  /// Creates a [DateRangePicker].
+  ///
+  /// Parameters:
+  /// - [value] (`DateTimeRange?`, required): Current selected range.
+  /// - [onChanged] (`ValueChanged<DateTimeRange?>?`, optional): Called when range changes.
+  /// - [placeholder] (`Widget?`, optional): Shown when no range selected.
+  /// - [mode] (`PromptMode`, default: `PromptMode.dialog`): Presentation mode.
+  /// - [initialView] (`CalendarView?`, optional): Starting calendar view.
+  /// - [initialViewType] (`CalendarViewType?`, optional): Starting view type.
+  /// - [popoverAlignment] (`AlignmentGeometry?`, optional): Popover alignment.
+  /// - [popoverAnchorAlignment] (`AlignmentGeometry?`, optional): Anchor alignment.
+  /// - [popoverPadding] (`EdgeInsetsGeometry?`, optional): Popover padding.
+  /// - [dialogTitle] (`Widget?`, optional): Dialog title.
+  /// - [stateBuilder] (`DateStateBuilder?`, optional): Date state callback.
   const DateRangePicker({
     super.key,
     required this.value,

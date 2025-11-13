@@ -7,6 +7,7 @@ class ItemPickerExample1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return PrimaryButton(
       onPressed: () {
+        // Show a popover item picker (non-dialog) with a virtual list of 1000 items.
         showItemPicker<int>(
           context,
           title: const Text('Pick an item'),
@@ -22,7 +23,8 @@ class ItemPickerExample1 extends StatelessWidget {
           },
         ).then(
           (value) {
-            if (value != null) {
+            if (value != null && context.mounted) {
+              // Feedback via toast when a selection is made.
               showToast(
                 context: context,
                 builder: (context, overlay) {
@@ -31,7 +33,7 @@ class ItemPickerExample1 extends StatelessWidget {
                   );
                 },
               );
-            } else {
+            } else if (context.mounted) {
               showToast(
                 context: context,
                 builder: (context, overlay) {

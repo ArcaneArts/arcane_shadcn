@@ -26,25 +26,44 @@ class TabPaneTheme {
   /// Type: `BorderRadiusGeometry?`. If null, uses the theme's large border radius.
   /// This affects both the main content area and the tab button appearance.
   final BorderRadiusGeometry? borderRadius;
-  
+
   /// Background color for the tab pane content area and active tabs.
   ///
   /// Type: `Color?`. If null, uses the theme's card color. This provides
   /// the background for both the main content area and highlighted tabs.
   final Color? backgroundColor;
-  
+
   /// Border styling for the tab pane container.
   ///
   /// Type: `BorderSide?`. If null, uses the theme's default border. This
   /// creates the outline around the entire tab pane component.
   final BorderSide? border;
-  
+
   /// Height of the tab bar area in logical pixels.
   ///
   /// Type: `double?`. If null, uses 32 logical pixels scaled by theme scaling.
   /// This determines the vertical space allocated for the tab buttons.
   final double? barHeight;
 
+  /// Creates a [TabPaneTheme].
+  ///
+  /// All parameters are optional and allow customization of tab pane appearance.
+  ///
+  /// Parameters:
+  /// - [borderRadius] (`BorderRadiusGeometry?`, optional): Border radius for the tab pane container.
+  /// - [backgroundColor] (`Color?`, optional): Background color of the tab pane.
+  /// - [border] (`BorderSide?`, optional): Border styling for the tab pane.
+  /// - [barHeight] (`double?`, optional): Height of the tab bar area.
+  ///
+  /// Example:
+  /// ```dart
+  /// const TabPaneTheme(
+  ///   borderRadius: BorderRadius.circular(8),
+  ///   backgroundColor: Colors.white,
+  ///   border: BorderSide(color: Colors.grey),
+  ///   barHeight: 32.0,
+  /// )
+  /// ```
   const TabPaneTheme({
     this.borderRadius,
     this.backgroundColor,
@@ -52,6 +71,15 @@ class TabPaneTheme {
     this.barHeight,
   });
 
+  /// Creates a copy with specified fields replaced.
+  ///
+  /// Parameters:
+  /// - [borderRadius] (`ValueGetter<BorderRadiusGeometry?>?`, optional): new border radius getter
+  /// - [backgroundColor] (`ValueGetter<Color?>?`, optional): new background color getter
+  /// - [border] (`ValueGetter<BorderSide?>?`, optional): new border getter
+  /// - [barHeight] (`ValueGetter<double?>?`, optional): new bar height getter
+  ///
+  /// Returns: `TabPaneTheme` — new theme with updated values
   TabPaneTheme copyWith({
     ValueGetter<BorderRadiusGeometry?>? borderRadius,
     ValueGetter<Color?>? backgroundColor,
@@ -110,7 +138,7 @@ class TabPaneData<T> extends SortableData<T> {
 ///
 /// Parameters:
 /// - [context] (BuildContext): Build context for theme access
-/// - [item] (TabPaneData<T>): The data for this specific tab
+/// - [item] (`TabPaneData<T>`): The data for this specific tab
 /// - [index] (int): Zero-based index of this tab in the list
 ///
 /// Returns: A [TabChild] widget for the tab button
@@ -130,7 +158,7 @@ typedef TabPaneItemBuilder<T> = TabChild Function(
 /// Features:
 /// - Drag-and-drop sortable tabs with visual feedback
 /// - Horizontal scrolling with edge fade effects for tab overflow
-/// - Integrated content area with customizable styling  
+/// - Integrated content area with customizable styling
 /// - Leading and trailing widget support in the tab bar
 /// - Custom tab rendering through builder patterns
 /// - Comprehensive theming and styling options
@@ -165,72 +193,73 @@ class TabPane<T> extends StatefulWidget {
   /// Type: `List<TabPaneData<T>>`. Each item contains the data for one tab
   /// and will be passed to the [itemBuilder] to create the visual representation.
   final List<TabPaneData<T>> items;
-  
+
   /// Builder function to create tab child widgets from data items.
   ///
   /// Type: `TabPaneItemBuilder<T>`. Called for each tab item to create the
   /// visual representation in the tab bar. Should return a TabChild widget.
   final TabPaneItemBuilder<T> itemBuilder;
-  
+
   /// Callback invoked when tabs are reordered through drag-and-drop.
   ///
   /// Type: `ValueChanged<List<TabPaneData<T>>>?`. Called with the new tab
   /// order when sorting operations complete. If null, sorting is disabled.
   final ValueChanged<List<TabPaneData<T>>>? onSort;
-  
+
   /// Index of the currently focused/selected tab.
   ///
   /// Type: `int`. Zero-based index of the active tab. The focused tab receives
   /// special visual styling and its content is typically displayed.
   final int focused;
-  
+
   /// Callback invoked when the focused tab changes.
   ///
   /// Type: `ValueChanged<int>`. Called when a tab is selected either through
   /// user interaction or programmatic changes during sorting operations.
   final ValueChanged<int> onFocused;
-  
+
   /// Widgets displayed at the leading edge of the tab bar.
   ///
   /// Type: `List<Widget>`, default: `[]`. These widgets appear before the
   /// scrollable tab area, useful for controls or branding elements.
   final List<Widget> leading;
-  
+
   /// Widgets displayed at the trailing edge of the tab bar.
   ///
   /// Type: `List<Widget>`, default: `[]`. These widgets appear after the
   /// scrollable tab area, useful for actions or controls.
   final List<Widget> trailing;
-  
+
   /// Border radius for the tab pane container.
   ///
   /// Type: `BorderRadiusGeometry?`. If null, uses the theme's large border
   /// radius. Applied to both the content area and tab styling.
   final BorderRadiusGeometry? borderRadius;
-  
+
   /// Background color for the content area and active tabs.
   ///
   /// Type: `Color?`. If null, uses the theme's card background color.
   /// Provides consistent styling across the tab pane components.
   final Color? backgroundColor;
-  
+
   /// Border styling for the tab pane container.
   ///
   /// Type: `BorderSide?`. If null, uses theme defaults for border appearance
   /// around the entire tab pane structure.
   final BorderSide? border;
-  
+
   /// The main content widget displayed in the content area.
   ///
   /// Type: `Widget`. This widget fills the content area above the tab bar
   /// and typically shows content related to the currently focused tab.
   final Widget child;
-  
+
   /// Height of the tab bar area in logical pixels.
   ///
   /// Type: `double?`. If null, uses 32 logical pixels scaled by theme scaling.
   /// Determines the vertical space allocated for tab buttons.
   final double? barHeight;
+
   /// Creates a [TabPane] with sortable tabs and integrated content display.
   ///
   /// Configures a comprehensive tab interface that combines sortable tab management
@@ -238,14 +267,14 @@ class TabPane<T> extends StatefulWidget {
   ///
   /// Parameters:
   /// - [key] (Key?): Widget identifier for the widget tree
-  /// - [items] (List<TabPaneData<T>>, required): Tab data items to display
-  /// - [itemBuilder] (TabPaneItemBuilder<T>, required): Builder for tab widgets
+  /// - [items] (`List<TabPaneData<T>>`, required): Tab data items to display
+  /// - [itemBuilder] (`TabPaneItemBuilder<T>`, required): Builder for tab widgets
   /// - [focused] (int, default: 0): Index of the currently focused tab
-  /// - [onFocused] (ValueChanged<int>, required): Callback for focus changes
+  /// - [onFocused] (`ValueChanged<int>`, required): Callback for focus changes
   /// - [child] (Widget, required): Content widget for the main display area
-  /// - [onSort] (ValueChanged<List<TabPaneData<T>>>?, optional): Callback for tab reordering
-  /// - [leading] (List<Widget>, default: []): Widgets before the tab area
-  /// - [trailing] (List<Widget>, default: []): Widgets after the tab area
+  /// - [onSort] (`ValueChanged<List<TabPaneData<T>>>?`, optional): Callback for tab reordering
+  /// - [leading] (`List<Widget>`, default: []): Widgets before the tab area
+  /// - [trailing] (`List<Widget>`, default: []): Widgets after the tab area
   /// - [borderRadius] (BorderRadiusGeometry?, optional): Border radius override
   /// - [backgroundColor] (Color?, optional): Background color override
   /// - [border] (BorderSide?, optional): Border styling override
@@ -302,8 +331,13 @@ class _TabGhostData {
   int get hashCode => 0;
 }
 
+/// State class for [TabPane] widget.
+///
+/// Manages the scrolling and rendering of tab pane content.
 class TabPaneState<T> extends State<TabPane<T>> {
   final ScrollController _scrollController = ScrollController();
+
+  /// Drag gesture identifier for tab interactions.
   static const kTabDrag = #tabDrag;
 
   Widget _childBuilder(

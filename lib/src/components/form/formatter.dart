@@ -3,6 +3,10 @@ import 'dart:math';
 import 'package:expressions/expressions.dart';
 import 'package:flutter/services.dart';
 
+/// Constrains the text selection to fit within the new text length.
+///
+/// Helper function that ensures selection offsets don't exceed the bounds
+/// of the updated text.
 TextSelection contraintToNewText(TextEditingValue newValue, String newText) {
   return TextSelection(
     baseOffset: newValue.selection.baseOffset.clamp(0, newText.length),
@@ -10,25 +14,71 @@ TextSelection contraintToNewText(TextEditingValue newValue, String newText) {
   );
 }
 
+/// Provides factory methods for common text input formatters.
+///
+/// [TextInputFormatters] is a utility class that creates various pre-configured
+/// [TextInputFormatter] instances for common formatting needs like uppercase/lowercase
+/// conversion, numeric input, time formatting, and more.
+///
+/// Example:
+/// ```dart
+/// TextField(
+///   inputFormatters: [
+///     TextInputFormatters.toUpperCase,
+///     TextInputFormatters.integerOnly(min: 0, max: 100),
+///   ],
+/// )
+/// ```
 class TextInputFormatters {
+  /// Converts all input text to uppercase.
   static const TextInputFormatter toUpperCase = _ToUpperCaseTextFormatter();
+
+  /// Converts all input text to lowercase.
   static const TextInputFormatter toLowerCase = _ToLowerCaseTextFormatter();
+
+  /// Creates a formatter for time input with leading zeros.
+  ///
+  /// Parameters:
+  /// - [length]: The fixed length of the time string.
   static TextInputFormatter time({required int length}) {
     return _TimeFormatter(length: length);
   }
 
+  /// Creates a formatter that only allows integer input with optional min/max bounds.
+  ///
+  /// Parameters:
+  /// - [min]: Optional minimum value.
+  /// - [max]: Optional maximum value.
   static TextInputFormatter integerOnly({int? min, int? max}) {
     return _IntegerOnlyFormatter(min: min, max: max);
   }
 
+  /// Creates a formatter that only allows decimal numeric input.
+  ///
+  /// Parameters:
+  /// - [min]: Optional minimum value.
+  /// - [max]: Optional maximum value.
+  /// - [decimalDigits]: Optional fixed number of decimal places.
   static TextInputFormatter digitsOnly(
       {double? min, double? max, int? decimalDigits}) {
     return _DoubleOnlyFormatter(
         min: min, max: max, decimalDigits: decimalDigits);
   }
 
+  /// Creates a formatter that evaluates mathematical expressions.
+  ///
+  /// Parameters:
+  /// - [context]: Optional context variables for expression evaluation.
   static TextInputFormatter mathExpression({Map<String, dynamic>? context}) {
     return _MathExpressionFormatter(context: context);
+  }
+
+  /// Creates a formatter for hexadecimal input.
+  ///
+  /// Parameters:
+  /// - [hashPrefix]: Whether to require/add a '#' prefix.
+  static TextInputFormatter hex({bool hashPrefix = false}) {
+    return _HexTextFormatter(hashPrefix: hashPrefix);
   }
 
   const TextInputFormatters._();
@@ -248,6 +298,47 @@ class _ToLowerCaseTextFormatter extends TextInputFormatter {
     return TextEditingValue(
       text: newValue.text.toLowerCase(),
       selection: newValue.selection,
+    );
+  }
+}
+
+class _HexTextFormatter extends TextInputFormatter {
+  final bool hashPrefix;
+  const _HexTextFormatter({this.hashPrefix = false});
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    String newText = newValue.text;
+    if (hashPrefix) {
+      if (!newText.startsWith('#')) {
+        newText = '#$newText';
+      }
+    } else {
+      if (newText.startsWith('#')) {
+        newText = newText.substring(1);
+      }
+    }
+    // make sure all characters are valid hex characters
+    final hexRegExp =
+        hashPrefix ? RegExp(r'^#?[0-9a-fA-F]*$') : RegExp(r'^[0-9a-fA-F]*$');
+    if (!hexRegExp.hasMatch(newText)) {
+      return oldValue;
+    }
+    var selection = contraintToNewText(newValue, newText);
+    // make sure selection is after the hash if hashPrefix is true
+    if (hashPrefix) {
+      if (selection.baseOffset == 0) {
+        selection = selection.copyWith(baseOffset: 1);
+      }
+      if (selection.extentOffset == 0) {
+        selection = selection.copyWith(extentOffset: 1);
+      }
+    }
+    return TextEditingValue(
+      text: newText,
+      selection: selection,
     );
   }
 }

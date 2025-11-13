@@ -191,8 +191,8 @@ class AutoComplete extends StatefulWidget {
   /// customized through the optional positioning and constraint parameters.
   ///
   /// Parameters:
-  /// - [suggestions] (List<String>, required): available autocomplete options
-  /// - [child] (Widget, required): widget to receive autocomplete functionality  
+  /// - [suggestions] (`List<String>`, required): available autocomplete options
+  /// - [child] (Widget, required): widget to receive autocomplete functionality
   /// - [popoverConstraints] (BoxConstraints?, optional): popover size limits
   /// - [popoverWidthConstraint] (PopoverConstraint?, optional): width strategy
   /// - [popoverAnchorAlignment] (AlignmentDirectional?, optional): anchor point
@@ -275,6 +275,21 @@ class _AutoCompleteItemState extends State<_AutoCompleteItem> {
       });
     }
   }
+}
+
+/// An intent representing an autocomplete suggestion selection.
+///
+/// Used by the autocomplete system to handle suggestion selections
+/// with different modes of completion.
+class AutoCompleteIntent extends Intent {
+  /// The suggestion text to be completed.
+  final String suggestion;
+
+  /// The mode determining how the completion should be applied.
+  final AutoCompleteMode mode;
+
+  /// Creates an autocomplete intent with the specified suggestion and mode.
+  const AutoCompleteIntent(this.suggestion, this.mode);
 }
 
 class _AutoCompleteState extends State<AutoComplete> {
@@ -381,23 +396,9 @@ class _AutoCompleteState extends State<AutoComplete> {
     suggestion = widget.completer(
       suggestion,
     );
-    switch (_mode) {
-      case AutoCompleteMode.append:
-        TextFieldAppendTextIntent intent =
-            TextFieldAppendTextIntent(text: suggestion);
-        invokeActionOnFocusedWidget(intent);
-        break;
-      case AutoCompleteMode.replaceWord:
-        TextFieldReplaceCurrentWordIntent intent =
-            TextFieldReplaceCurrentWordIntent(text: suggestion);
-        invokeActionOnFocusedWidget(intent);
-        break;
-      case AutoCompleteMode.replaceAll:
-        TextFieldSetTextIntent intent =
-            TextFieldSetTextIntent(text: suggestion);
-        invokeActionOnFocusedWidget(intent);
-        break;
-    }
+    invokeActionOnFocusedWidget(
+      AutoCompleteIntent(suggestion, _mode),
+    );
   }
 
   @override

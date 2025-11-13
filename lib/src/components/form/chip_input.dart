@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart' hide TextInput;
+import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-import 'package:shadcn_flutter/src/components/layout/focus_outline.dart';
 
 /// Function signature for building custom chip widgets in chip input fields.
 ///
@@ -16,13 +14,6 @@ typedef ChipWidgetBuilder<T> = Widget Function(BuildContext context, T chip);
 /// including popover constraints and chip rendering preferences. Applied globally
 /// through [ComponentTheme] or per-instance for customization.
 class ChipInputTheme {
-  /// Constraints applied to the suggestion popover container.
-  ///
-  /// Controls the maximum and minimum dimensions of the autocomplete suggestion
-  /// popover that appears during typing. When null, uses framework defaults
-  /// with reasonable size limits for suggestion lists.
-  final BoxConstraints? popoverConstraints;
-
   /// Whether to render selected items as interactive chip widgets by default.
   ///
   /// When true, selected items appear as dismissible chip widgets with close buttons.
@@ -30,12 +21,15 @@ class ChipInputTheme {
   /// can override this default behavior.
   final bool? useChips;
 
+  /// The spacing between chips.
+  final double? spacing;
+
   /// Creates a [ChipInputTheme].
   ///
   /// All parameters are optional and fall back to framework defaults when null.
   /// The theme can be applied globally or to specific chip input instances.
   const ChipInputTheme({
-    this.popoverConstraints,
+    this.spacing,
     this.useChips,
   });
 
@@ -46,12 +40,11 @@ class ChipInputTheme {
   ChipInputTheme copyWith({
     ValueGetter<BoxConstraints?>? popoverConstraints,
     ValueGetter<bool?>? useChips,
+    ValueGetter<double?>? spacing,
   }) {
     return ChipInputTheme(
-      popoverConstraints: popoverConstraints == null
-          ? this.popoverConstraints
-          : popoverConstraints(),
       useChips: useChips == null ? this.useChips : useChips(),
+      spacing: spacing == null ? this.spacing : spacing(),
     );
   }
 
@@ -59,441 +52,588 @@ class ChipInputTheme {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is ChipInputTheme &&
-        other.popoverConstraints == popoverConstraints &&
-        other.useChips == useChips;
+        other.useChips == useChips &&
+        other.spacing == spacing;
   }
 
   @override
-  int get hashCode => Object.hash(popoverConstraints, useChips);
+  int get hashCode => Object.hash(useChips, spacing);
 }
 
-/// Reactive controller for managing chip input state with convenient methods.
+/// A text editing controller that supports inline chip widgets.
 ///
-/// Extends [ValueNotifier] to provide state management for chip input widgets
-/// containing lists of typed objects. Supports adding, removing, and clearing
-/// chips programmatically while notifying listeners of changes.
+/// Extends [TextEditingController] to manage text with embedded chip objects
+/// represented by special Unicode codepoints from the Private Use Area (U+E000-U+F8FF).
+/// Each chip is mapped to a unique codepoint allowing up to 6400 chips per controller.
 ///
-/// The controller maintains a list of items of type [T] and provides methods
-/// for common list operations in chip input contexts.
+/// Use this when you need to display removable tags or tokens within a text field,
+/// such as email recipients, keywords, or selected items.
 ///
 /// Example:
 /// ```dart
-/// final controller = ChipInputController<String>(['initial', 'chips']);
-///
-/// // React to changes
-/// controller.addListener(() {
-///   print('Chips: ${controller.value}');
-/// });
-///
-/// // Programmatic control
-/// controller.add('new chip');
-/// controller.removeAt(0);
+/// final controller = ChipEditingController<String>(
+///   initialChips: ['tag1', 'tag2'],
+/// );
 /// ```
-class ChipInputController<T> extends ValueNotifier<List<T>>
-    with ComponentController<List<T>> {
-  /// Creates a [ChipInputController] with an optional initial list of chips.
-  ///
-  /// The [value] parameter provides the initial chip list. When not specified,
-  /// starts with an empty list. The controller notifies listeners when the
-  /// chip list changes through any method calls or direct value assignment.
-  ///
-  /// Example:
-  /// ```dart
-  /// final controller = ChipInputController<String>(['apple', 'banana']);
-  /// ```
-  ChipInputController([super.value = const []]);
+class ChipEditingController<T> extends TextEditingController {
+  static const int _chipStart = 0xE000; // Private Use Area start
+  static const int _chipEnd = 0xF8FF; // Private Use Area end
+  static const int _maxChips = _chipEnd - _chipStart + 1;
+  // these codepoints are reserved for chips, so that they don't conflict with normal text
+  // there are 6400 codepoints available for chips
 
-  /// Adds a new chip to the end of the current list.
-  ///
-  /// Notifies listeners of the change. The chip is appended to maintain
-  /// the existing order of chips in the input.
-  void add(T chip) {
-    value = [...value, chip];
+  // final List<T> _chips = [];
+  final Map<int, T> _chipMap = {};
+
+  int _nextChipIndex = 0;
+
+  int get _nextAvailableChipIndex {
+    if (_chipMap.length >= _maxChips) {
+      throw Exception('Maximum number of chips reached');
+    }
+    while (_chipMap.containsKey(_nextChipIndex)) {
+      int nextIndex = _nextChipIndex + 1;
+      if (nextIndex >= _maxChips) {
+        nextIndex = 0;
+      }
+      _nextChipIndex = nextIndex;
+    }
+    return _nextChipIndex;
   }
 
-  /// Removes the chip at the specified index.
+  /// Factory constructor creating a chip editing controller.
   ///
-  /// Throws [RangeError] if the index is out of bounds. Notifies listeners
-  /// of the change if the removal is successful.
-  void removeAt(int index) {
-    final newList = [...value];
-    newList.removeAt(index);
-    value = newList;
+  /// Optionally initializes with [text] and [initialChips].
+  factory ChipEditingController({String? text, List<T>? initialChips}) {
+    StringBuffer buffer = StringBuffer();
+    if (initialChips != null) {
+      for (int i = 0; i < initialChips.length; i++) {
+        buffer.writeCharCode(_chipStart + i);
+      }
+    }
+    if (text != null) {
+      buffer.write(text);
+    }
+    return ChipEditingController._internal(buffer.toString());
   }
 
-  /// Removes all chips matching the provided chip.
-  ///
-  /// Uses equality comparison to find matching chips. Removes all occurrences
-  /// and notifies listeners if any chips were removed.
-  void remove(T chip) {
-    value = value.where((item) => item != chip).toList();
+  ChipEditingController._internal(String text) : super(text: text);
+
+  @override
+  set text(String newText) {
+    super.text = newText;
+    _updateText(newText);
   }
 
-  /// Removes all chips from the input.
-  ///
-  /// Sets the value to an empty list and notifies listeners of the change.
-  void clear() {
-    value = [];
+  @override
+  set value(TextEditingValue newValue) {
+    super.value = newValue;
+    _updateText(newValue.text);
   }
 
-  /// Returns true if the chip list contains the specified chip.
-  bool contains(T chip) {
-    return value.contains(chip);
+  void _updateText(String newText) {
+    for (final entry in _chipMap.entries.toList()) {
+      int chipIndex = entry.key;
+      int chipCodeUnit = _chipStart + chipIndex;
+      if (!newText.contains(String.fromCharCode(chipCodeUnit))) {
+        _chipMap.remove(chipIndex);
+      }
+    }
   }
 
-  /// Returns the number of chips currently in the input.
-  int get length => value.length;
+  /// Returns an unmodifiable list of all chips in the controller.
+  List<T> get chips => List.unmodifiable(_chipMap.values);
 
-  /// Returns true if the chip input is empty.
-  bool get isEmpty => value.isEmpty;
-
-  /// Returns true if the chip input contains at least one chip.
-  bool get isNotEmpty => value.isNotEmpty;
-}
-
-/// Reactive chip input with automatic state management and controller support.
-///
-/// A high-level chip input widget that provides automatic state management through
-/// the controlled component pattern. Supports both controller-based and callback-based
-/// state management with comprehensive customization options for chips, suggestions,
-/// and input behavior.
-///
-/// ## Features
-///
-/// - **Flexible chip rendering**: Custom chip builders for complete visual control
-/// - **Autocomplete suggestions**: Real-time suggestions with customizable presentation
-/// - **Multiple input modes**: Text tokenization or chip-based entry
-/// - **Form integration**: Automatic validation and form field registration
-/// - **Keyboard navigation**: Full keyboard support for selection and deletion
-///
-/// ## Usage Patterns
-///
-/// **Controller-based (recommended for complex state):**
-/// ```dart
-/// final controller = ChipInputController<String>(['apple', 'banana']);
-///
-/// ControlledChipInput<String>(
-///   controller: controller,
-///   chipBuilder: (context, chip) => Chip(label: Text(chip)),
-///   suggestions: ['orange', 'grape', 'mango'],
-/// )
-/// ```
-///
-/// **Callback-based (simple state management):**
-/// ```dart
-/// List<String> selectedItems = [];
-///
-/// ControlledChipInput<String>(
-///   initialValue: selectedItems,
-///   onChanged: (items) => setState(() => selectedItems = items),
-///   chipBuilder: (context, chip) => CustomChipWidget(chip),
-/// )
-/// ```
-class ControlledChipInput<T> extends StatelessWidget
-    with ControlledComponent<List<T>> {
-  /// Initial chip list when no controller is provided.
-  ///
-  /// Used only when [controller] is null. Provides the starting set of chips
-  /// to display in the input. Defaults to an empty list.
-  @override
-  final List<T> initialValue;
-
-  /// Callback fired when the chip list changes.
-  ///
-  /// Called with the new list of chips when user interactions modify the selection.
-  /// If both [controller] and [onChanged] are provided, both will receive updates.
-  @override
-  final ValueChanged<List<T>>? onChanged;
-
-  /// External controller for programmatic chip list management.
-  ///
-  /// When provided, takes precedence over [initialValue] and [onChanged].
-  /// The controller's state changes are automatically reflected in the widget.
-  @override
-  final ChipInputController<T>? controller;
-
-  /// Whether the chip input is interactive and enabled.
-  ///
-  /// When false, the input becomes read-only and visually disabled.
-  /// When null, automatically determines enabled state based on callbacks.
-  @override
-  final bool enabled;
-
-  /// External controller for the underlying text input field.
-  ///
-  /// Provides direct control over the text entry portion of the chip input.
-  /// When null, the widget manages its own text input controller internally.
-  final TextEditingController? textEditingController;
-
-  /// Constraints applied to the autocomplete suggestion popover.
-  ///
-  /// Overrides the theme default. Controls the size limits of the suggestion
-  /// list that appears during typing. When null, uses theme or framework defaults.
-  final BoxConstraints? popoverConstraints;
-
-  /// Undo history controller for text input field.
-  ///
-  /// Allows programmatic undo/redo of text input changes. Delegated to the underlying [ChipInput].
-  final UndoHistoryController? undoHistoryController;
-
-  /// Callback fired when the user submits the input (e.g., presses enter).
-  ///
-  /// Delegated to the underlying [ChipInput]. Called with the submitted text value.
-  final ValueChanged<String>? onSubmitted;
-
-  /// Initial text value for the input field.
-  ///
-  /// Delegated to the underlying [ChipInput]. Sets the starting text in the input field.
-  final String? initialText;
-
-  /// Focus node for managing input focus.
-  ///
-  /// Delegated to the underlying [ChipInput]. Allows external control of focus state.
-  final FocusNode? focusNode;
-
-  /// List of available suggestions for autocomplete functionality.
-  ///
-  /// Items from this list are filtered and presented to the user during typing.
-  /// The actual filtering logic is managed internally based on text input.
-  final List<T> suggestions;
-
-  /// Current list of selected chips to display.
-  ///
-  /// When using controller-based management, this is managed automatically.
-  /// For callback-based management, this should reflect the current state.
-  final List<T> chips;
-
-  /// List of input formatters for the text field.
-  ///
-  /// Delegated to the underlying [ChipInput]. Allows customization of text input formatting and restrictions.
-  final List<TextInputFormatter>? inputFormatters;
-
-  /// Callback for handling suggestion selection.
-  ///
-  /// Called with the index of the selected suggestion when a user chooses
-  /// an item from the autocomplete list. The callback is responsible for
-  /// adding the suggestion to the chip list.
-  final void Function(int index)? onSuggestionChoosen;
-
-  /// Builder function for creating chip widget representations.
-  ///
-  /// Required function that defines how each chip appears visually in the input.
-  /// Receives the build context and chip data, returning a widget that represents
-  /// the chip with appropriate styling and interaction capabilities.
-  final ChipWidgetBuilder<T> chipBuilder;
-
-  /// Optional builder function for customizing suggestion list items.
-  ///
-  /// When provided, suggestions use this builder instead of default presentation.
-  /// Allows complete customization of how suggestions appear in the autocomplete popover.
-  final ChipWidgetBuilder<T>? suggestionBuilder;
-
-  /// Whether to render selected items as interactive chip widgets.
-  ///
-  /// Overrides the theme default. When true, selected items appear as dismissible
-  /// chips. When false, items appear as simple text tokens.
-  final bool? useChips;
-
-  /// Text input action for the text field (e.g., done, next).
-  ///
-  /// Delegated to the underlying [ChipInput]. Allows customization of the keyboard action button.
-  final TextInputAction? textInputAction;
-
-  /// Widget displayed when no chips are selected and no text is entered.
-  ///
-  /// Provides helpful instructions or context for the user about what to enter.
-  /// Typically a Text widget with muted styling.
-  final Widget? placeholder;
-
-  /// Builder for leading widget in suggestion list items.
-  ///
-  /// Delegated to the underlying [ChipInput]. Allows customization of leading content in suggestions.
-  final Widget Function(BuildContext, T)? suggestionLeadingBuilder;
-
-  /// Builder for trailing widget in suggestion list items.
-  ///
-  /// Delegated to the underlying [ChipInput]. Allows customization of trailing content in suggestions.
-  final Widget Function(BuildContext, T)? suggestionTrailingBuilder;
-
-  /// Widget displayed at the end of the input field.
-  ///
-  /// Delegated to the underlying [ChipInput]. Allows adding custom trailing widgets to the input field.
-  final Widget? inputTrailingWidget;
-
-  /// Creates a [ControlledChipInput] with comprehensive customization options.
-  ///
-  /// The [chipBuilder] parameter is required as it defines how chips are visually
-  /// represented. Either [controller] or [onChanged] should be provided for
-  /// interactivity, depending on the preferred state management approach.
-  ///
-  /// Parameters:
-  /// - [controller] (ChipInputController<T>?, optional): external state controller
-  /// - [initialValue] (List<T>, default: []): starting chips when no controller
-  /// - [onChanged] (ValueChanged<List<T>>?, optional): chip list change callback
-  /// - [enabled] (bool, default: true): whether input is interactive
-  /// - [chipBuilder] (ChipWidgetBuilder<T>, required): chip widget builder
-  /// - [suggestions] (List<T>, default: []): available autocomplete options
-  /// - [suggestionBuilder] (ChipWidgetBuilder<T>?, optional): custom suggestion builder
-  /// - [useChips] (bool?, optional): override chip rendering mode
-  /// - [placeholder] (Widget?, optional): empty state placeholder widget
-  /// - [undoHistoryController] (UndoHistoryController?, optional): undo/redo controller for text input
-  /// - [onSubmitted] (ValueChanged<String>?, optional): callback for text submission
-  /// - [initialText] (String?, optional): initial text value for input field
-  /// - [focusNode] (FocusNode?, optional): focus node for input field
-  /// - [inputFormatters] (List<TextInputFormatter>?, optional): input formatters for text field
-  /// - [textInputAction] (TextInputAction?, optional): keyboard action button
-  /// - [suggestionLeadingBuilder] (Widget Function(BuildContext, T)?, optional): leading widget builder for suggestions
-  /// - [suggestionTrailingBuilder] (Widget Function(BuildContext, T)?, optional): trailing widget builder for suggestions
-  /// - [inputTrailingWidget] (Widget?, optional): trailing widget for input field
-  ///
-  /// Example:
-  /// ```dart
-  /// ControlledChipInput<String>(
-  ///   controller: controller,
-  ///   chipBuilder: (context, chip) => Chip(
-  ///     label: Text(chip),
-  ///     onDeleted: () => controller.remove(chip),
-  ///   ),
-  ///   suggestions: ['apple', 'banana', 'cherry'],
-  ///   placeholder: Text('Type to add fruits...'),
-  ///   undoHistoryController: myUndoController,
-  ///   onSubmitted: (text) => print('Submitted: $text'),
-  ///   initialText: 'Start typing...',
-  ///   focusNode: myFocusNode,
-  ///   inputFormatters: [myFormatter],
-  ///   textInputAction: TextInputAction.done,
-  ///   suggestionLeadingBuilder: (context, chip) => Icon(Icons.star),
-  ///   suggestionTrailingBuilder: (context, chip) => Icon(Icons.close),
-  ///   inputTrailingWidget: Icon(Icons.add),
-  /// )
-  /// ```
-  const ControlledChipInput({
-    super.key,
-    this.controller,
-    this.initialValue = const [],
-    this.onChanged,
-    this.enabled = true,
-    this.textEditingController,
-    this.popoverConstraints,
-    this.undoHistoryController,
-    this.onSubmitted,
-    this.initialText,
-    this.focusNode,
-    this.suggestions = const [],
-    this.chips = const [],
-    this.inputFormatters,
-    this.onSuggestionChoosen,
-    required this.chipBuilder,
-    this.suggestionBuilder,
-    this.useChips,
-    this.textInputAction,
-    this.placeholder,
-    this.suggestionLeadingBuilder,
-    this.suggestionTrailingBuilder,
-    this.inputTrailingWidget,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ControlledComponentAdapter(
-      controller: controller,
-      initialValue: initialValue,
-      onChanged: onChanged,
-      enabled: enabled,
-      builder: (context, data) {
-        return ChipInput(
-          controller: textEditingController,
-          popoverConstraints: popoverConstraints,
-          undoHistoryController: undoHistoryController,
-          onSubmitted: onSubmitted,
-          initialText: initialText,
-          focusNode: focusNode,
-          suggestions: suggestions,
-          chips: data.value,
-          inputFormatters: inputFormatters,
-          onSuggestionChoosen: onSuggestionChoosen,
-          onChanged: data.onChanged,
-          useChips: useChips,
-          chipBuilder: chipBuilder,
-          suggestionBuilder: suggestionBuilder,
-          textInputAction: textInputAction,
-          placeholder: placeholder,
-          suggestionLeadingBuilder: suggestionLeadingBuilder,
-          suggestionTrailingBuilder: suggestionTrailingBuilder,
-          inputTrailingWidget: inputTrailingWidget,
-          enabled: data.enabled,
-        );
-      },
+  /// Sets the chips in this controller, replacing all existing chips.
+  set chips(List<T> newChips) {
+    String text = value.text;
+    // remove chips that are not in newChips
+    // add chips that are in newChips but not present, appending them at the last chip position
+    StringBuffer buffer = StringBuffer();
+    int chipCount = 0;
+    for (int i = 0; i < text.length; i++) {
+      int codeUnit = text.codeUnitAt(i);
+      if (codeUnit >= _chipStart && codeUnit <= _chipEnd) {
+        T? existingChip = _chipMap[codeUnit - _chipStart];
+        if (existingChip != null && newChips.contains(existingChip)) {
+          buffer.writeCharCode(codeUnit);
+          chipCount++;
+        }
+      } else {
+        buffer.writeCharCode(codeUnit);
+      }
+    }
+    for (int i = chipCount; i < newChips.length; i++) {
+      T chip = newChips[i];
+      int chipIndex = _nextAvailableChipIndex;
+      buffer.writeCharCode(_chipStart + chipIndex);
+      _chipMap[chipIndex] = chip;
+    }
+    super.value = value.copyWith(
+      text: buffer.toString(),
+      selection: TextSelection.collapsed(offset: buffer.length),
     );
   }
+
+  /// Removes all chips from the controller, leaving only plain text.
+  void removeAllChips() {
+    StringBuffer buffer = StringBuffer();
+    String text = value.text;
+    for (int i = 0; i < text.length; i++) {
+      int codeUnit = text.codeUnitAt(i);
+      if (codeUnit < _chipStart || codeUnit > _chipEnd) {
+        buffer.writeCharCode(codeUnit);
+      }
+    }
+    super.value = value.copyWith(
+      text: buffer.toString(),
+      selection: TextSelection.collapsed(offset: buffer.length),
+    );
+    _chipMap.clear();
+  }
+
+  @override
+  TextSpan buildTextSpan(
+      {required BuildContext context,
+      TextStyle? style,
+      required bool withComposing}) {
+    final provider = Data.maybeOf<_ChipProvider<T>>(context);
+    final theme = ComponentTheme.maybeOf<ChipInputTheme>(context);
+    final spacing = theme?.spacing ?? 4.0;
+    if (provider != null) {
+      final bool composingRegionOutOfRange =
+          !value.isComposingRangeValid || !withComposing;
+
+      if (composingRegionOutOfRange) {
+        List<InlineSpan> children = [];
+        String text = value.text;
+        StringBuffer buffer = StringBuffer();
+        for (int i = 0; i < text.length; i++) {
+          int codeUnit = text.codeUnitAt(i);
+          if (codeUnit >= _chipStart && codeUnit <= _chipEnd) {
+            // Flush buffer
+            if (buffer.isNotEmpty) {
+              children.add(TextSpan(style: style, text: buffer.toString()));
+              buffer.clear();
+            }
+            T? chip = _chipMap[codeUnit - _chipStart];
+            Widget? chipWidget =
+                chip == null ? null : provider.buildChip(context, chip);
+            if (chipWidget != null) {
+              bool previousIsChip = i > 0 &&
+                  text.codeUnitAt(i - 1) >= _chipStart &&
+                  text.codeUnitAt(i - 1) <= _chipEnd;
+              bool nextIsChip = i < text.length - 1 &&
+                  text.codeUnitAt(i + 1) >= _chipStart &&
+                  text.codeUnitAt(i + 1) <= _chipEnd;
+              children.add(WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: previousIsChip
+                        ? spacing / 2
+                        : i == 0
+                            ? 0
+                            : spacing,
+                    right: nextIsChip ? spacing / 2 : spacing,
+                  ),
+                  child: chipWidget,
+                ),
+              ));
+            }
+          } else {
+            buffer.writeCharCode(codeUnit);
+          }
+        }
+        // Flush remaining buffer
+        if (buffer.isNotEmpty) {
+          children.add(TextSpan(style: style, text: buffer.toString()));
+        }
+        return TextSpan(style: style, children: children);
+      }
+
+      final TextStyle composingStyle =
+          style?.merge(const TextStyle(decoration: TextDecoration.underline)) ??
+              const TextStyle(decoration: TextDecoration.underline);
+      List<InlineSpan> children = [];
+      String text = value.text;
+      StringBuffer buffer = StringBuffer();
+      for (int i = 0; i < text.length; i++) {
+        int codeUnit = text.codeUnitAt(i);
+        if (codeUnit >= _chipStart && codeUnit <= _chipEnd) {
+          // Flush buffer
+          if (buffer.isNotEmpty) {
+            children.add(TextSpan(style: style, text: buffer.toString()));
+            buffer.clear();
+          }
+          T? chip = _chipMap[codeUnit - _chipStart];
+          Widget? chipWidget =
+              chip == null ? null : provider.buildChip(context, chip);
+          if (chipWidget != null) {
+            bool previousIsChip = i > 0 &&
+                text.codeUnitAt(i - 1) >= _chipStart &&
+                text.codeUnitAt(i - 1) <= _chipEnd;
+            bool nextIsChip = i < text.length - 1 &&
+                text.codeUnitAt(i + 1) >= _chipStart &&
+                text.codeUnitAt(i + 1) <= _chipEnd;
+            children.add(WidgetSpan(
+              alignment: PlaceholderAlignment.middle,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: previousIsChip
+                      ? spacing / 2
+                      : i == 0
+                          ? 0
+                          : spacing,
+                  right: nextIsChip ? spacing / 2 : spacing,
+                ),
+                child: chipWidget,
+              ),
+            ));
+          }
+        } else {
+          // Check if current index is within composing range
+          if (i >= value.composing.start && i < value.composing.end) {
+            // Flush buffer
+            if (buffer.isNotEmpty) {
+              children.add(TextSpan(style: style, text: buffer.toString()));
+              buffer.clear();
+            }
+            children.add(TextSpan(
+                style: composingStyle, text: String.fromCharCode(codeUnit)));
+          } else {
+            buffer.writeCharCode(codeUnit);
+          }
+        }
+      }
+      // Flush remaining buffer
+      if (buffer.isNotEmpty) {
+        children.add(TextSpan(style: style, text: buffer.toString()));
+      }
+      return TextSpan(style: style, children: children);
+    }
+    return super.buildTextSpan(
+        context: context, style: style, withComposing: withComposing);
+  }
+
+  /// Returns the plain text without chip characters.
+  String get plainText {
+    StringBuffer buffer = StringBuffer();
+    String text = value.text;
+    for (int i = 0; i < text.length; i++) {
+      int codeUnit = text.codeUnitAt(i);
+      if (codeUnit < _chipStart || codeUnit > _chipEnd) {
+        buffer.writeCharCode(codeUnit);
+      }
+    }
+    return buffer.toString();
+  }
+
+  /// Returns the text at the current cursor position.
+  String get textAtCursor {
+    final boundaries = _findChipTextBoundaries(selection.baseOffset);
+    return value.text.substring(boundaries.start, boundaries.end);
+  }
+
+  /// Inserts a chip at the cursor position by converting the text at cursor.
+  ///
+  /// Uses [chipConverter] to convert the text at cursor to a chip.
+  void insertChipAtCursor(T? Function(String chipText) chipConverter) {
+    final boundaries = _findChipTextBoundaries(selection.baseOffset);
+    String chipText = value.text.substring(boundaries.start, boundaries.end);
+    T? chip = chipConverter(chipText);
+    if (chip != null) {
+      int chipIndex = _nextAvailableChipIndex;
+      _replaceAsChip(boundaries.start, boundaries.end, chipIndex);
+      _chipMap[chipIndex] = chip;
+    }
+  }
+
+  /// Clears the text at the current cursor position.
+  void clearTextAtCursor() {
+    final boundaries = _findChipTextBoundaries(selection.baseOffset);
+    String text = value.text;
+    StringBuffer buffer = StringBuffer();
+    buffer.write(text.substring(0, boundaries.start));
+    buffer.write(text.substring(boundaries.end));
+    super.value = value.copyWith(
+      text: buffer.toString(),
+      selection: TextSelection.collapsed(offset: boundaries.start),
+    );
+  }
+
+  /// Appends a chip at the end of the chip sequence.
+  void appendChip(T chip) {
+    // append chip at the last chip position
+    // note: chip position is not always in order
+    // sometimes theres chip and then text and then chip
+    // so we need to find the last chip position
+    String text = value.text;
+    int chipIndex = _nextAvailableChipIndex;
+    int lastChipIndex = -1;
+    for (int i = text.length - 1; i >= 0; i--) {
+      int codeUnit = text.codeUnitAt(i);
+      if (codeUnit >= _chipStart && codeUnit <= _chipEnd) {
+        lastChipIndex = i;
+        break;
+      }
+    }
+    String newText = text.replaceRange(lastChipIndex + 1, lastChipIndex + 1,
+        String.fromCharCode(_chipStart + chipIndex));
+    super.value = value.copyWith(
+      text: newText,
+      selection: TextSelection.collapsed(offset: lastChipIndex + 2),
+    );
+    _chipMap[chipIndex] = chip;
+  }
+
+  /// Appends a chip at the current cursor position.
+  void appendChipAtCursor(T chip) {
+    // append chip at the cursor position
+    final boundaries = _findChipTextBoundaries(selection.baseOffset);
+    String text = value.text;
+    int chipIndex = _nextAvailableChipIndex;
+    String newText = text.replaceRange(boundaries.end, boundaries.end,
+        String.fromCharCode(_chipStart + chipIndex));
+    super.value = value.copyWith(
+      text: newText,
+      selection: TextSelection.collapsed(offset: boundaries.end + 1),
+    );
+    _chipMap[chipIndex] = chip;
+  }
+
+  /// Inserts a chip at a specific position in the text.
+  void insertChip(T chip) {
+    // insert chip at the start
+    int chipIndex = _nextAvailableChipIndex;
+    String newText = String.fromCharCode(_chipStart + chipIndex) + value.text;
+    super.value = value.copyWith(
+      text: newText,
+      selection: const TextSelection.collapsed(offset: 1),
+    );
+    _chipMap[chipIndex] = chip;
+  }
+
+  void _replaceAsChip(int start, int end, int index) {
+    String text = value.text;
+    StringBuffer buffer = StringBuffer();
+    buffer.write(text.substring(0, start));
+    buffer.writeCharCode(_chipStart + index);
+    buffer.write(text.substring(end));
+    super.value = value.copyWith(
+      text: buffer.toString(),
+      selection: TextSelection.collapsed(offset: start + 1),
+    );
+  }
+
+  ({int start, int end}) _findChipTextBoundaries(int cursorPosition) {
+    String text = value.text;
+    int start = cursorPosition;
+    int end = cursorPosition;
+
+    // Move start backward to find the beginning of the chip text
+    while (start > 0) {
+      int codeUnit = text.codeUnitAt(start - 1);
+      if (codeUnit >= _chipStart && codeUnit <= _chipEnd) {
+        break;
+      }
+      start--;
+    }
+
+    // Move end forward to find the end of the chip text
+    while (end < text.length) {
+      int codeUnit = text.codeUnitAt(end);
+      if (codeUnit >= _chipStart && codeUnit <= _chipEnd) {
+        break;
+      }
+      end++;
+    }
+
+    return (start: start, end: end);
+  }
+
+  /// Removes the specified chip from the controller.
+  void removeChip(T chip) {
+    int? chipIndex;
+    _chipMap.forEach((key, value) {
+      if (value == chip) {
+        chipIndex = key;
+      }
+    });
+    if (chipIndex != null) {
+      String text = value.text;
+      StringBuffer buffer = StringBuffer();
+      int currentCursorOffset = value.selection.baseOffset;
+      int newCursorOffset = currentCursorOffset;
+
+      for (int i = 0; i < text.length; i++) {
+        int codeUnit = text.codeUnitAt(i);
+        if (codeUnit == _chipStart + chipIndex!) {
+          // Found the chip to remove
+          // Adjust cursor position if it's after the removed chip
+          if (currentCursorOffset > i) {
+            newCursorOffset = currentCursorOffset - 1;
+          }
+          // skip this code unit
+          continue;
+        }
+        buffer.writeCharCode(codeUnit);
+      }
+      super.value = value.copyWith(
+        text: buffer.toString(),
+        selection: TextSelection.collapsed(offset: newCursorOffset),
+      );
+      _chipMap.remove(chipIndex);
+    }
+  }
 }
 
-class ChipInput<T> extends StatefulWidget {
-  final TextEditingController? controller;
-  final BoxConstraints? popoverConstraints;
-  final UndoHistoryController? undoHistoryController;
-  final ValueChanged<String>? onSubmitted;
-  final String? initialText;
-  final FocusNode? focusNode;
-  final List<T> suggestions;
-  final List<T> chips;
-  final List<TextInputFormatter>? inputFormatters;
-  final void Function(int index)? onSuggestionChoosen;
-  final ValueChanged<List<T>>? onChanged;
-  final ChipWidgetBuilder<T> chipBuilder;
-  final ChipWidgetBuilder<T>? suggestionBuilder;
-  final bool? useChips;
-  final TextInputAction? textInputAction;
-  final Widget? placeholder;
-  final Widget Function(BuildContext, T)? suggestionLeadingBuilder;
-  final Widget Function(BuildContext, T)? suggestionTrailingBuilder;
-  final Widget? inputTrailingWidget;
-  final bool enabled;
+abstract class _ChipProvider<T> {
+  Widget? buildChip(BuildContext context, T chip);
+}
 
+/// Callback type for converting text to a chip.
+///
+/// Takes the chip text and returns a chip object, or null if conversion fails.
+typedef ChipSubmissionCallback<T> = T? Function(String chipText);
+
+/// A text input widget that supports inline chip elements.
+///
+/// Allows users to create chip tokens within a text field, useful for
+/// tags, email recipients, or any multi-item input scenario.
+class ChipInput<T> extends TextInputStatefulWidget {
+  /// Checks if a code unit represents a chip character.
+  static bool isChipUnicode(int codeUnit) {
+    return codeUnit >= ChipEditingController._chipStart &&
+        codeUnit <= ChipEditingController._chipEnd;
+  }
+
+  /// Checks if a string character is a chip character.
+  static bool isChipCharacter(String character) {
+    if (character.isEmpty) return false;
+    int codeUnit = character.codeUnitAt(0);
+    return isChipUnicode(codeUnit);
+  }
+
+  /// Builder function for creating chip widgets.
+  final ChipWidgetBuilder<T> chipBuilder;
+
+  /// Callback to convert text into a chip object.
+  final ChipSubmissionCallback<T> onChipSubmitted;
+
+  /// Callback invoked when the list of chips changes.
+  final ValueChanged<List<T>>? onChipsChanged;
+
+  /// Whether to display items as visual chips (defaults to theme setting).
+  final bool? useChips;
+
+  /// Initial chips to display in the input.
+  final List<T>? initialChips;
+
+  /// Whether to automatically insert autocomplete suggestions as chips.
+  final bool autoInsertSuggestion;
+
+  /// Creates a chip input widget.
   const ChipInput({
     super.key,
-    this.controller,
-    this.popoverConstraints,
-    this.undoHistoryController,
-    this.initialText,
-    this.onSubmitted,
-    this.focusNode,
-    this.suggestions = const [],
-    this.chips = const [],
-    this.inputFormatters,
-    this.onSuggestionChoosen,
-    this.onChanged,
-    this.useChips,
-    this.suggestionBuilder,
-    this.textInputAction,
-    this.placeholder,
-    this.suggestionLeadingBuilder,
-    this.suggestionTrailingBuilder,
-    this.inputTrailingWidget,
+    super.groupId,
+    ChipEditingController<T>? super.controller,
+    super.focusNode,
+    super.decoration,
+    super.padding,
+    super.placeholder,
+    super.crossAxisAlignment,
+    super.clearButtonSemanticLabel,
+    super.keyboardType,
+    super.textInputAction,
+    super.textCapitalization,
+    super.style,
+    super.strutStyle,
+    super.textAlign,
+    super.textAlignVertical,
+    super.textDirection,
+    super.readOnly,
+    super.showCursor,
+    super.autofocus,
+    super.obscuringCharacter,
+    super.obscureText,
+    super.autocorrect,
+    super.smartDashesType,
+    super.smartQuotesType,
+    super.enableSuggestions,
+    super.maxLines,
+    super.minLines,
+    super.expands,
+    super.maxLength,
+    super.maxLengthEnforcement,
+    super.onChanged,
+    super.onEditingComplete,
+    super.onSubmitted,
+    super.onTapOutside,
+    super.onTapUpOutside,
+    super.inputFormatters,
+    super.enabled,
+    super.cursorWidth,
+    super.cursorHeight,
+    super.cursorRadius,
+    super.cursorOpacityAnimates,
+    super.cursorColor,
+    super.selectionHeightStyle,
+    super.selectionWidthStyle,
+    super.keyboardAppearance,
+    super.scrollPadding,
+    super.enableInteractiveSelection,
+    super.selectionControls,
+    super.dragStartBehavior,
+    super.scrollController,
+    super.scrollPhysics,
+    super.onTap,
+    super.autofillHints,
+    super.clipBehavior,
+    super.restorationId,
+    super.stylusHandwritingEnabled,
+    super.enableIMEPersonalizedLearning,
+    super.contentInsertionConfiguration,
+    super.contextMenuBuilder,
+    super.initialValue,
+    super.hintText,
+    super.border,
+    super.borderRadius,
+    super.filled,
+    super.statesController,
+    super.magnifierConfiguration,
+    super.spellCheckConfiguration,
+    super.undoController,
+    super.features,
+    super.submitFormatters,
+    super.skipInputFeatureFocusTraversal,
     required this.chipBuilder,
-    this.enabled = true,
+    required this.onChipSubmitted,
+    this.autoInsertSuggestion = true,
+    this.onChipsChanged,
+    this.useChips,
+    this.initialChips,
   });
+
+  @override
+  ChipEditingController<T>? get controller =>
+      super.controller as ChipEditingController<T>?;
 
   @override
   State<ChipInput<T>> createState() => ChipInputState();
 }
 
+/// State class for [ChipInput].
+///
+/// Manages the chip input's internal state and chip rendering.
 class ChipInputState<T> extends State<ChipInput<T>>
-    with FormValueSupplier<List<T>, ChipInput<T>> {
-  late FocusNode _focusNode;
-  late TextEditingController _controller;
-  late ValueNotifier<List<T>> _suggestions;
-  final ValueNotifier<int> _selectedSuggestions = ValueNotifier(-1);
-  final PopoverController _popoverController = PopoverController();
+    with FormValueSupplier<List<T>, ChipInput<T>>
+    implements _ChipProvider<T> {
+  late ChipEditingController<T> _controller;
 
-  BoxConstraints get _popoverConstraints {
-    final theme = Theme.of(context);
-    final compTheme = ComponentTheme.maybeOf<ChipInputTheme>(context);
-    return styleValue<BoxConstraints>(
-      widgetValue: widget.popoverConstraints,
-      themeValue: compTheme?.popoverConstraints,
-      defaultValue: BoxConstraints(maxHeight: 300 * theme.scaling),
-    );
+  @override
+  Widget? buildChip(BuildContext context, T chip) {
+    return _chipBuilder(chip);
   }
 
   bool get _useChips {
@@ -508,409 +648,107 @@ class ChipInputState<T> extends State<ChipInput<T>>
   @override
   void initState() {
     super.initState();
-    _suggestions = ValueNotifier([]);
-    _focusNode = widget.focusNode ?? FocusNode();
-    _controller = widget.controller ?? TextEditingController();
-    _suggestions.addListener(_onSuggestionsChanged);
-    _focusNode.addListener(_onFocusChanged);
-    if (widget.suggestions.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        if (!mounted) {
-          return;
-        }
-        _suggestions.value = widget.suggestions;
-      });
-    }
-    formValue = widget.chips;
+    _controller = widget.controller ??
+        ChipEditingController<T>(
+          initialChips: widget.initialChips,
+          text: widget.initialValue ?? '',
+        );
+    _controller.addListener(_onTextChanged);
+    formValue = widget.controller?.chips ?? [];
   }
 
-  void _onFocusChanged() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-      _onSuggestionsChanged();
-    });
+  void _onTextChanged() {
+    formValue = _controller.chips;
   }
 
-  void _onSuggestionsChanged() {
-    if (_suggestions.value.isEmpty || !_focusNode.hasFocus) {
-      _popoverController.close();
-    } else if (!_popoverController.hasOpenPopover &&
-        _suggestions.value.isNotEmpty) {
-      _popoverController.show(
-        context: context,
-        handler: const PopoverOverlayHandler(),
-        builder: (context) {
-          return buildPopover(context);
-        },
-        alignment: Alignment.topCenter,
-        widthConstraint: PopoverConstraint.anchorFixedSize,
-        dismissBackdropFocus: false,
-        showDuration: Duration.zero,
-        hideDuration: Duration.zero,
-        offset: Offset(0, Theme.of(context).scaling * 4),
-      );
-    }
-  }
-
-  Widget _chipBuilder(int index) {
+  Widget? _chipBuilder(T chip) {
     if (!_useChips) {
-      return widget.chipBuilder(context, widget.chips[index]);
+      return widget.chipBuilder(context, chip);
     }
     return Chip(
       trailing: ChipButton(
         onPressed: () {
-          List<T> chips = List.of(widget.chips);
-          chips.removeAt(index);
-          widget.onChanged?.call(chips);
+          _controller.removeChip(chip);
+          widget.onChipsChanged?.call(_controller.chips);
         },
         child: const Icon(LucideIcons.x),
       ),
-      child: widget.chipBuilder(context, widget.chips[index]),
+      child: widget.chipBuilder(context, chip),
     );
   }
 
   @override
   void didUpdateWidget(covariant ChipInput<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.controller != oldWidget.controller) {}
-    if (widget.focusNode != oldWidget.focusNode) {
-      _focusNode.removeListener(_onFocusChanged);
-      _focusNode = widget.focusNode ?? FocusNode();
-      _focusNode.addListener(_onFocusChanged);
+    if (widget.controller != oldWidget.controller) {
+      _controller.removeListener(_onTextChanged);
+      _controller = widget.controller ?? ChipEditingController<T>();
+      _controller.addListener(_onTextChanged);
+      formValue = _controller.chips;
     }
-    if (!listEquals(widget.suggestions, _suggestions.value)) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _suggestions.value = widget.suggestions;
-      });
-    }
-    if (!listEquals(widget.chips, oldWidget.chips)) {
-      formValue = widget.chips;
-    }
-  }
-
-  Widget buildPopover(BuildContext context) {
-    final theme = Theme.of(context);
-    return TextFieldTapRegion(
-      child: Data.inherit(
-        data: this,
-        child: ConstrainedBox(
-          constraints: _popoverConstraints,
-          child: OutlinedContainer(
-            child: AnimatedBuilder(
-              animation: Listenable.merge([_suggestions, _selectedSuggestions]),
-              builder: (context, child) {
-                return ListView(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.all(theme.scaling * 4),
-                  children: [
-                    for (int i = 0; i < _suggestions.value.length; i++)
-                      SelectedButton(
-                        style: const ButtonStyle.ghost(),
-                        selectedStyle: const ButtonStyle.secondary(),
-                        value: i == _selectedSuggestions.value,
-                        onChanged: (value) {
-                          if (value) {
-                            widget.onSuggestionChoosen?.call(i);
-                            _controller.clear();
-                            _selectedSuggestions.value = -1;
-                            _popoverController.close();
-                          }
-                        },
-                        child: Row(
-                          children: [
-                            if (widget.suggestionLeadingBuilder != null) ...[
-                              widget.suggestionLeadingBuilder!(
-                                  context, _suggestions.value[i]),
-                              SizedBox(
-                                  width:
-                                      theme.scaling * 10), // Add spacing here
-                            ],
-                            Expanded(
-                              child: widget.suggestionBuilder
-                                      ?.call(context, _suggestions.value[i]) ??
-                                  Text(_suggestions.value[i].toString())
-                                      .normal()
-                                      .small(),
-                            ),
-                            if (widget.suggestionTrailingBuilder != null) ...[
-                              SizedBox(
-                                  width:
-                                      theme.scaling * 10), // Add spacing here
-                              widget.suggestionTrailingBuilder!
-                                      (context, _suggestions.value[i])
-                                  .normal()
-                                  .small(),
-                            ],
-                          ],
-                        ),
-                      ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   @override
   void dispose() {
-    _popoverController.dispose();
+    _controller.removeListener(_onTextChanged);
     super.dispose();
-  }
-
-  final GlobalKey _textFieldKey = GlobalKey();
-
-  void _handleSubmitted(String text) {
-    if (_selectedSuggestions.value >= 0 &&
-        _selectedSuggestions.value < _suggestions.value.length) {
-      // A suggestion is selected, use it
-      widget.onSuggestionChoosen?.call(_selectedSuggestions.value);
-    } else if (text.isNotEmpty) {
-      // No suggestion selected, use the entered text
-      widget.onSubmitted?.call(text);
-    }
-    _focusNode.requestFocus();
-    _controller.clear();
-    _selectedSuggestions.value = -1;
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ListenableBuilder(
-      listenable: _focusNode,
-      builder: (context, child) {
-        return FocusOutline(
-          focused: _focusNode.hasFocus,
-          borderRadius: theme.borderRadiusMd,
-          child: child!,
-        );
-      },
-      child: GestureDetector(
-        onTap: () {
-          _focusNode.requestFocus();
-        },
-        child: FocusableActionDetector(
-          mouseCursor: SystemMouseCursors.text,
+    return Data<_ChipProvider<T>>.inherit(
+        data: this,
+        child: Shortcuts(
           shortcuts: {
-            LogicalKeySet(LogicalKeyboardKey.tab):
-                const SelectSuggestionIntent(),
-            LogicalKeySet(LogicalKeyboardKey.arrowDown):
-                const NextSuggestionIntent(),
-            LogicalKeySet(LogicalKeyboardKey.arrowUp):
-                const PreviousSuggestionIntent(),
+            LogicalKeySet(LogicalKeyboardKey.enter): const ChipSubmitIntent(),
           },
-          actions: {
-            SelectSuggestionIntent: CallbackAction(
-              onInvoke: (intent) {
-                var index = _selectedSuggestions.value;
-                if (index >= 0 && index < _suggestions.value.length) {
-                  widget.onSuggestionChoosen?.call(index);
-                  _controller.clear();
-                  _selectedSuggestions.value = -1;
-                } else if (_suggestions.value.isNotEmpty) {
-                  _selectedSuggestions.value = 0;
-                }
-                return null;
-              },
-            ),
-            NextSuggestionIntent: CallbackAction(
-              onInvoke: (intent) {
-                var index = _selectedSuggestions.value;
-                if (index < _suggestions.value.length - 1) {
-                  _selectedSuggestions.value = index + 1;
-                } else if (_suggestions.value.isNotEmpty) {
-                  _selectedSuggestions.value = 0;
-                }
-                return null;
-              },
-            ),
-            PreviousSuggestionIntent: CallbackAction(
-              onInvoke: (intent) {
-                var index = _selectedSuggestions.value;
-                if (index > 0) {
-                  _selectedSuggestions.value = index - 1;
-                } else if (_suggestions.value.isNotEmpty) {
-                  _selectedSuggestions.value = _suggestions.value.length - 1;
-                }
-                return null;
-              },
-            ),
-          },
-          child: AnimatedBuilder(
-            animation: _focusNode,
-            builder: (context, child) {
-              if (widget.chips.isNotEmpty) {
-                if (_focusNode.hasFocus) {
-                  child = Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      child!,
-                      Wrap(
-                        runSpacing: theme.scaling * 4,
-                        spacing: theme.scaling * 4,
-                        children: [
-                          for (int i = 0; i < widget.chips.length; i++)
-                            _chipBuilder(i),
-                        ],
-                      ).withPadding(
-                        left: theme.scaling * 6,
-                        right: theme.scaling * 6,
-                        bottom: theme.scaling * 4,
-                      ),
-                    ],
-                  );
-                } else {
-                  child = Stack(
-                    alignment: AlignmentDirectional.centerStart,
-                    children: [
-                      Visibility(
-                        visible: false,
-                        maintainState: true,
-                        maintainAnimation: true,
-                        maintainInteractivity: true,
-                        maintainSize: true,
-                        maintainSemantics: true,
-                        child: child!,
-                      ),
-                      Wrap(
-                        runSpacing: theme.scaling * 4,
-                        spacing: theme.scaling * 4,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          for (int i = 0; i < widget.chips.length; i++)
-                            _chipBuilder(i),
-                          if (_controller.text.isNotEmpty) const Gap(4),
-                          if (_controller.text.isNotEmpty)
-                            Text(
-                              _controller.text,
-                            ).base(),
-                        ],
-                      ).withPadding(
-                          horizontal: theme.scaling * 6,
-                          vertical: theme.scaling * 4),
-                    ],
-                  );
-                }
-              }
-              return TextFieldTapRegion(
-                child: OutlinedContainer(
-                  backgroundColor: theme.colorScheme.input.scaleAlpha(0.3),
-                  borderRadius: theme.borderRadiusMd,
-                  borderColor: theme.colorScheme.border,
-                  child: Row(
-                    children: [
-                      Expanded(child: child!),
-                      if (widget.inputTrailingWidget != null) ...[
-                        const VerticalDivider(
-                          indent: 10,
-                          endIndent: 10,
-                        ),
-                        widget.inputTrailingWidget!,
-                      ]
-                    ],
+          child: Actions(
+            actions: {
+              if (widget.autoInsertSuggestion)
+                AutoCompleteIntent: Action.overridable(
+                  defaultAction: CallbackAction<AutoCompleteIntent>(
+                    onInvoke: (intent) {
+                      _controller.insertChipAtCursor(
+                          (text) => widget.onChipSubmitted(intent.suggestion));
+                      widget.onChipsChanged?.call(_controller.chips);
+                      return;
+                    },
                   ),
+                  context: context,
                 ),
-              );
-            },
-            child: ComponentTheme(
-              data: const FocusOutlineTheme(
-                  border: Border.fromBorderSide(BorderSide.none)),
-              child: TextField(
-                key: _textFieldKey,
-                focusNode: _focusNode,
-                initialValue: widget.initialText,
-                inputFormatters: widget.inputFormatters,
-                textInputAction: widget.textInputAction,
-                border: const Border.fromBorderSide(BorderSide.none),
-                decoration: const BoxDecoration(),
-                enabled: widget.enabled,
-                maxLines: 1,
-                placeholder: widget.placeholder,
-                onSubmitted: _handleSubmitted,
-                controller: _controller,
-                undoController: widget.undoHistoryController,
+              ChipSubmitIntent: Action.overridable(
+                defaultAction: CallbackAction<ChipSubmitIntent>(
+                  onInvoke: (intent) {
+                    _controller.insertChipAtCursor(
+                        (text) => widget.onChipSubmitted(text));
+                    widget.onChipsChanged?.call(_controller.chips);
+                    return;
+                  },
+                ),
+                context: context,
               ),
+            },
+            child: widget.copyWith(
+              controller: () => _controller,
+              onSubmitted: () => (value) {
+                _controller.insertChipAtCursor(widget.onChipSubmitted);
+              },
+              onChanged: () => (text) {
+                widget.onChanged?.call(_controller.plainText);
+              },
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   @override
   void didReplaceFormValue(List<T> value) {
-    widget.onChanged?.call(value);
+    widget.onChipsChanged?.call(value);
   }
 }
 
-class SelectSuggestionIntent extends Intent {
-  const SelectSuggestionIntent();
+/// Intent for submitting a chip in the chip input.
+class ChipSubmitIntent extends Intent {
+  /// Creates a chip submit intent.
+  const ChipSubmitIntent();
 }
-
-class NextSuggestionIntent extends Intent {
-  const NextSuggestionIntent();
-}
-
-class PreviousSuggestionIntent extends Intent {
-  const PreviousSuggestionIntent();
-}
-
-// class _ChipSuggestionItem extends StatefulWidget {
-//   final Widget suggestion;
-//   final Widget? leading;
-//   final Widget? trailing;
-//   final bool selected;
-//   final VoidCallback onSelected;
-//
-//   const _ChipSuggestionItem({
-//     required this.suggestion,
-//     this.leading,
-//     this.trailing,
-//     required this.selected,
-//     required this.onSelected,
-//   });
-//
-//   @override
-//   State<_ChipSuggestionItem> createState() => _ChipSuggestionItemState();
-// }
-//
-// class _ChipSuggestionItemState extends State<_ChipSuggestionItem> {
-//   @override
-//   void didUpdateWidget(covariant _ChipSuggestionItem oldWidget) {
-//     super.didUpdateWidget(oldWidget);
-//     if (oldWidget.selected != widget.selected) {
-//       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-//         if (!mounted) {
-//           return;
-//         }
-//         if (widget.selected) {
-//           Scrollable.ensureVisible(context);
-//         }
-//       });
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return SelectedButton(
-//       value: widget.selected,
-//       onChanged: (value) {
-//         if (value) {
-//           widget.onSelected();
-//         }
-//       },
-//       child: Row(
-//         children: [
-//           if (widget.leading != null) widget.leading!,
-//           Expanded(child: widget.suggestion),
-//           if (widget.trailing != null) widget.trailing!,
-//         ],
-//       ),
-//     );
-//   }
-// }

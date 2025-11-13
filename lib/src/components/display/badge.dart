@@ -92,7 +92,7 @@ class BadgeTheme {
 ///   leading: Icon(Icons.star, size: 16),
 ///   onPressed: () => _showNewItems(),
 /// );
-/// 
+///
 /// // Non-interactive status badge
 /// PrimaryBadge(
 ///   child: Text('5'),
@@ -100,12 +100,26 @@ class BadgeTheme {
 /// );
 /// ```
 class PrimaryBadge extends StatelessWidget {
+  /// The main content of the badge.
   final Widget child;
+
+  /// Optional callback when the badge is pressed, making it interactive.
+  ///
+  /// If `null`, the badge is non-interactive.
   final VoidCallback? onPressed;
+
+  /// Optional widget displayed before the child content.
   final Widget? leading;
+
+  /// Optional widget displayed after the child content.
   final Widget? trailing;
+
+  /// Optional custom style override for the badge.
+  ///
+  /// If `null`, uses theme's primary badge style or default primary styling.
   final AbstractButtonStyle? style;
 
+  /// Creates a primary badge.
   const PrimaryBadge({
     super.key,
     required this.child,
@@ -142,13 +156,27 @@ class PrimaryBadge extends StatelessWidget {
   }
 }
 
+/// A secondary-styled badge for displaying labels, counts, or status indicators.
+///
+/// Similar to [PrimaryBadge] but with secondary (muted) styling suitable for
+/// less prominent information.
 class SecondaryBadge extends StatelessWidget {
+  /// The main content of the badge.
   final Widget child;
+
+  /// Optional callback when the badge is pressed.
   final VoidCallback? onPressed;
+
+  /// Optional widget displayed before the child content.
   final Widget? leading;
+
+  /// Optional widget displayed after the child content.
   final Widget? trailing;
+
+  /// Optional custom style override for the badge.
   final AbstractButtonStyle? style;
 
+  /// Creates a secondary badge with the specified child content.
   const SecondaryBadge({
     super.key,
     required this.child,
@@ -185,13 +213,27 @@ class SecondaryBadge extends StatelessWidget {
   }
 }
 
+/// An outline-styled badge for displaying labels, counts, or status indicators.
+///
+/// Uses outline styling with a visible border and no background fill,
+/// suitable for less visually prominent badge elements.
 class OutlineBadge extends StatelessWidget {
+  /// The main content of the badge.
   final Widget child;
+
+  /// Optional callback when the badge is pressed.
   final VoidCallback? onPressed;
+
+  /// Optional widget displayed before the child content.
   final Widget? leading;
+
+  /// Optional widget displayed after the child content.
   final Widget? trailing;
+
+  /// Optional custom style override for the badge.
   final AbstractButtonStyle? style;
 
+  /// Creates an outline badge with the specified child content.
   const OutlineBadge({
     super.key,
     required this.child,
@@ -228,13 +270,27 @@ class OutlineBadge extends StatelessWidget {
   }
 }
 
+/// A destructive-styled badge for displaying warnings or dangerous actions.
+///
+/// Uses destructive (typically red) styling to indicate dangerous, destructive,
+/// or critical information that requires user attention.
 class DestructiveBadge extends StatelessWidget {
+  /// The main content of the badge.
   final Widget child;
+
+  /// Optional callback when the badge is pressed.
   final VoidCallback? onPressed;
+
+  /// Optional widget displayed before the child content.
   final Widget? leading;
+
+  /// Optional widget displayed after the child content.
   final Widget? trailing;
+
+  /// Optional custom style override for the badge.
   final AbstractButtonStyle? style;
 
+  /// Creates a destructive badge with the specified child content.
   const DestructiveBadge({
     super.key,
     required this.child,

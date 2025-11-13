@@ -42,16 +42,16 @@ typedef DrawerBuilder = Widget Function(BuildContext context, Size extraSize,
 class DrawerTheme {
   /// Surface opacity for backdrop effects.
   final double? surfaceOpacity;
-  
+
   /// Surface blur intensity for backdrop effects.
   final double? surfaceBlur;
-  
+
   /// Color of the barrier behind the drawer.
   final Color? barrierColor;
-  
+
   /// Whether to display the drag handle for draggable drawers.
   final bool? showDragHandle;
-  
+
   /// Size of the drag handle when displayed.
   final Size? dragHandleSize;
 
@@ -61,7 +61,7 @@ class DrawerTheme {
   ///
   /// Parameters:
   /// - [surfaceOpacity] (double?, optional): opacity for backdrop surface effects
-  /// - [surfaceBlur] (double?, optional): blur intensity for backdrop effects  
+  /// - [surfaceBlur] (double?, optional): blur intensity for backdrop effects
   /// - [barrierColor] (Color?, optional): color of the modal barrier
   /// - [showDragHandle] (bool?, optional): whether to show drag handles
   /// - [dragHandleSize] (Size?, optional): size of the drag handle
@@ -82,6 +82,16 @@ class DrawerTheme {
     this.dragHandleSize,
   });
 
+  /// Creates a copy of this theme with the given fields replaced.
+  ///
+  /// Parameters:
+  /// - [surfaceOpacity] (`ValueGetter<double?>?`, optional): New surface opacity.
+  /// - [surfaceBlur] (`ValueGetter<double?>?`, optional): New surface blur amount.
+  /// - [barrierColor] (`ValueGetter<Color?>?`, optional): New barrier color.
+  /// - [showDragHandle] (`ValueGetter<bool?>?`, optional): New show drag handle setting.
+  /// - [dragHandleSize] (`ValueGetter<Size?>?`, optional): New drag handle size.
+  ///
+  /// Returns: A new [DrawerTheme] with updated properties.
   DrawerTheme copyWith({
     ValueGetter<double?>? surfaceOpacity,
     ValueGetter<double?>? surfaceBlur,
@@ -414,27 +424,69 @@ Future<T?> openSheet<T>({
   ).future;
 }
 
+/// Internal wrapper widget for drawer/sheet rendering.
+///
+/// Manages the visual presentation and interaction behavior of drawer overlays.
+/// Handles sizing, positioning, drag interactions, and animations.
 class DrawerWrapper extends StatefulWidget {
+  /// Position of the drawer on screen.
   final OverlayPosition position;
+
+  /// Content widget displayed in the drawer.
   final Widget child;
+
+  /// Whether the drawer expands to fill available space.
   final bool expands;
+
+  /// Whether the drawer can be dragged to resize or dismiss.
   final bool draggable;
+
+  /// Additional size beyond the content size.
   final Size extraSize;
+
+  /// Size of the drawer.
   final Size size;
+
+  /// Whether to show the drag handle.
   final bool showDragHandle;
+
+  /// Border radius for the drawer.
   final BorderRadiusGeometry? borderRadius;
+
+  /// Size of the drag handle.
   final Size? dragHandleSize;
+
+  /// Internal padding of the drawer content.
   final EdgeInsets padding;
+
+  /// Surface opacity for the drawer background.
   final double? surfaceOpacity;
+
+  /// Surface blur amount for the drawer background.
   final double? surfaceBlur;
+
+  /// Color of the barrier behind the drawer.
   final Color? barrierColor;
+
+  /// Z-index for stacking multiple drawers.
   final int stackIndex;
+
+  /// Gap before the drag handle.
   final double? gapBeforeDragger;
+
+  /// Gap after the drag handle.
   final double? gapAfterDragger;
+
+  /// Optional animation controller for custom animations.
   final AnimationController? animationController;
+
+  /// Size constraints for the drawer.
   final BoxConstraints? constraints;
+
+  /// Alignment of the drawer content.
   final AlignmentGeometry? alignment;
 
+  /// Creates a [DrawerWrapper].
   const DrawerWrapper({
     super.key,
     required this.position,
@@ -987,12 +1039,26 @@ class _DrawerWrapperState extends State<DrawerWrapper>
   }
 }
 
+/// Closes the currently open sheet overlay.
+///
+/// Dismisses the active sheet by closing the drawer. Sheets are drawers
+/// without backdrop transformation.
+///
+/// Parameters:
+/// - [context] (`BuildContext`, required): Build context.
+///
+/// Returns: `Future<void>` that completes when sheet is closed.
 Future<void> closeSheet(BuildContext context) {
   // sheet is just a drawer with no backdrop transformation
   return closeDrawer(context);
 }
 
+/// Wrapper widget for sheet overlays.
+///
+/// Extends [DrawerWrapper] with sheet-specific defaults (no drag, no expansion).
+/// Sheets are simplified drawers without backdrop transformation.
 class SheetWrapper extends DrawerWrapper {
+  /// Creates a [SheetWrapper].
   const SheetWrapper({
     super.key,
     required super.position,
@@ -1131,20 +1197,45 @@ class _SheetWrapperState extends _DrawerWrapperState {
   }
 }
 
+/// Position for overlay components like drawers and sheets.
 enum OverlayPosition {
+  /// Positioned on the left edge
   left,
+
+  /// Positioned on the right edge
   right,
+
+  /// Positioned on the top edge
   top,
+
+  /// Positioned on the bottom edge
   bottom,
+
+  /// Positioned at the start (left in LTR, right in RTL)
   start,
+
+  /// Positioned at the end (right in LTR, left in RTL)
   end,
 }
 
+/// Scale factor for backdrop transform when drawer is open.
+///
+/// Constant value of 0.95 creates a subtle zoom-out effect on the
+/// background content when overlays appear.
 const kBackdropScaleDown = 0.95;
 
+/// Data class containing backdrop transformation information.
+///
+/// Holds the size difference needed to scale and position backdrop
+/// content when overlays are displayed.
 class BackdropTransformData {
+  /// The difference in size between original and transformed backdrop.
   final Size sizeDifference;
 
+  /// Creates backdrop transform data.
+  ///
+  /// Parameters:
+  /// - [sizeDifference] (Size, required): Size difference for transform
   BackdropTransformData(this.sizeDifference);
 }
 
@@ -1198,6 +1289,29 @@ class _DrawerOverlayWrapperState extends State<_DrawerOverlayWrapper>
   }
 }
 
+/// Opens a raw drawer overlay with full customization.
+///
+/// Low-level function for creating custom drawer overlays. Provides complete
+/// control over drawer positioning, appearance, and behavior.
+///
+/// Parameters:
+/// - [key] (`Key?`, optional): Widget key.
+/// - [context] (`BuildContext`, required): Build context.
+/// - [builder] (`DrawerBuilder`, required): Drawer content builder.
+/// - [position] (`OverlayPosition`, required): Drawer position on screen.
+/// - [transformBackdrop] (`bool`, default: `true`): Whether to transform backdrop.
+/// - [useRootDrawerOverlay] (`bool`, default: `true`): Use root overlay.
+/// - [modal] (`bool`, default: `true`): Whether drawer is modal.
+/// - [barrierColor] (`Color?`, optional): Barrier color.
+/// - [barrierDismissible] (`bool`, default: `true`): Dismissible by tapping barrier.
+/// - [backdropBuilder] (`WidgetBuilder?`, optional): Custom backdrop builder.
+/// - [useSafeArea] (`bool`, default: `true`): Respect safe area.
+/// - [animationController] (`AnimationController?`, optional): Custom animation.
+/// - [autoOpen] (`bool`, default: `true`): Auto-open on creation.
+/// - [constraints] (`BoxConstraints?`, optional): Size constraints.
+/// - [alignment] (`AlignmentGeometry?`, optional): Content alignment.
+///
+/// Returns: `DrawerOverlayCompleter<T?>` for managing the drawer lifecycle.
 DrawerOverlayCompleter<T?> openRawDrawer<T>({
   Key? key,
   required BuildContext context,
@@ -1379,18 +1493,45 @@ class _MountedOverlayEntryData {
   _MountedOverlayEntryData(this.state);
 }
 
+/// Closes the currently open drawer overlay.
+///
+/// Dismisses the active drawer from the overlay stack. Optionally returns
+/// a result value to the code that opened the drawer.
+///
+/// Parameters:
+/// - [context] (`BuildContext`, required): Build context from within the drawer.
+/// - [result] (`T?`, optional): Optional result to return.
+///
+/// Returns: `Future<void>` that completes when drawer is closed.
 Future<void> closeDrawer<T>(BuildContext context, [T? result]) {
   final data = Data.maybeOf<_MountedOverlayEntryData>(context);
   assert(data != null, 'No DrawerEntryWidget found in the widget tree');
   return data!.state.close(result);
 }
 
+/// Data class representing a drawer overlay layer in the hierarchy.
+///
+/// Tracks the drawer overlay state and its parent layer, enabling nested
+/// drawer management and size computation across the layer stack.
 class DrawerLayerData {
+  /// The drawer overlay state for this layer.
   final DrawerOverlayState overlay;
+
+  /// The parent drawer layer, null if this is the root layer.
   final DrawerLayerData? parent;
 
+  /// Creates drawer layer data.
+  ///
+  /// Parameters:
+  /// - [overlay] (DrawerOverlayState, required): Overlay state for this layer
+  /// - [parent] (DrawerLayerData?): Parent layer in the hierarchy
   const DrawerLayerData(this.overlay, this.parent);
 
+  /// Computes the size of this drawer layer.
+  ///
+  /// Delegates to the overlay state to calculate the layer dimensions.
+  ///
+  /// Returns the computed size or null if not available.
   Size? computeSize() {
     return overlay.computeSize();
   }
@@ -1409,14 +1550,41 @@ class DrawerLayerData {
   }
 }
 
+/// Widget that manages drawer overlay layers.
+///
+/// Provides a container for drawer overlays, managing their lifecycle and
+/// hierarchical relationships. Supports nested drawers through layer data
+/// propagation.
+///
+/// Example:
+/// ```dart
+/// DrawerOverlay(
+///   child: MyAppContent(),
+/// )
+/// ```
 class DrawerOverlay extends StatefulWidget {
+  /// Child widget displayed under the overlay layer.
   final Widget child;
 
+  /// Creates a drawer overlay.
+  ///
+  /// Parameters:
+  /// - [child] (Widget, required): Content widget
   const DrawerOverlay({super.key, required this.child});
 
   @override
   State<DrawerOverlay> createState() => DrawerOverlayState();
 
+  /// Finds the drawer layer data from the widget tree.
+  ///
+  /// Searches up the widget tree for the nearest [DrawerLayerData].
+  /// Optionally navigates to the root layer if [root] is true.
+  ///
+  /// Parameters:
+  /// - [context] (BuildContext, required): Build context
+  /// - [root] (bool): Whether to find root layer, defaults to false
+  ///
+  /// Returns [DrawerLayerData] or null if not found.
   static DrawerLayerData? maybeFind(BuildContext context, [bool root = false]) {
     var data = Data.maybeFind<DrawerLayerData>(context);
     if (root) {
@@ -1427,6 +1595,16 @@ class DrawerOverlay extends StatefulWidget {
     return data;
   }
 
+  /// Finds the drawer layer data using messenger lookup.
+  ///
+  /// Similar to [maybeFind] but uses the messenger mechanism for lookup.
+  /// Optionally navigates to the root layer if [root] is true.
+  ///
+  /// Parameters:
+  /// - [context] (BuildContext, required): Build context
+  /// - [root] (bool): Whether to find root layer, defaults to false
+  ///
+  /// Returns [DrawerLayerData] or null if not found.
   static DrawerLayerData? maybeFindMessenger(BuildContext context,
       [bool root = false]) {
     var data = Data.maybeFindMessenger<DrawerLayerData>(context);
@@ -1439,22 +1617,59 @@ class DrawerOverlay extends StatefulWidget {
   }
 }
 
+/// State class for [DrawerOverlay] managing drawer entry lifecycle.
+///
+/// Manages the stack of active drawer overlays, handling their addition,
+/// removal, and size computation. Maintains a backdrop key for managing
+/// backdrop transformations.
 class DrawerOverlayState extends State<DrawerOverlay> {
   final List<DrawerOverlayEntry> _entries = [];
+
+  /// Key for the backdrop widget to enable transformations.
   final GlobalKey backdropKey = GlobalKey();
 
+  /// Adds a drawer overlay entry to the list of active entries.
+  ///
+  /// Updates the widget state to include the new entry, triggering a rebuild
+  /// to display the drawer overlay.
+  ///
+  /// Parameters:
+  /// - [entry] (`DrawerOverlayEntry`, required): The drawer entry to add.
+  ///
+  /// Example:
+  /// ```dart
+  /// final entry = DrawerOverlayEntry(
+  ///   builder: (context) => MyDrawerContent(),
+  /// );
+  /// drawerState.addEntry(entry);
+  /// ```
   void addEntry(DrawerOverlayEntry entry) {
     setState(() {
       _entries.add(entry);
     });
   }
 
+  /// Computes the size of the drawer overlay area.
+  ///
+  /// Returns the size of the overlay's render box. Used for positioning
+  /// and sizing drawer content.
+  ///
+  /// Throws [AssertionError] if overlay is not ready (no size available).
+  ///
+  /// Returns [Size] of the overlay area.
   Size computeSize() {
     Size? size = context.size;
     assert(size != null, 'DrawerOverlay is not ready');
     return size!;
   }
 
+  /// Removes a drawer entry from the overlay stack.
+  ///
+  /// Triggers a rebuild to update the overlay display after removing
+  /// the specified entry.
+  ///
+  /// Parameters:
+  /// - [entry] (DrawerOverlayEntry, required): Entry to remove
   void removeEntry(DrawerOverlayEntry entry) {
     setState(() {
       _entries.remove(entry);
@@ -1526,22 +1741,54 @@ class DrawerOverlayState extends State<DrawerOverlay> {
   }
 }
 
+/// Widget representing a single drawer entry in the overlay stack.
+///
+/// Manages the lifecycle and rendering of an individual drawer overlay,
+/// including its backdrop, barrier, and animated transitions.
 class DrawerEntryWidget<T> extends StatefulWidget {
+  /// Builder function for the drawer content.
   final DrawerBuilder builder;
+
+  /// Backdrop widget (content behind the drawer).
   final Widget backdrop;
+
+  /// Builder for transforming the backdrop.
   final BackdropBuilder backdropBuilder;
+
+  /// Builder for the modal barrier.
   final BarrierBuilder barrierBuilder;
+
+  /// Whether the drawer is modal (blocks interaction with backdrop).
   final bool modal;
+
+  /// Captured theme data to apply within the drawer.
   final CapturedThemes? themes;
+
+  /// Captured inherited data to propagate.
   final CapturedData? data;
+
+  /// Completer for the drawer's result value.
   final Completer<T> completer;
+
+  /// Position of the drawer (left, right, top, bottom, start, end).
   final OverlayPosition position;
+
+  /// Index of this drawer in the stack.
   final int stackIndex;
+
+  /// Total number of drawers in the stack.
   final int totalStack;
+
+  /// Whether to apply safe area insets.
   final bool useSafeArea;
+
+  /// Optional external animation controller.
   final AnimationController? animationController;
+
+  /// Whether to automatically open on mount.
   final bool autoOpen;
 
+  /// Creates a drawer entry widget.
   const DrawerEntryWidget({
     super.key,
     required this.builder,
@@ -1564,8 +1811,13 @@ class DrawerEntryWidget<T> extends StatefulWidget {
   State<DrawerEntryWidget<T>> createState() => DrawerEntryWidgetState<T>();
 }
 
+/// State class for [DrawerEntryWidget] managing drawer animations and lifecycle.
+///
+/// Handles animation control, focus management, and drawer dismissal.
+/// Manages both internal and external animation controllers.
 class DrawerEntryWidgetState<T> extends State<DrawerEntryWidget<T>>
     with SingleTickerProviderStateMixin {
+  /// Notifier for additional offset applied during drag gestures.
   late ValueNotifier<double> additionalOffset = ValueNotifier(0);
   late AnimationController _controller;
   late ControlledAnimation _controlledAnimation;
@@ -1609,6 +1861,15 @@ class DrawerEntryWidgetState<T> extends State<DrawerEntryWidget<T>>
     }
   }
 
+  /// Closes the drawer with an optional result value.
+  ///
+  /// Animates the drawer out using an ease-out cubic curve, then completes
+  /// the completer with the provided result.
+  ///
+  /// Parameters:
+  /// - [result] (T?): Optional result to return when drawer closes
+  ///
+  /// Returns a [Future] that completes when the close animation finishes.
   Future<void> close([T? result]) {
     return _controlledAnimation.forward(0, Curves.easeOutCubic).then((value) {
       widget.completer.complete(result);
@@ -1784,29 +2045,87 @@ class DrawerEntryWidgetState<T> extends State<DrawerEntryWidget<T>>
   }
 }
 
+/// Builder function for drawer backdrop transformations.
+///
+/// Creates a widget that wraps the backdrop content, applying transformations
+/// during drawer animations.
+///
+/// Parameters:
+/// - [context] (BuildContext): Build context
+/// - [child] (Widget): Backdrop widget to transform
+/// - [animation] (`Animation<double>`): Animation value from 0 (closed) to 1 (open)
+/// - [stackIndex] (int): Index of the drawer in the stack
+///
+/// Returns the transformed backdrop widget.
 typedef BackdropBuilder = Widget Function(BuildContext context, Widget child,
     Animation<double> animation, int stackIndex);
 
+/// Builder function for drawer modal barriers.
+///
+/// Creates an optional barrier widget that appears over the backdrop when
+/// the drawer is modal. Typically used for dimming and dismissal handling.
+///
+/// Parameters:
+/// - [context] (BuildContext): Build context
+/// - [child] (Widget): Content behind the barrier
+/// - [animation] (`Animation<double>`): Animation value from 0 (closed) to 1 (open)
+/// - [stackIndex] (int): Index of the drawer in the stack
+///
+/// Returns the barrier widget or null if no barrier needed.
 typedef BarrierBuilder = Widget? Function(BuildContext context, Widget child,
     Animation<double> animation, int stackIndex);
 
+/// Data class representing a drawer overlay entry in the stack.
+///
+/// Encapsulates all configuration and state needed to render a single
+/// drawer overlay, including builders, animation, theming, and positioning.
 class DrawerOverlayEntry<T> {
+  /// Key for accessing the drawer entry widget state.
   final GlobalKey<DrawerEntryWidgetState<T>> key = GlobalKey();
+
+  /// Builder for backdrop transformations.
   final BackdropBuilder backdropBuilder;
+
+  /// Builder for drawer content.
   final DrawerBuilder builder;
+
+  /// Whether the drawer is modal.
   final bool modal;
+
+  /// Builder for the modal barrier.
   final BarrierBuilder barrierBuilder;
+
+  /// Captured theme data.
   final CapturedThemes? themes;
+
+  /// Captured inherited data.
   final CapturedData? data;
+
+  /// Completer for the drawer result.
   final Completer<T> completer;
+
+  /// Position of the drawer.
   final OverlayPosition position;
+
+  /// Whether tapping the barrier dismisses the drawer.
   final bool barrierDismissible;
+
+  /// Whether to apply safe area insets.
   final bool useSafeArea;
+
+  /// Optional external animation controller.
   final AnimationController? animationController;
+
+  /// Whether to automatically open on mount.
   final bool autoOpen;
+
+  /// Size constraints for the drawer.
   final BoxConstraints? constraints;
+
+  /// Alignment of the drawer content.
   final AlignmentGeometry? alignment;
 
+  /// Creates a drawer overlay entry.
   DrawerOverlayEntry({
     required this.builder,
     required this.backdropBuilder,
@@ -1825,9 +2144,17 @@ class DrawerOverlayEntry<T> {
   });
 }
 
+/// Completer for drawer overlay operations.
+///
+/// Wraps a [DrawerOverlayEntry] to provide overlay lifecycle management,
+/// including animation tracking and dismissal handling.
 class DrawerOverlayCompleter<T> extends OverlayCompleter<T> {
   final DrawerOverlayEntry<T> _entry;
 
+  /// Creates a drawer overlay completer.
+  ///
+  /// Parameters:
+  /// - [_entry] (`DrawerOverlayEntry<T>`, required): The drawer entry to manage
   DrawerOverlayCompleter(this._entry);
 
   @override
@@ -1838,6 +2165,12 @@ class DrawerOverlayCompleter<T> extends OverlayCompleter<T> {
     _entry.completer.complete();
   }
 
+  /// Gets the animation controller for the drawer.
+  ///
+  /// Returns the external animation controller if provided, otherwise
+  /// returns the internal controller from the drawer entry widget state.
+  ///
+  /// Returns [AnimationController] or null if not available.
   AnimationController? get animationController =>
       _entry.animationController ?? _entry.key.currentState?._controller;
 
@@ -1856,14 +2189,32 @@ class DrawerOverlayCompleter<T> extends OverlayCompleter<T> {
   }
 }
 
+/// Overlay handler specialized for sheet-style overlays.
+///
+/// Provides a simplified API for showing sheet overlays (bottom sheets,
+/// side sheets, etc.) with standard positioning and barrier behavior.
 class SheetOverlayHandler extends OverlayHandler {
+  /// Checks if the current context is within a sheet overlay.
+  ///
+  /// Parameters:
+  /// - [context] (BuildContext, required): Build context to check
+  ///
+  /// Returns true if context is within a sheet overlay, false otherwise.
   static bool isSheetOverlay(BuildContext context) {
     return Model.maybeOf<bool>(context, #shadcn_flutter_sheet_overlay) == true;
   }
 
+  /// Position where the sheet appears.
   final OverlayPosition position;
+
+  /// Optional barrier color for the modal backdrop.
   final Color? barrierColor;
 
+  /// Creates a sheet overlay handler.
+  ///
+  /// Parameters:
+  /// - [position] (OverlayPosition): Sheet position, defaults to bottom
+  /// - [barrierColor] (Color?): Optional barrier color
   const SheetOverlayHandler({
     this.position = OverlayPosition.bottom,
     this.barrierColor,

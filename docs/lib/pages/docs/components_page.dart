@@ -1,3 +1,8 @@
+// Components catalog page used by the docs app.
+//
+// Renders the grid/list of component tiles and links to each component's
+// example wrapper page. This is part of the documentation scaffolding rather
+// than a demo unit. Comments added only; behavior unchanged.
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
@@ -98,10 +103,10 @@ class ComponentsPage extends StatefulWidget {
   const ComponentsPage({super.key});
 
   @override
-  _ComponentsPageState createState() => _ComponentsPageState();
+  ComponentsPageState createState() => ComponentsPageState();
 }
 
-class _ComponentsPageState extends State<ComponentsPage> {
+class ComponentsPageState extends State<ComponentsPage> {
   final OnThisPage animationKey = OnThisPage();
   final OnThisPage disclosureKey = OnThisPage();
   final OnThisPage feedbackKey = OnThisPage();

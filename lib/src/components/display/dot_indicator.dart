@@ -1,5 +1,9 @@
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
+/// Builder function type for creating custom dot widgets.
+///
+/// Takes the build context, dot index, and whether the dot is active,
+/// and returns a widget to display for that dot.
 typedef DotBuilder = Widget Function(
     BuildContext context, int index, bool active);
 
@@ -137,12 +141,25 @@ class DotIndicator extends StatelessWidget {
     return active ? const ActiveDotItem() : const InactiveDotItem();
   }
 
+  /// The current active index (0-based).
   final int index;
+
+  /// The total number of dots to display.
   final int length;
+
+  /// Callback invoked when a dot is tapped.
   final ValueChanged<int>? onChanged;
+
+  /// Spacing between dots.
   final double? spacing;
+
+  /// The direction of the dot layout (horizontal or vertical).
   final Axis direction;
+
+  /// Padding around the dots container.
   final EdgeInsetsGeometry? padding;
+
+  /// Custom builder for individual dots.
   final DotBuilder? dotBuilder;
 
   /// Creates a [DotIndicator].
@@ -153,7 +170,7 @@ class DotIndicator extends StatelessWidget {
   /// Parameters:
   /// - [index] (int, required): current active dot position (0-based)
   /// - [length] (int, required): total number of dots to display
-  /// - [onChanged] (ValueChanged<int>?, optional): callback when dot is tapped
+  /// - [onChanged] (`ValueChanged<int>?`, optional): callback when dot is tapped
   /// - [spacing] (double?, optional): override spacing between dots
   /// - [direction] (Axis, default: horizontal): layout direction of dots
   /// - [padding] (EdgeInsetsGeometry?, optional): padding around dot container
@@ -198,10 +215,10 @@ class DotIndicator extends StatelessWidget {
         themeValue: compTheme?.spacing,
         defaultValue: 8 * scaling);
     final padding = styleValue(
-            widgetValue: this.padding,
-            themeValue: compTheme?.padding,
-            defaultValue: const EdgeInsets.all(8))
-        .resolve(directionality) *
+                widgetValue: this.padding,
+                themeValue: compTheme?.padding,
+                defaultValue: const EdgeInsets.all(8))
+            .resolve(directionality) *
         theme.scaling;
     final dotBuilder =
         this.dotBuilder ?? compTheme?.dotBuilder ?? _defaultDotBuilder;
@@ -240,13 +257,26 @@ class DotIndicator extends StatelessWidget {
   }
 }
 
+/// A basic dot item widget with customizable appearance.
+///
+/// Used as a base component for creating custom dot indicators.
 class DotItem extends StatelessWidget {
+  /// The size of the dot.
   final double? size;
+
+  /// The color of the dot.
   final Color? color;
+
+  /// The border radius of the dot.
   final double? borderRadius;
+
+  /// The border color of the dot.
   final Color? borderColor;
+
+  /// The border width of the dot.
   final double? borderWidth;
 
+  /// Creates a dot item with the specified properties.
   const DotItem({
     super.key,
     this.size,
@@ -274,13 +304,26 @@ class DotItem extends StatelessWidget {
   }
 }
 
+/// An active dot item widget representing the current position.
+///
+/// Styled to highlight the currently active item in a dot indicator.
 class ActiveDotItem extends StatelessWidget {
+  /// The size of the dot.
   final double? size;
+
+  /// The color of the dot.
   final Color? color;
+
+  /// The border radius of the dot.
   final double? borderRadius;
+
+  /// The border color of the dot.
   final Color? borderColor;
+
+  /// The border width of the dot.
   final double? borderWidth;
 
+  /// Creates an active dot item with the specified properties.
   const ActiveDotItem({
     super.key,
     this.size,
@@ -323,13 +366,27 @@ class ActiveDotItem extends StatelessWidget {
   }
 }
 
+/// An inactive dot item widget representing non-current positions.
+///
+/// Styled to indicate inactive items in a dot indicator with
+/// optional border styling.
 class InactiveDotItem extends StatelessWidget {
+  /// The size of the dot.
   final double? size;
+
+  /// The color of the dot.
   final Color? color;
+
+  /// The border radius of the dot.
   final double? borderRadius;
+
+  /// The border color of the dot.
   final Color? borderColor;
+
+  /// The border width of the dot.
   final double? borderWidth;
 
+  /// Creates an inactive dot item with the specified properties.
   const InactiveDotItem({
     super.key,
     this.size,
@@ -352,12 +409,12 @@ class InactiveDotItem extends StatelessWidget {
         widgetValue: this.borderRadius,
         themeValue: compTheme?.borderRadius,
         defaultValue: theme.radiusMd);
-    final borderColor =
-        this.borderColor ?? compTheme?.inactiveBorderColor ?? theme.colorScheme.secondary;
+    final borderColor = this.borderColor ??
+        compTheme?.inactiveBorderColor ??
+        theme.colorScheme.secondary;
     final borderWidth =
         this.borderWidth ?? compTheme?.inactiveBorderWidth ?? (2 * scaling);
-    final color =
-        this.color ?? compTheme?.inactiveColor;
+    final color = this.color ?? compTheme?.inactiveColor;
     return Container(
       width: size,
       height: size,

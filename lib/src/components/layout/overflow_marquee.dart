@@ -47,6 +47,7 @@ class OverflowMarqueeTheme {
   /// Animation curve of the scroll.
   final Curve? curve;
 
+  /// Creates an [OverflowMarqueeTheme].
   const OverflowMarqueeTheme({
     this.direction,
     this.duration,
@@ -56,6 +57,7 @@ class OverflowMarqueeTheme {
     this.curve,
   });
 
+  /// Creates a copy of this theme with the given fields replaced.
   OverflowMarqueeTheme copyWith({
     ValueGetter<Axis?>? direction,
     ValueGetter<Duration?>? duration,
@@ -131,12 +133,37 @@ class OverflowMarqueeTheme {
 /// )
 /// ```
 class OverflowMarquee extends StatefulWidget {
+  /// The child widget to display and potentially scroll.
   final Widget child;
+
+  /// Scroll direction (horizontal or vertical).
+  ///
+  /// If `null`, uses theme default or [Axis.horizontal].
   final Axis? direction;
+
+  /// Total duration for one complete scroll cycle.
+  ///
+  /// If `null`, uses theme default.
   final Duration? duration;
+
+  /// Distance to scroll per animation step.
+  ///
+  /// If `null`, scrolls the entire overflow amount.
   final double? step;
+
+  /// Pause duration between scroll cycles.
+  ///
+  /// If `null`, uses theme default.
   final Duration? delayDuration;
+
+  /// Portion of edges to apply fade effect (0.0 to 1.0).
+  ///
+  /// For example, 0.15 fades 15% of each edge. If `null`, uses theme default.
   final double? fadePortion;
+
+  /// Animation curve for scroll motion.
+  ///
+  /// If `null`, uses theme default or [Curves.linear].
   final Curve? curve;
 
   /// Creates an [OverflowMarquee] widget with customizable scrolling behavior.
@@ -236,6 +263,7 @@ class _OverflowMarqueeState extends State<OverflowMarquee>
         elapsed: elapsed,
         step: step,
         textDirection: textDirection,
+        curve: curve,
         child: widget.child,
       ),
     );
@@ -251,6 +279,7 @@ class _OverflowMarqueeLayout extends SingleChildRenderObjectWidget {
   final Duration elapsed;
   final double step;
   final TextDirection textDirection;
+  final Curve curve;
 
   const _OverflowMarqueeLayout({
     required this.direction,
@@ -261,6 +290,7 @@ class _OverflowMarqueeLayout extends SingleChildRenderObjectWidget {
     required this.elapsed,
     required this.step,
     required this.textDirection,
+    required this.curve,
     required Widget child,
   }) : super(child: child);
 
@@ -275,6 +305,7 @@ class _OverflowMarqueeLayout extends SingleChildRenderObjectWidget {
       step: step,
       elapsed: elapsed,
       textDirection: textDirection,
+      curve: curve,
     );
   }
 
@@ -315,6 +346,10 @@ class _OverflowMarqueeLayout extends SingleChildRenderObjectWidget {
       renderObject.textDirection = textDirection;
       hasChanged = true;
     }
+    if (renderObject.curve != curve) {
+      renderObject.curve = curve;
+      hasChanged = true;
+    }
     if (hasChanged) {
       renderObject.markNeedsLayout();
     }
@@ -335,6 +370,7 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
   Duration elapsed;
   double step;
   TextDirection textDirection;
+  Curve curve;
 
   _RenderOverflowMarqueeLayout({
     required this.direction,
@@ -345,6 +381,7 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
     required this.elapsed,
     required this.step,
     required this.textDirection,
+    required this.curve,
   }) : super(null);
 
   @override
@@ -430,6 +467,7 @@ class _RenderOverflowMarqueeLayout extends RenderShiftedBox
         delayDurationInMicros + durationInMicros) {
       double progress =
           (cycleElapsedInMicros - delayDurationInMicros) / durationInMicros;
+      progress = curve.transform(progress);
       return reverse ? 1 - progress : progress;
     } else {
       return reverse ? 0 : 1;

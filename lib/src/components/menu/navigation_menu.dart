@@ -152,6 +152,9 @@ class NavigationMenuItem extends StatefulWidget {
   State<NavigationMenuItem> createState() => NavigationMenuItemState();
 }
 
+/// State class for [NavigationMenuItem] widget.
+///
+/// Manages the lifecycle and interaction of a single navigation menu item.
 class NavigationMenuItemState extends State<NavigationMenuItem> {
   NavigationMenuState? _menuState;
 
@@ -416,7 +419,7 @@ class NavigationMenuContentList extends StatelessWidget {
   /// grid's appearance and spacing.
   ///
   /// Parameters:
-  /// - [children] (List<Widget>, required): Items to arrange in grid
+  /// - [children] (`List<Widget>`, required): Items to arrange in grid
   /// - [crossAxisCount] (int, default: 3): Number of columns per row
   /// - [spacing] (double?, optional): Horizontal spacing between items
   /// - [runSpacing] (double?, optional): Vertical spacing between rows
@@ -551,7 +554,7 @@ class NavigationMenu extends StatefulWidget {
   /// Parameters:
   /// - [surfaceOpacity] (double?, optional): Popover background opacity
   /// - [surfaceBlur] (double?, optional): Popover backdrop blur intensity
-  /// - [children] (List<Widget>, required): Menu items to display
+  /// - [children] (`List<Widget>`, required): Menu items to display
   ///
   /// Example:
   /// ```dart
@@ -574,7 +577,12 @@ class NavigationMenu extends StatefulWidget {
   State<NavigationMenu> createState() => NavigationMenuState();
 }
 
+/// State class for [NavigationMenu] managing menu interactions and timing.
+///
+/// Handles hover debouncing, popover control, active menu item tracking,
+/// and content builder management for navigation menu items.
 class NavigationMenuState extends State<NavigationMenu> {
+  /// Debounce duration for hover interactions to prevent flickering.
   static const Duration kDebounceDuration = Duration(milliseconds: 200);
   // final GlobalKey<PopoverAnchorState> _popoverKey = GlobalKey();
   // final ValueNotifier<bool> _visible = ValueNotifier(false);
@@ -589,6 +597,12 @@ class NavigationMenuState extends State<NavigationMenu> {
     _contentBuilders[key] = builder;
   }
 
+  /// Checks if the given menu item is currently active.
+  ///
+  /// Parameters:
+  /// - [item] (`NavigationMenuItemState`, required): the menu item to check
+  ///
+  /// Returns: `bool` — true if the item is active and popover is open
   bool isActive(NavigationMenuItemState item) {
     return _popoverController.hasOpenPopover &&
         widget.children[_activeIndex.value] == item.widget;
@@ -616,13 +630,15 @@ class NavigationMenuState extends State<NavigationMenu> {
       offset: compTheme?.offset ?? const Offset(0, 4) * scaling,
       builder: buildPopover,
       modal: false,
-      margin:
-          requestMargin() ?? compTheme?.margin ?? (const EdgeInsets.all(8) * scaling),
+      margin: requestMargin() ??
+          compTheme?.margin ??
+          (const EdgeInsets.all(8) * scaling),
       allowInvertHorizontal: false,
       allowInvertVertical: false,
       onTickFollow: (value) {
-        value.margin =
-            requestMargin() ?? compTheme?.margin ?? (const EdgeInsets.all(8) * scaling);
+        value.margin = requestMargin() ??
+            compTheme?.margin ??
+            (const EdgeInsets.all(8) * scaling);
       },
     );
   }
@@ -637,12 +653,24 @@ class NavigationMenuState extends State<NavigationMenu> {
     _show(item.context);
   }
 
+  /// Finds a navigation menu item state by its widget.
+  ///
+  /// Parameters:
+  /// - [widget] (`Widget`, required): the widget to search for
+  ///
+  /// Returns: `NavigationMenuItemState?` — the state if found, null otherwise
   NavigationMenuItemState? findByWidget(Widget widget) {
     return _contentBuilders.keys
         .where((key) => key.widget == widget)
         .firstOrNull;
   }
 
+  /// Builds the content for the menu item at the given index.
+  ///
+  /// Parameters:
+  /// - [index] (`int`, required): index of the menu item
+  ///
+  /// Returns: `Widget` — the content widget
   Widget buildContent(int index) {
     NavigationMenuItemState? item = findByWidget(widget.children[index]);
     final theme = Theme.of(context);
@@ -658,10 +686,17 @@ class NavigationMenuState extends State<NavigationMenu> {
     return Container();
   }
 
+  /// Closes the currently open popover menu.
   void close() {
     _popoverController.close();
   }
 
+  /// Builds the popover widget for the navigation menu.
+  ///
+  /// Parameters:
+  /// - [context] (`BuildContext`, required): build context
+  ///
+  /// Returns: `Widget` — the popover widget
   Widget buildPopover(BuildContext context) {
     final theme = Theme.of(context);
     final compTheme = ComponentTheme.maybeOf<NavigationMenuTheme>(context);
@@ -744,6 +779,9 @@ class NavigationMenuState extends State<NavigationMenu> {
     );
   }
 
+  /// Calculates the margin for the popover based on current widget position.
+  ///
+  /// Returns: `EdgeInsets?` — calculated margin or null if render box not available
   EdgeInsets? requestMargin() {
     RenderBox? box = context.findRenderObject() as RenderBox?;
     if (box != null) {

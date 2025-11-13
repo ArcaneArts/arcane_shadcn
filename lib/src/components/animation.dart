@@ -125,7 +125,7 @@ class AnimatedValueBuilder<T> extends StatefulWidget {
   /// - [initialValue] (T?, optional): Starting value for animation. If null, no initial animation occurs.
   /// - [value] (T, required): Target value to animate to.
   /// - [duration] (Duration, required): Animation duration.
-  /// - [builder] (AnimatedChildBuilder<T>, required): Builds widget from animated value.
+  /// - [builder] (`AnimatedChildBuilder<T>`, required): Builds widget from animated value.
   /// - [onEnd] (Function?, optional): Called when animation completes.
   /// - [curve] (Curve, default: Curves.linear): Animation timing curve.
   /// - [lerp] (Function?, optional): Custom interpolation for complex types.
@@ -168,7 +168,7 @@ class AnimatedValueBuilder<T> extends StatefulWidget {
   /// - [initialValue] (T?, optional): Starting value for animation.
   /// - [value] (T, required): Target value to animate to.
   /// - [duration] (Duration, required): Animation duration.
-  /// - [builder] (AnimationBuilder<T>, required): Builds widget from Animation object.
+  /// - [builder] (`AnimationBuilder<T>`, required): Builds widget from Animation object.
   /// - [onEnd] (Function?, optional): Called when animation completes.
   /// - [curve] (Curve, default: Curves.linear): Animation timing curve.
   /// - [lerp] (Function?, optional): Custom interpolation function.
@@ -212,7 +212,7 @@ class AnimatedValueBuilder<T> extends StatefulWidget {
   /// - [initialValue] (T?, optional): Starting value for animation.
   /// - [value] (T, required): Target value to animate to.
   /// - [duration] (Duration, required): Animation duration.
-  /// - [builder] (AnimatedChildValueBuilder<T>, required): Builds widget with raw interpolation data.
+  /// - [builder] (`AnimatedChildValueBuilder<T>`, required): Builds widget with raw interpolation data.
   /// - [onEnd] (Function?, optional): Called when animation completes.
   /// - [curve] (Curve, default: Curves.linear): Animation timing curve.
   /// - [child] (Widget?, optional): Optional child passed to builder.
@@ -288,6 +288,22 @@ class _AnimatableValue<T> extends Animatable<T> {
   }
 }
 
+/// State class for [AnimatedValueBuilder] that manages the animation lifecycle.
+///
+/// This state class handles:
+/// - Creating and disposing animation controllers
+/// - Managing curved animations
+/// - Driving value interpolation
+/// - Responding to value changes and rebuilding accordingly
+///
+/// ## Type Parameters
+///
+/// * [T] - The type of value being animated.
+///
+/// ## Overview
+///
+/// You typically don't interact with this class directly. It's created automatically
+/// by the [AnimatedValueBuilder] widget and manages all animation details internally.
 class AnimatedValueBuilderState<T> extends State<AnimatedValueBuilder<T>>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
@@ -320,6 +336,23 @@ class AnimatedValueBuilderState<T> extends State<AnimatedValueBuilder<T>>
     }
   }
 
+  /// Interpolates between two values using the widget's lerp function or default.
+  ///
+  /// ## Parameters
+  ///
+  /// * [a] - The starting value.
+  /// * [b] - The ending value.
+  /// * [t] - The interpolation factor (0.0 to 1.0).
+  ///
+  /// ## Returns
+  ///
+  /// The interpolated value of type [T].
+  ///
+  /// ## Notes
+  ///
+  /// If [widget.lerp] is provided, it's used for interpolation. Otherwise, the
+  /// method attempts dynamic arithmetic interpolation. If the type doesn't support
+  /// arithmetic operations, an exception is thrown with helpful guidance.
   T lerpedValue(T a, T b, double t) {
     if (widget.lerp != null) {
       return widget.lerp!(a, b, t);
@@ -436,7 +469,7 @@ enum RepeatMode {
 ///
 /// The widget supports different repeat modes via [RepeatMode]:
 /// - [RepeatMode.repeat]: Continuous forward animation with instant reset
-/// - [RepeatMode.reverse]: Continuous reverse animation  
+/// - [RepeatMode.reverse]: Continuous reverse animation
 /// - [RepeatMode.pingPong]: Smooth back-and-forth animation
 /// - [RepeatMode.pingPongReverse]: Ping-pong starting in reverse
 ///

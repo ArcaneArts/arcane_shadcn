@@ -1,15 +1,33 @@
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
+/// Theme configuration for [TimePicker] widget appearance and behavior.
+///
+/// Defines default settings for time picker components including display
+/// format, popover positioning, and dialog customization.
 class TimePickerTheme {
+  /// Mode for displaying the time picker (popover or dialog).
   final PromptMode? mode;
+
+  /// Alignment of the popover relative to its anchor.
   final AlignmentGeometry? popoverAlignment;
+
+  /// Alignment point on the anchor widget for popover positioning.
   final AlignmentGeometry? popoverAnchorAlignment;
+
+  /// Padding inside the popover.
   final EdgeInsetsGeometry? popoverPadding;
+
+  /// Whether to use 24-hour time format.
   final bool? use24HourFormat;
+
+  /// Whether to show seconds picker.
   final bool? showSeconds;
+
+  /// Custom title widget for the time picker dialog.
   final Widget? dialogTitle;
 
+  /// Creates a [TimePickerTheme].
   const TimePickerTheme({
     this.mode,
     this.popoverAlignment,
@@ -20,6 +38,7 @@ class TimePickerTheme {
     this.dialogTitle,
   });
 
+  /// Creates a copy of this theme with the given fields replaced.
   TimePickerTheme copyWith({
     ValueGetter<PromptMode?>? mode,
     ValueGetter<AlignmentGeometry?>? popoverAlignment,
@@ -72,7 +91,7 @@ class TimePickerTheme {
 
 /// A controller for managing [ControlledTimePicker] values programmatically.
 ///
-/// This controller extends [ValueNotifier<TimeOfDay?>] to provide reactive
+/// This controller extends `ValueNotifier<TimeOfDay?>` to provide reactive
 /// state management for time picker components. It implements [ComponentController]
 /// to integrate with the controlled component system, allowing external control
 /// and listening to time selection changes.
@@ -132,43 +151,43 @@ class ControlledTimePicker extends StatelessWidget
   /// Determines how the time selection interface is displayed to the user.
   /// Can be either dialog mode (modal popup) or popover mode (dropdown).
   final PromptMode mode;
-  
+
   /// Widget displayed when no time is selected.
   ///
   /// This placeholder appears in the picker button when [initialValue] is null
   /// and no time has been selected yet. If null, a default placeholder is used.
   final Widget? placeholder;
-  
+
   /// Alignment for the popover relative to its anchor widget.
   ///
   /// Used only when [mode] is [PromptMode.popover]. Controls where the popover
   /// appears relative to the picker button.
   final AlignmentGeometry? popoverAlignment;
-  
+
   /// Alignment of the anchor point on the picker button.
   ///
   /// Used only when [mode] is [PromptMode.popover]. Determines which point
   /// on the picker button the popover aligns to.
   final AlignmentGeometry? popoverAnchorAlignment;
-  
+
   /// Internal padding for the popover content.
   ///
   /// Used only when [mode] is [PromptMode.popover]. Controls spacing inside
   /// the popover container around the time picker interface.
   final EdgeInsetsGeometry? popoverPadding;
-  
+
   /// Whether to use 24-hour format for time display and input.
   ///
   /// When true, times are displayed in 24-hour format (00:00-23:59).
   /// When false or null, uses the system default format preference.
   final bool? use24HourFormat;
-  
+
   /// Whether to include seconds in the time selection.
   ///
   /// When true, the time picker allows selection of seconds in addition
   /// to hours and minutes. When false, only hours and minutes are selectable.
   final bool showSeconds;
-  
+
   /// Optional title widget for the dialog mode.
   ///
   /// Used only when [mode] is [PromptMode.dialog]. Displayed at the top
@@ -184,7 +203,7 @@ class ControlledTimePicker extends StatelessWidget
   /// Parameters:
   /// - [controller] (TimePickerController?, optional): External controller for programmatic control
   /// - [initialValue] (TimeOfDay?, optional): Initial time when no controller is provided
-  /// - [onChanged] (ValueChanged<TimeOfDay?>?, optional): Callback for time selection changes
+  /// - [onChanged] (`ValueChanged<TimeOfDay?>?`, optional): Callback for time selection changes
   /// - [enabled] (bool, default: true): Whether the picker accepts user interaction
   /// - [mode] (PromptMode, default: PromptMode.dialog): Presentation style (dialog or popover)
   /// - [placeholder] (Widget?, optional): Content displayed when no time is selected
@@ -246,19 +265,45 @@ class ControlledTimePicker extends StatelessWidget
   }
 }
 
+/// A time picker widget for selecting time values.
+///
+/// Provides time selection interface with hours, minutes, and optional
+/// seconds in either popover or dialog mode.
 class TimePicker extends StatelessWidget {
+  /// The currently selected time value.
   final TimeOfDay? value;
+
+  /// Callback invoked when the selected time changes.
   final ValueChanged<TimeOfDay?>? onChanged;
+
+  /// The display mode for the time picker (popover or dialog).
   final PromptMode mode;
+
+  /// Placeholder widget shown when no time is selected.
   final Widget? placeholder;
+
+  /// Alignment of the popover relative to the anchor.
   final AlignmentGeometry? popoverAlignment;
+
+  /// Anchor alignment for the popover.
   final AlignmentGeometry? popoverAnchorAlignment;
+
+  /// Padding inside the popover.
   final EdgeInsetsGeometry? popoverPadding;
+
+  /// Whether to use 24-hour format.
   final bool? use24HourFormat;
+
+  /// Whether to show seconds selection.
   final bool showSeconds;
+
+  /// Title widget for the dialog mode.
   final Widget? dialogTitle;
+
+  /// Whether the time picker is enabled.
   final bool? enabled;
 
+  /// Creates a time picker.
   const TimePicker({
     super.key,
     required this.value,
@@ -281,12 +326,10 @@ class TimePicker extends StatelessWidget {
     bool use24HourFormat = this.use24HourFormat ??
         compTheme?.use24HourFormat ??
         MediaQuery.of(context).alwaysUse24HourFormat;
-    final bool showSeconds =
-        compTheme?.showSeconds ?? this.showSeconds;
+    final bool showSeconds = compTheme?.showSeconds ?? this.showSeconds;
     return ObjectFormField(
       value: value,
-      placeholder: placeholder ??
-          Text(localizations.placeholderTimePicker),
+      placeholder: placeholder ?? Text(localizations.placeholderTimePicker),
       onChanged: onChanged,
       builder: (context, value) {
         return Text(localizations.formatTimeOfDay(value,
@@ -314,12 +357,24 @@ class TimePicker extends StatelessWidget {
   }
 }
 
+/// Dialog widget for interactive time selection.
+///
+/// Displays input fields for hours, minutes, and optional seconds
+/// with AM/PM toggle for 12-hour format.
 class TimePickerDialog extends StatefulWidget {
+  /// The initial time value.
   final TimeOfDay? initialValue;
+
+  /// Callback invoked when the time changes.
   final ValueChanged<TimeOfDay?>? onChanged;
+
+  /// Whether to use 24-hour format.
   final bool use24HourFormat;
+
+  /// Whether to show seconds input.
   final bool showSeconds;
 
+  /// Creates a time picker dialog.
   const TimePickerDialog({
     super.key,
     this.initialValue,
@@ -556,35 +611,99 @@ class _TimeFormatter extends TextInputFormatter {
   }
 }
 
+/// Controller for managing [DurationPicker] values programmatically.
+///
+/// Extends `ValueNotifier<Duration?>` to provide reactive state management
+/// for duration picker components. Integrates with the controlled component
+/// system for external control and change notifications.
+///
+/// Example:
+/// ```dart
+/// final controller = DurationPickerController(Duration(hours: 2, minutes: 30));
+/// controller.addListener(() {
+///   print('Selected duration: ${controller.value}');
+/// });
+/// ```
 class DurationPickerController extends ValueNotifier<Duration?>
     with ComponentController<Duration?> {
+  /// Creates a [DurationPickerController] with an initial value.
   DurationPickerController(super.value);
 }
 
+/// Represents the parts of a duration that can be selected.
+///
+/// Used by [DurationPicker] to specify which time units are editable.
 enum DurationPart {
+  /// Day component of the duration.
   day,
+
+  /// Hour component of the duration.
   hour,
+
+  /// Minute component of the duration.
   minute,
+
+  /// Second component of the duration.
   second,
 }
 
+/// Represents the parts of a time-of-day that can be selected.
+///
+/// Used by [TimePicker] to specify which time components are editable.
 enum TimePart {
+  /// Hour component (0-23 or 1-12 depending on format).
   hour,
+
+  /// Minute component (0-59).
   minute,
+
+  /// Second component (0-59).
   second,
 }
 
+/// Widget for picking duration values with day, hour, minute, and second components.
+///
+/// Provides an input interface for selecting time durations. Can be controlled
+/// externally via [DurationPickerController] or used with callbacks.
+///
+/// Example:
+/// ```dart
+/// DurationPicker(
+///   value: Duration(hours: 1, minutes: 30),
+///   onChanged: (duration) {
+///     print('Selected: $duration');
+///   },
+/// )
+/// ```
 class DurationPicker extends StatelessWidget {
+  /// The currently selected duration value.
   final Duration? value;
+
+  /// Callback invoked when the selected duration changes.
   final ValueChanged<Duration?>? onChanged;
+
+  /// The display mode for the duration picker (popover or dialog).
   final PromptMode mode;
+
+  /// Placeholder widget shown when no duration is selected.
   final Widget? placeholder;
+
+  /// Alignment of the popover relative to the anchor.
   final AlignmentGeometry? popoverAlignment;
+
+  /// Anchor alignment for the popover.
   final AlignmentGeometry? popoverAnchorAlignment;
+
+  /// Padding inside the popover.
   final EdgeInsetsGeometry? popoverPadding;
+
+  /// Title widget for the dialog mode.
   final Widget? dialogTitle;
+
+  /// Whether the duration picker is enabled.
   final bool? enabled;
 
+  /// Creates a duration picker.
   const DurationPicker({
     super.key,
     required this.value,
@@ -624,10 +743,18 @@ class DurationPicker extends StatelessWidget {
   }
 }
 
+/// Dialog widget for interactive duration selection.
+///
+/// Displays input fields for days, hours, minutes, and seconds
+/// for selecting durations.
 class DurationPickerDialog extends StatefulWidget {
+  /// The initial duration value.
   final Duration? initialValue;
+
+  /// Callback invoked when the duration changes.
   final ValueChanged<Duration?>? onChanged;
 
+  /// Creates a duration picker dialog.
   const DurationPickerDialog({
     super.key,
     this.initialValue,
@@ -788,15 +915,32 @@ class _DurationPickerDialogState extends State<DurationPickerDialog> {
   }
 }
 
+/// Represents a range of time with a start and end time.
+///
+/// Used to define time intervals or periods. Both [start] and [end]
+/// are represented as [TimeOfDay] values.
+///
+/// Example:
+/// ```dart
+/// final workHours = TimeRange(
+///   start: TimeOfDay(hour: 9, minute: 0),
+///   end: TimeOfDay(hour: 17, minute: 0),
+/// );
+/// ```
 class TimeRange {
+  /// The start time of the range.
   final TimeOfDay start;
+
+  /// The end time of the range.
   final TimeOfDay end;
 
+  /// Creates a [TimeRange] with the specified start and end times.
   const TimeRange({
     required this.start,
     required this.end,
   });
 
+  /// Creates a copy of this range with the given fields replaced.
   TimeRange copyWith({
     ValueGetter<TimeOfDay>? start,
     ValueGetter<TimeOfDay>? end,

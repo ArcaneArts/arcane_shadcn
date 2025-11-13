@@ -24,16 +24,16 @@ import 'package:shadcn_flutter/src/events.dart';
 class ModalBackdropTheme {
   /// Border radius applied to the modal surface.
   final BorderRadiusGeometry? borderRadius;
-  
+
   /// Padding around the modal content area.
   final EdgeInsetsGeometry? padding;
-  
+
   /// Color of the barrier that appears behind the modal.
   final Color? barrierColor;
-  
+
   /// Whether the backdrop behaves as a modal (blocking interaction).
   final bool? modal;
-  
+
   /// Whether to clip the surface for visual effects.
   final bool? surfaceClip;
 
@@ -151,22 +151,22 @@ class ModalBackdrop extends StatelessWidget {
 
   /// The child widget to display above the backdrop.
   final Widget child;
-  
+
   /// Border radius for the backdrop cutout around the child.
   final BorderRadiusGeometry? borderRadius;
-  
+
   /// Padding around the child widget.
   final EdgeInsetsGeometry? padding;
-  
+
   /// Color of the backdrop barrier.
   final Color? barrierColor;
-  
+
   /// Animation for fade in/out transitions.
   final Animation<double>? fadeAnimation;
-  
+
   /// Whether the backdrop should behave as a modal.
   final bool? modal;
-  
+
   /// Whether to apply surface clipping effects.
   final bool? surfaceClip;
 
@@ -178,11 +178,11 @@ class ModalBackdrop extends StatelessWidget {
   /// Parameters:
   /// - [child] (Widget, required): content widget displayed above backdrop
   /// - [modal] (bool?, optional): enables modal behavior, defaults to true
-  /// - [surfaceClip] (bool?, optional): enables surface clipping, defaults to true  
+  /// - [surfaceClip] (bool?, optional): enables surface clipping, defaults to true
   /// - [borderRadius] (BorderRadiusGeometry?, optional): corner radius for cutout
   /// - [barrierColor] (Color?, optional): backdrop color, defaults to black with 80% opacity
   /// - [padding] (EdgeInsetsGeometry?, optional): padding around child
-  /// - [fadeAnimation] (Animation<double>?, optional): fade transition animation
+  /// - [fadeAnimation] (`Animation<double>?`, optional): fade transition animation
   ///
   /// Example:
   /// ```dart
@@ -277,7 +277,7 @@ class ModalBackdrop extends StatelessWidget {
 ///
 /// Features:
 /// - Automatic full-screen mode detection
-/// - Surface styling with blur and opacity effects  
+/// - Surface styling with blur and opacity effects
 /// - Configurable borders and shadows
 /// - Clip behavior control
 /// - Theme integration
@@ -299,7 +299,7 @@ class ModalBackdrop extends StatelessWidget {
 class ModalContainer extends StatelessWidget {
   /// Model key used to identify full-screen modal mode.
   static const kFullScreenMode = #modal_surface_card_fullscreen;
-  
+
   /// Checks if the current context is in full-screen modal mode.
   ///
   /// Returns `true` if the modal should display in full-screen mode,
@@ -310,39 +310,40 @@ class ModalContainer extends StatelessWidget {
 
   /// The child widget to display inside the modal container.
   final Widget child;
-  
+
   /// Padding applied inside the container around the child.
   final EdgeInsetsGeometry? padding;
-  
+
   /// Whether the container should have a filled background.
   final bool filled;
-  
+
   /// Background fill color when [filled] is true.
   final Color? fillColor;
-  
+
   /// Border radius for the container corners.
   final BorderRadiusGeometry? borderRadius;
-  
+
   /// Color of the container border.
   final Color? borderColor;
-  
+
   /// Width of the container border in logical pixels.
   final double? borderWidth;
-  
+
   /// Clipping behavior for the container content.
   final Clip clipBehavior;
-  
+
   /// Drop shadow effects applied to the container.
   final List<BoxShadow>? boxShadow;
-  
+
   /// Surface opacity for backdrop effects.
   final double? surfaceOpacity;
-  
+
   /// Surface blur intensity for backdrop effects.
   final double? surfaceBlur;
-  
+
   /// Animation duration for surface transitions.
   final Duration? duration;
+
   /// Creates a [ModalContainer].
   ///
   /// The [child] parameter is required. Other parameters customize the
@@ -357,7 +358,7 @@ class ModalContainer extends StatelessWidget {
   /// - [clipBehavior] (Clip, default: Clip.none): clipping behavior for content
   /// - [borderColor] (Color?, optional): border color
   /// - [borderWidth] (double?, optional): border width in logical pixels
-  /// - [boxShadow] (List<BoxShadow>?, optional): drop shadow effects
+  /// - [boxShadow] (`List<BoxShadow>?`, optional): drop shadow effects
   /// - [surfaceOpacity] (double?, optional): backdrop opacity level
   /// - [surfaceBlur] (double?, optional): backdrop blur intensity
   /// - [duration] (Duration?, optional): animation duration for transitions
@@ -433,22 +434,22 @@ class ModalContainer extends StatelessWidget {
 class SurfaceBarrierPainter extends CustomPainter {
   /// Large size constant for creating screen-filling effects.
   static const double bigSize = 1000000;
-  
+
   /// Large screen size for painting operations.
   static const bigScreen = Size(bigSize, bigSize);
-  
+
   /// Large offset to center the big screen.
   static const bigOffset = Offset(-bigSize / 2, -bigSize / 2);
 
   /// Whether to clip a cutout area in the barrier.
   final bool clip;
-  
+
   /// Border radius for the cutout area.
   final BorderRadius borderRadius;
-  
+
   /// Color of the barrier.
   final Color barrierColor;
-  
+
   /// Padding around the cutout area.
   final EdgeInsets padding;
 
@@ -544,12 +545,30 @@ class SurfaceBarrierPainter extends CustomPainter {
 class DialogRoute<T> extends RawDialogRoute<T> {
   /// Captured data from the launching context.
   final CapturedData? data;
-  
+
   /// Alignment for positioning the dialog.
   final AlignmentGeometry alignment;
-  
+
   /// Whether the dialog should display in full-screen mode.
   final bool fullScreen;
+
+  /// Creates a [DialogRoute].
+  ///
+  /// Parameters:
+  /// - [context] (`BuildContext`, required): Build context.
+  /// - [builder] (`WidgetBuilder`, required): Dialog content builder.
+  /// - [themes] (`CapturedThemes?`, optional): Captured theme data.
+  /// - [barrierColor] (`Color`, default: transparent): Barrier color.
+  /// - [barrierDismissible] (`bool?`, optional): Whether tapping barrier dismisses dialog.
+  /// - [barrierLabel] (`String?`, optional): Semantic label for barrier.
+  /// - [useSafeArea] (`bool`, default: `true`): Whether to respect safe area.
+  /// - [settings] (`RouteSettings?`, optional): Route settings.
+  /// - [anchorPoint] (`Offset?`, optional): Anchor point for route.
+  /// - [traversalEdgeBehavior] (`TraversalEdgeBehavior?`, optional): Traversal behavior.
+  /// - [alignment] (`AlignmentGeometry`, required): Dialog alignment.
+  /// - [transitionBuilder] (`RouteTransitionsBuilder`, required): Transition builder.
+  /// - [fullScreen] (`bool`, default: `false`): Full-screen mode.
+  /// - [data] (`CapturedData?`, optional): Captured data.
   DialogRoute({
     required BuildContext context,
     required WidgetBuilder builder,
@@ -639,7 +658,7 @@ Widget _buildShadcnDialogTransitions(
 ///
 /// Features:
 /// - Consistent design system integration
-/// - Smooth scale and fade animations  
+/// - Smooth scale and fade animations
 /// - Configurable alignment and barriers
 /// - Theme and data inheritance
 /// - Safe area handling
@@ -1103,7 +1122,7 @@ class DialogOverlayCompleter<T> extends OverlayCompleter<T> {
   /// Creates a [DialogOverlayCompleter].
   ///
   /// Parameters:
-  /// - [route] (DialogRoute<T>, required): the dialog route to manage
+  /// - [route] (`DialogRoute<T>`, required): the dialog route to manage
   ///
   /// Example:
   /// ```dart

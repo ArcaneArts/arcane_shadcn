@@ -76,12 +76,12 @@ class StarRatingTheme {
 /// Example:
 /// ```dart
 /// final controller = StarRatingController(3.5);
-/// 
+///
 /// // Listen to changes
 /// controller.addListener(() {
 ///   print('Rating changed to: ${controller.value}');
 /// });
-/// 
+///
 /// // Update the rating
 /// controller.value = 4.0;
 /// ```
@@ -119,7 +119,7 @@ class StarRatingController extends ValueNotifier<double>
 /// **Controller-based (recommended for complex state):**
 /// ```dart
 /// final controller = StarRatingController(3.5);
-/// 
+///
 /// ControlledStarRating(
 ///   controller: controller,
 ///   max: 5.0,
@@ -131,7 +131,7 @@ class StarRatingController extends ValueNotifier<double>
 /// **Callback-based (simple state management):**
 /// ```dart
 /// double currentRating = 0.0;
-/// 
+///
 /// ControlledStarRating(
 ///   initialValue: currentRating,
 ///   onChanged: (rating) => setState(() => currentRating = rating),
@@ -150,18 +150,78 @@ class ControlledStarRating extends StatelessWidget
   @override
   final StarRatingController? controller;
 
+  /// The minimum increment for rating changes.
+  ///
+  /// When a user interacts with the star rating, the value will snap to
+  /// multiples of this step. For example, a step of `0.5` allows half-star
+  /// ratings, while `1.0` allows only whole-star ratings.
   final double step;
+
+  /// The layout direction of the stars.
+  ///
+  /// Stars can be arranged horizontally ([Axis.horizontal]) or vertically
+  /// ([Axis.vertical]). Defaults to horizontal.
   final Axis direction;
+
+  /// The maximum rating value.
+  ///
+  /// Determines how many stars are displayed. For example, `max: 5.0` shows
+  /// 5 stars. Defaults to `5.0`.
   final double max;
+
+  /// The color of filled star portions.
+  ///
+  /// If `null`, uses the theme's primary color.
   final Color? activeColor;
+
+  /// The color of unfilled star portions.
+  ///
+  /// If `null`, uses a default background color from the theme.
   final Color? backgroundColor;
+
+  /// The number of points per star.
+  ///
+  /// Controls the star shape. Defaults to `5` for traditional five-pointed
+  /// stars. Higher values create stars with more points.
   final double starPoints;
+
+  /// Override size of each star.
+  ///
+  /// If `null`, uses the default size from the theme.
   final double? starSize;
+
+  /// Override spacing between stars.
+  ///
+  /// If `null`, uses the default spacing from the theme.
   final double? starSpacing;
+
+  /// Rounding radius for star points.
+  ///
+  /// Controls how rounded the tips of the star points appear. If `null`,
+  /// uses sharp points.
   final double? starPointRounding;
+
+  /// Rounding radius for star valleys.
+  ///
+  /// Controls how rounded the inner valleys between star points appear.
+  /// If `null`, uses sharp valleys.
   final double? starValleyRounding;
+
+  /// Vertical compression factor for stars.
+  ///
+  /// Values less than `1.0` make stars appear squashed. If `null`, stars
+  /// maintain their natural proportions.
   final double? starSquash;
+
+  /// Inner to outer radius ratio for stars.
+  ///
+  /// Controls the depth of star valleys. Lower values create deeper valleys.
+  /// If `null`, uses a default ratio.
   final double? starInnerRadiusRatio;
+
+  /// Rotation angle for stars in radians.
+  ///
+  /// Rotates each star by this angle. If `null`, stars are not rotated.
   final double? starRotation;
 
   /// Creates a [ControlledStarRating].
@@ -173,7 +233,7 @@ class ControlledStarRating extends StatelessWidget
   /// Parameters:
   /// - [controller] (StarRatingController?, optional): external state controller
   /// - [initialValue] (double, default: 0.0): starting rating when no controller
-  /// - [onChanged] (ValueChanged<double>?, optional): rating change callback
+  /// - [onChanged] (`ValueChanged<double>?`, optional): rating change callback
   /// - [enabled] (bool, default: true): whether star rating is interactive
   /// - [step] (double, default: 0.5): minimum increment for rating changes
   /// - [direction] (Axis, default: horizontal): layout direction of stars
@@ -292,23 +352,93 @@ class ControlledStarRating extends StatelessWidget
 /// );
 /// ```
 class StarRating extends StatefulWidget {
+  /// The current rating value.
+  ///
+  /// Should be between `0` and [max]. Fractional values are supported.
   final double value;
+
+  /// Callback invoked when the rating changes.
+  ///
+  /// If `null`, the widget is in read-only mode.
   final ValueChanged<double>? onChanged;
+
+  /// The minimum increment for rating changes.
+  ///
+  /// When a user interacts with the stars, the value will snap to multiples
+  /// of this step. Defaults to `0.5` for half-star precision.
   final double step;
+
+  /// The layout direction of the stars.
+  ///
+  /// Can be [Axis.horizontal] or [Axis.vertical]. Defaults to horizontal.
   final Axis direction;
+
+  /// The maximum rating value.
+  ///
+  /// Determines how many stars are displayed. Defaults to `5.0`.
   final double max;
+
+  /// The color of filled star portions.
+  ///
+  /// If `null`, uses the theme's primary color.
   final Color? activeColor;
+
+  /// The color of unfilled star portions.
+  ///
+  /// If `null`, uses a default background color from the theme.
   final Color? backgroundColor;
+
+  /// The number of points per star.
+  ///
+  /// Defaults to `5` for traditional five-pointed stars.
   final double starPoints;
+
+  /// Override size of each star.
+  ///
+  /// If `null`, uses the default size from the theme.
   final double? starSize;
+
+  /// Override spacing between stars.
+  ///
+  /// If `null`, uses the default spacing from the theme.
   final double? starSpacing;
+
+  /// Rounding radius for star points.
+  ///
+  /// Controls how rounded the tips of the star points appear. If `null`,
+  /// uses sharp points.
   final double? starPointRounding;
+
+  /// Rounding radius for star valleys.
+  ///
+  /// Controls how rounded the inner valleys between star points appear.
+  /// If `null`, uses sharp valleys.
   final double? starValleyRounding;
+
+  /// Vertical compression factor for stars.
+  ///
+  /// Values less than `1.0` make stars appear squashed. If `null`, stars
+  /// maintain their natural proportions.
   final double? starSquash;
+
+  /// Inner to outer radius ratio for stars.
+  ///
+  /// Controls the depth of star valleys. Lower values create deeper valleys.
+  /// If `null`, uses a default ratio.
   final double? starInnerRadiusRatio;
+
+  /// Rotation angle for stars in radians.
+  ///
+  /// Rotates each star by this angle. If `null`, stars are not rotated.
   final double? starRotation;
+
+  /// Whether the star rating is interactive.
+  ///
+  /// When `false`, the widget is in read-only mode. Defaults to `true` if
+  /// [onChanged] is provided.
   final bool? enabled;
 
+  /// Creates a [StarRating].
   const StarRating({
     super.key,
     required this.value,
@@ -366,9 +496,9 @@ class _StarRatingState extends State<StarRating>
     var starInnerRadiusRatio = widget.starInnerRadiusRatio ?? 0.4;
     var starRotation = widget.starRotation ?? 0.0;
     var starSize = styleValue(
-        widgetValue: widget.starSize,
-        themeValue: compTheme?.starSize,
-        defaultValue: 24.0) *
+            widgetValue: widget.starSize,
+            themeValue: compTheme?.starSize,
+            defaultValue: 24.0) *
         scaling;
     return Container(
       width: starSize,
@@ -569,14 +699,26 @@ class _StarRatingState extends State<StarRating>
   }
 }
 
+/// Intent for increasing the star rating value via keyboard shortcuts.
+///
+/// Used with Flutter's shortcuts and actions system to handle keyboard
+/// input for incrementing the rating. Typically bound to right arrow key.
 class IncreaseStarIntent extends Intent {
+  /// The step size to increase the rating by.
   final double step;
 
+  /// Creates an [IncreaseStarIntent].
   const IncreaseStarIntent(this.step);
 }
 
+/// Intent for decreasing the star rating value via keyboard shortcuts.
+///
+/// Used with Flutter's shortcuts and actions system to handle keyboard
+/// input for decrementing the rating. Typically bound to left arrow key.
 class DecreaseStarIntent extends Intent {
+  /// The step size to decrease the rating by.
   final double step;
 
+  /// Creates a [DecreaseStarIntent].
   const DecreaseStarIntent(this.step);
 }
